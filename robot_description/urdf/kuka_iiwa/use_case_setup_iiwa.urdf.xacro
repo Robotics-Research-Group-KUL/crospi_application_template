@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<robot name="iiwa_setup" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+   <!--Import the lbr iiwa macro -->
+   <xacro:include filename="$(find iiwa_description)/urdf/iiwa.urdf.xacro"/>
+<!-- create prefix property -->
+    <!-- <xacro:property name="prefix_left" value="left_"/> -->
+    <xacro:property name="prefix_right" value="right_"/>
+
+   <!-- Fix robot to world-->
+   <link name="world"/>
+
+    <!-- ************ ROBOT AND BASE **********     -->
+    <!-- Create the torso link -->
+    <joint name="${prefix_right}torso_joint" type="fixed">
+      <origin xyz="0 0 0.4" rpy="0 0 -1.5708"/>
+      <parent link="world"/>
+      <child link="${prefix_right}torso_link"/>
+    </joint>
+
+    <link name="${prefix_right}torso_link">
+        <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <!-- <geometry>
+            <mesh filename="package://cable_controller/robot_description/meshes/torso.stl" scale="0.001 0.001 0.001"/>
+        </geometry> -->
+        <material name="White"/>
+        </visual>
+    </link>
+
+    <!-- <joint name="${prefix_left}torso_joint" type="fixed">
+      <parent link="world"/>
+      <origin xyz="0 0 0.4" rpy="0 0 -1.5708"/>
+      <child link="${prefix_left}torso_link"/>
+    </joint> -->
+
+    <!-- <link name="${prefix_left}torso_link">
+    </link> -->
+
+    <!-- <xacro:iiwa prefix="${prefix_left}" parent="${prefix_left}torso_link">
+        <origin xyz="-0.11127 0.0 -0.07513" rpy="-0.785398 0.0  1.5708"/>
+    </xacro:iiwa> -->
+
+    <xacro:iiwa prefix="${prefix_right}" parent="${prefix_right}torso_link">
+        <origin xyz="0.11127 0.0 -0.07513" rpy="0.785398 0.0  1.5708"/>
+    </xacro:iiwa>
+
+
+<!-- LEFT FRAMES -->
+    <!-- <link name="${prefix_left}ft_sensor_frame"/>
+  	<joint name="${prefix_left}ft_sensor_joint" type="fixed">
+  		<origin xyz="0 0 ${0.01 + 0.025/2}" rpy="${0} ${3.1416} ${-3.1416/4}"/>
+  		<parent link="${prefix_left}tool0"/>
+  		<child link="${prefix_left}ft_sensor_frame"/>
+  	</joint> -->
+
+    <!-- <link name="${prefix_left}gripper"/>
+  	<joint name="${prefix_left}gripper_joint" type="fixed">
+  		<origin xyz="0.0 0.0 0.19" rpy="${0} ${3.1416} 0"/>
+  		<parent link="${prefix_left}tool0"/>
+  		<child link="${prefix_left}gripper"/>
+    </joint> -->
+
+
+
+<!-- RIGHT FRAMES -->
+  <link name="${prefix_right}ft_sensor_frame"/>
+  	<joint name="${prefix_right}ft_sensor_joint" type="fixed">
+  		<origin xyz="0 0 ${0.01 + 0.025/2}" rpy="${0} ${3.1416} ${-3.1416/4}"/>
+  		<parent link="${prefix_right}tool0"/>
+  		<child link="${prefix_right}ft_sensor_frame"/>
+  </joint>
+
+  <link name="${prefix_right}gripper"/>
+  <joint name="${prefix_right}gripper_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.19" rpy="${0} ${3.1416} ${-3.1416/2}"/>
+    <parent link="${prefix_right}tool0"/>
+    <child link="${prefix_right}gripper"/>
+  </joint>
+
+  <xacro:property name="x_w" value="0"/>
+	<xacro:property name="y_w" value="0"/>
+	<xacro:property name="z_w" value="0"/>
+	<xacro:property name="roll_w" value="0.0"/>
+	<xacro:property name="pitch_w" value="0.0"/>
+	<xacro:property name="yaw_w" value="0.0"/> 
+
+	<!-- combined scene -->
+	<!-- <link name="tool_frame"/> -->
+
+	<!-- <joint name="tool_frame_joint" type="fixed">
+		<origin xyz="${x_w} ${y_w} ${z_w}" rpy="${roll_w} ${pitch_w} ${yaw_w}"/>
+		<parent link="${prefix_left}ft_sensor_frame"/>
+		<child link="tool_frame"/>
+	</joint> -->
+
+</robot>
