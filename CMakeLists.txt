@@ -12,6 +12,29 @@ find_package(ament_cmake REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 
+
+
+# Define the Lua script to be executed
+set(WORK_DIR ${CMAKE_SOURCE_DIR}/etasl/task_specifications)
+# set(LUA_SCRIPT ${WORK_DIR}/etasl_json_schema_generator.lua)
+set(LUA_SCRIPT ${WORK_DIR}/move_cartesianspace.etasl.lua)
+
+# Add a custom target to generate the JSON schema
+# add_custom_command(generate_json_schema
+#     COMMAND lua ${LUA_SCRIPT}
+#     WORKING_DIRECTORY ${WORK_DIR}
+#     COMMENT "Generating JSON schema..."
+# )
+
+execute_process (
+  COMMAND lua ${LUA_SCRIPT}
+  WORKING_DIRECTORY ${WORK_DIR}
+) 
+
+
+# Ensure that the JSON schema is generated before building
+# add_dependencies(etasl_ros2_application_template generate_json_schema)
+
 install(DIRECTORY config_files coordination etasl launch robot_description 
   DESTINATION share/${PROJECT_NAME})
 

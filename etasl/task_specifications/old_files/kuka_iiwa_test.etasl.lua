@@ -8,7 +8,8 @@ require("math")
 
 tf = ee
 
-last_joint   = ctx:getScalarExpr(robot_joints[7])
+last_joint   = ctx:getScalarExpr(robot_joints[6])
+-- last_joint   = ctx:getScalarExpr(robot_joints[7])
 
 Constraint{
     context=ctx,

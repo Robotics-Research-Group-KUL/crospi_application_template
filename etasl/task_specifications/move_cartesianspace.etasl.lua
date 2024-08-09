@@ -3,17 +3,21 @@ require("geometric")
 -- worldmodel=require("worldmodel")
 require("math")
 
+require("etasl_json_schema_generator")
+
 -- ========================================= PARAMETERS ===================================
-maxvel    = ctx:createInputChannelScalar("maxvel" ,0.1)
-maxacc    = ctx:createInputChannelScalar("maxacc" ,0.1)
-eqradius  = ctx:createInputChannelScalar("eq_r"   ,0.08)
-delta_x   = ctx:createInputChannelScalar("delta_x",0.0)
-delta_y   = ctx:createInputChannelScalar("delta_y",0.0)
-delta_z   = ctx:createInputChannelScalar("delta_z",0.0)
+maxvel    = createInputJsonScalar("maxvel" ,0.1)
+maxacc    = createInputJsonScalar("maxacc" ,0.1)
+eqradius  = createInputJsonScalar("eq_r"   ,0.08)
+delta_x   = createInputJsonScalar("delta_x",0.0)
+delta_y   = createInputJsonScalar("delta_y",0.0)
+delta_z   = createInputJsonScalar("delta_z",0.0)
 
 -- ======================================== FRAMES ========================================
 
 tf = ee
+
+-- tf = frame(vector(0,0,0))
 
 -- =============================== INITIAL POSE ==============================
 

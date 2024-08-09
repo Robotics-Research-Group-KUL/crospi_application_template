@@ -14,9 +14,6 @@ etasl_application_prefix_dir = etasl_application_prefix_dir:gsub("%s+$", "") -- 
 
 etasl_application_share_dir = etasl_application_prefix_dir .. "/share/etasl_ros2_application_template"
 
-print("-----------------")
-print(etasl_application_share_dir)
-
 xmlstr = urdfreader.loadFile(etasl_application_share_dir .. "/robot_description/urdf/ur10/use_case_setup_ur10.urdf")
 robot = urdfreader.readUrdf(xmlstr,{})
 -- robot:writeDot("ur10_robot.dot")
