@@ -6,12 +6,12 @@ require("math")
 require("etasl_json_schema_generator")
 
 -- ========================================= PARAMETERS ===================================
-maxvel    = createInputJsonScalar("maxvel" ,0.1)
-maxacc    = createInputJsonScalar("maxacc" ,0.1)
-eqradius  = createInputJsonScalar("eq_r"   ,0.08)
-delta_x   = createInputJsonScalar("delta_x",0.0)
-delta_y   = createInputJsonScalar("delta_y",0.0)
-delta_z   = createInputJsonScalar("delta_z",0.0)
+maxvel    = createScalarParameter("maxvel" ,0.1, "Maximum velocity")
+maxacc    = createScalarParameter("maxacc" , 0.1, "Maximum acceleration")
+eqradius  = createScalarParameter("eq_r"   ,0.08, "Equivalent radius")
+delta_x   = createScalarParameter("delta_x",0.0, "Distance [m] that the robot will move w.r.t. the starting position in the X coordinate")
+delta_y   = createScalarParameter("delta_y",0.0, "Distance [m] that the robot will move w.r.t. the starting position in the Y coordinate")
+delta_z   = createScalarParameter("delta_z",0.0, "Distance [m] that the robot will move w.r.t. the starting position in the Z coordinate")
 
 -- ======================================== FRAMES ========================================
 

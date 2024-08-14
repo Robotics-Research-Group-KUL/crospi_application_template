@@ -1,0 +1,6 @@
+{
+    "$schema": "../../../../etasl/tasks-schema.json",
+    "tasks": [
+        {"name": "sadas","robot_specification_file":"kuka_iiwa.etasl.lua","parameters":{"is-move_joystick": true,"K_joystick": 0.2}}
+        ]
+}

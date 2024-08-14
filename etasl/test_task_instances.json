@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$id":"test_task_instances.json",
+    "title":"Tasks configuration",
+    "type":"object",
+    "description":"Schema for definition of eTaSL tasks",
+    "properties": {
+        "tasks": {
+            "title":"Tasks",
+            "description":"Tasks (i.e. instances of task specification) with specific parameters based on the application at hand.",
+            "type" : "array",
+            "items" : {
+                "type": "object",
+                "properties": {
+                    "name":{
+                        "description":"Name of the task (unique to the task instance)",
+                        "type":"string"
+                      },
+                      "robot_specification_file":{
+                        "description":"Name of the etasl lua file containing the robot specification",
+                        "enum": ["path1", "path2"]
+                        },
+                    "parameters":{
+                        "oneOf": [
+                            {"$ref": "task_json_schemas/move_cartesianspace.etasl.json"},
+                            {"$ref": "task_json_schemas/move_joystick.etasl.json"}
+                        ]
+                    }
+                },
+                "required": ["name","robot_specification_file","parameters"]
+            }
+        }
+    },
+    "required": ["tasks"]
+}
+

@@ -31,6 +31,7 @@ from typing import List, Callable, Union, Type
 
 from event_state import EventState
 
+from jsonschema import validate, exceptions
 
 
 import time
@@ -328,3 +329,15 @@ def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_vi
         YasminViewerPub('{} (nested FSM)'.format(name), sm)
 
     return sm
+
+
+def validate_json(json_data, schema):
+    try:
+        validate(instance=json_data, schema=schema)
+        print("JSON is valid.")
+    except exceptions.ValidationError as err:
+        print("JSON validation error:", err.message)
+        print("Error path:", list(err.path))
+        print("Schema path:", list(err.schema_path))
+        return False
+    return True

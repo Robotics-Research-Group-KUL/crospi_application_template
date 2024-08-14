@@ -31,7 +31,9 @@ from colorama import Fore, Back, Style
 
 
 import etasl_yasmin_utils as etasl_utils
-# from etasl_state import EtaslState
+import json
+# import requests
+from jsonschema import validate, ValidationError
 
 task_specifications_dir = "$[etasl_ros2_application_template]/etasl/task_specifications"
 robot_specifications_dir = "$[etasl_ros2_application_template]/etasl/robot_specifications"
@@ -70,16 +72,24 @@ def main(args=None):
     
     sm_out.add_state("CONFIGURING", Configuring(serv_manager),
                     transitions={SUCCEED: "MovingHome"})
+    
+    state_moving_home = {
+        "name":"MovingHome",
+        "file_path":"{}/move_jointspace_trap.etasl.lua".format(task_specifications_dir),
+        "robot_path":robot_specification,
+        "display_in_viewer":True,
+        "properties": {"hola":"chao","hola1":"chao1"}
+    }
 
     sm_out.add_state("MovingHome", etasl_utils.nested_etasl_state(name="MovingHome", file_path="{}/move_jointspace_trap.etasl.lua".format(task_specifications_dir), robot_path=robot_specification, display_in_viewer=True),
                     transitions={SUCCEED: "MovingCartesian", 
                                  ABORT: ABORT})
     
-    sm_out.add_state("MovingCartesian", etasl_utils.nested_etasl_state(name="MovingCartesian", file_path="{}/move_cartesianspace.etasl.lua".format(task_specifications_dir), robot_path=robot_specification),
+    sm_out.add_state("MovingCartesian", etasl_utils.nested_etasl_state(name="MovingCartesian", file_path="{}/move_cartesianspace.etasl.lua".format(task_specifications_dir), robot_path=robot_specification, display_in_viewer=True),
                 transitions={SUCCEED: "MovingJoystick", 
                                  ABORT: ABORT})
     
-    sm_out.add_state("MovingJoystick", etasl_utils.nested_etasl_state(name="MovingJoystick", file_path="{}/move_joystick.etasl.lua".format(task_specifications_dir), robot_path=robot_specification),
+    sm_out.add_state("MovingJoystick", etasl_utils.nested_etasl_state(name="MovingJoystick", file_path="{}/move_joystick.etasl.lua".format(task_specifications_dir), robot_path=robot_specification, display_in_viewer=True),
             transitions={SUCCEED: "finished_outer", 
                                  ABORT: ABORT})
 
