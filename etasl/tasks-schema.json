@@ -22,7 +22,9 @@
                       },
                     "parameters":{
                         "oneOf": [
+                            {"$ref": "task_json_schemas/dummy_task.etasl.json"},
                             {"$ref": "task_json_schemas/kuka_iiwa_jointspace_trap.etasl.json"},
+                            {"$ref": "task_json_schemas/markus_task.etasl.json"},
                             {"$ref": "task_json_schemas/move_cartesianspace.etasl.json"},
                             {"$ref": "task_json_schemas/move_jointspace_trap.etasl.json"},
                             {"$ref": "task_json_schemas/move_joystick.etasl.json"}

@@ -3,7 +3,7 @@
     "tasks": [
         {
             "name": "MovingHome",
-            "robot_specification_file": "ur10.etasl.lua",
+            "robot_specification_file": "kuka_iiwa.etasl.lua",
             "parameters": {
                 "is-move_jointspace_trap": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_jointspace_trap.etasl.lua"
@@ -11,7 +11,7 @@
         },
         {
             "name": "MovingCartesian",
-            "robot_specification_file": "ur10.etasl.lua",
+            "robot_specification_file": "kuka_iiwa.etasl.lua",
             "parameters": {
                 "is-move_cartesianspace": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_cartesianspace.etasl.lua",
@@ -25,7 +25,7 @@
         },
         {
             "name": "MovingJoystick",
-            "robot_specification_file": "ur10.etasl.lua",
+            "robot_specification_file": "kuka_iiwa.etasl.lua",
             "parameters": {
                 "is-move_joystick": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_joystick.etasl.lua",
@@ -34,7 +34,7 @@
         },
         {
             "name": "MovingDown",
-            "robot_specification_file": "ur10.etasl.lua",
+            "robot_specification_file": "kuka_iiwa.etasl.lua",
             "parameters": {
                 "is-move_cartesianspace": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_cartesianspace.etasl.lua",
@@ -48,7 +48,7 @@
         },
         {
             "name": "MovingUp",
-            "robot_specification_file": "ur10.etasl.lua",
+            "robot_specification_file": "kuka_iiwa.etasl.lua",
             "parameters": {
                 "is-move_cartesianspace": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_cartesianspace.etasl.lua",

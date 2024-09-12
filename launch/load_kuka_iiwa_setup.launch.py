@@ -7,8 +7,8 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-    urdf_file_name = 'robot_description/urdf/ur10/use_case_setup_ur10.urdf'
-    config_rviz_file = 'robot_description/urdf/ur10/rviz_config.rviz' # Replace with your RViz config file path
+    urdf_file_name = 'robot_description/urdf/kuka_iiwa/use_case_setup_iiwa.urdf'
+    config_rviz_file = 'robot_description/urdf/kuka_iiwa/rviz_config.rviz' # Replace with your RViz config file path
 
     urdf_file = os.path.join( get_package_share_directory('etasl_ros2_application_template'), urdf_file_name)
     rviz_file = os.path.join( get_package_share_directory('etasl_ros2_application_template'), config_rviz_file)
@@ -37,6 +37,6 @@ def generate_launch_description():
             executable='rviz2',
             name='rviz2',
             output='screen',
-            arguments=['-d', rviz_file]  
+            arguments=['-d', rviz_file]  # Replace with your RViz config file path
         )
     ])

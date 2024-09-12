@@ -39,7 +39,7 @@ for lua_file_dir in "$LUA_ETASL_DIR"/*.etasl.lua; do #extensions with .etasl.lua
     filename=$(basename "$lua_file_dir")
     filename_without_ext="${filename%.lua}"
     # dir_luafile="/home/santiregui/ros2_ws/src/etasl_ros2_application_template/etasl/task_specifications/test/${lua_file_dir}"
-    command_string="require('etasl_json_schema_generator');${command_string_robot};dofile('${lua_file_dir}'); write_json_schema('${filename_without_ext}.json'); print('Finished generating file ${filename_without_ext}.json')"
+    command_string="require('etasl_parameters');${command_string_robot};dofile('${lua_file_dir}'); write_json_schema('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
     
     # echo $command_string
     lua -e "${command_string}"

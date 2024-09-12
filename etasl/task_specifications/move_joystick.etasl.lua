@@ -2,7 +2,9 @@ require("context")
 require("geometric")
 -- worldmodel=require("worldmodel")
 require("math")
-require("etasl_json_schema_generator")
+require("etasl_parameters")
+
+set_task_description("This task specification allows to control the angular and linear velocity the end effector via a 6D joystick (a.k.a. spacemouse).")
 
 -- ========================================= PARAMETERS ===================================
 K_joystick    = createScalarParameter("K_joystick" ,0.2, "K_joystick")

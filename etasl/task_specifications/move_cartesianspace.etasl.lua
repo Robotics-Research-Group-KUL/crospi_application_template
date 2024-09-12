@@ -3,7 +3,9 @@ require("geometric")
 -- worldmodel=require("worldmodel")
 require("math")
 
-require("etasl_json_schema_generator")
+require("etasl_parameters")
+
+set_task_description("This task specification allows to move the position of the end effector in cartesian space relative to the initial pose, while maintaining a constant orientation.")
 
 -- ========================================= PARAMETERS ===================================
 maxvel    = createScalarParameter("maxvel" ,0.1, "Maximum velocity")
@@ -26,7 +28,7 @@ startpos  = origin(startpose)
 startrot  = rotation(startpose)
 
 -- =============================== END POSE ==============================
-endpos    = origin(startpose) + vector(0.0,0.0,-0.05)
+endpos    = origin(startpose) + vector(delta_x,delta_y,delta_z)
 endrot    = rotation(startpose)
 
 -- =========================== VELOCITY PROFILE ============================================

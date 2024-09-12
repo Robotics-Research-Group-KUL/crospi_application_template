@@ -31,6 +31,7 @@ from typing import List, Callable, Union, Type
 
 from event_state import EventState
 
+import json
 from jsonschema import validate, exceptions
 
 
@@ -240,8 +241,80 @@ class CleanupEtasl(ServiceState):
         # req_task.file_path = file_name
         # repl = self.call_service('readTaskSpecificationFile', req_task)
 
+class ReadTaskSpecificationString(ServiceState):
+    def __init__(self, string_specification: str) -> None:
+        super().__init__(
+            TaskSpecificationString,  # srv type
+            "/etasl_node/readTaskSpecificationString",  # service name
+            self.create_request_handler,  # cb to create the request
+            [],  # outcomes. Includes SUCCEED, ABORT, TIMEOUT by default
+            self.response_handler,  # cb to process the response
+            timeout = 2.5 #seconds 
+        )
+        self.string_specification = string_specification
+        # self.file_path = file_path
+
+    def create_request_handler(self, blackboard: Blackboard) -> TaskSpecificationString.Request:
+
+        req = TaskSpecificationString.Request()
+        req.str = self.string_specification
+        # print("ReadTaskSpecificationString")
+        return req
+
+    def response_handler(self,blackboard: Blackboard,response: TaskSpecificationString.Response) -> str:
+
+        # print("Service response success: " + str(response.success))
+        blackboard.success = response.success
+        if not response.success:
+            return ABORT
+        # time.sleep(1)
+        return SUCCEED
+    
+class ReadTaskParameters(ServiceState):
+    def __init__(self, task_name: str) -> None:
+        super().__init__(
+            TaskSpecificationString,  # srv type
+            "/etasl_node/readTaskSpecificationString",  # service name
+            self.create_request_handler,  # cb to create the request
+            [],  # outcomes. Includes SUCCEED, ABORT, TIMEOUT by default
+            self.response_handler,  # cb to process the response
+            timeout = 2.5 #seconds 
+        )
+        self.task_name = task_name
+        # self.file_path = file_path
+
+    def create_request_handler(self, blackboard: Blackboard) -> TaskSpecificationString.Request:
+
+        req = TaskSpecificationString.Request()
+
+        task = get_task(self.task_name,blackboard)
+
+        # Specify the parameters to exclude
+        excluded_params = {'file_path', 'is-move_cartesianspace', 'is-move_joystick', 'is-move_jointspace_trap'} #TODO delete this names
+
+        # Create a string with each parameter and its corresponding value, excluding specified parameters
+        param_string = "\n".join([
+            f"{key}={str(value).lower() if isinstance(value, bool) else value};"
+            for key, value in task["parameters"].items() if key not in excluded_params
+        ])
+
+        req.str = param_string
+
+        # print(param_string)
+        # print("ReadTaskSpecificationString")
+        return req
+
+    def response_handler(self,blackboard: Blackboard,response: TaskSpecificationString.Response) -> str:
+
+        # print("Service response success: " + str(response.success))
+        blackboard.success = response.success
+        if not response.success:
+            return ABORT
+        # time.sleep(1)
+        return SUCCEED
+
 class ReadTaskSpecificationFile(ServiceState):
-    def __init__(self, file_path: str) -> None:
+    def __init__(self, task_name: str) -> None:
         super().__init__(
             TaskSpecificationFile,  # srv type
             "/etasl_node/readTaskSpecificationFile",  # service name
@@ -250,12 +323,48 @@ class ReadTaskSpecificationFile(ServiceState):
             self.response_handler,  # cb to process the response
             timeout = 2.5 #seconds 
         )
-        self.file_path = file_path
+        self.task_name = task_name
+        # self.file_path = file_path
 
     def create_request_handler(self, blackboard: Blackboard) -> TaskSpecificationFile.Request:
 
         req = TaskSpecificationFile.Request()
-        req.file_path = self.file_path
+        task = get_task(self.task_name,blackboard)
+
+        req.file_path = task["parameters"]["file_path"]
+        print(task)
+        # print("ReadTaskSpecificationFile")
+        return req
+
+    def response_handler(self,blackboard: Blackboard,response: TaskSpecificationFile.Response) -> str:
+
+        # print("Service response success: " + str(response.success))
+        blackboard.success = response.success
+        if not response.success:
+            return ABORT
+        # time.sleep(1)
+        return SUCCEED
+    
+class ReadRobotSpecificationFile(ServiceState):
+    def __init__(self, task_name: str) -> None:
+        super().__init__(
+            TaskSpecificationFile,  # srv type
+            "/etasl_node/readTaskSpecificationFile",  # service name
+            self.create_request_handler,  # cb to create the request
+            [],  # outcomes. Includes SUCCEED, ABORT, TIMEOUT by default
+            self.response_handler,  # cb to process the response
+            timeout = 2.5 #seconds 
+        )
+        self.task_name = task_name
+        # self.file_path = file_path
+
+    def create_request_handler(self, blackboard: Blackboard) -> TaskSpecificationFile.Request:
+
+        req = TaskSpecificationFile.Request()
+        task = get_task(self.task_name,blackboard)
+        robot_path = "$[etasl_ros2_application_template]/etasl/robot_specifications/{}".format(task["robot_specification_file"])
+        req.file_path = robot_path
+        # print(task)
         # print("ReadTaskSpecificationFile")
         return req
 
@@ -285,7 +394,11 @@ class Executing(EventState):
         return
         # time.sleep(1)
 
-def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
+# def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
+def nested_etasl_state(name: str, blackboard: Blackboard, display_in_viewer: bool= False):
+
+
+    
 
     sm = StateMachine(outcomes=[SUCCEED, ABORT])
 
@@ -295,16 +408,21 @@ def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_vi
                         TIMEOUT: ABORT}) #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues
     
     sm.add_state("CLEANUP_ETASL", CleanupEtasl(),
-            transitions={SUCCEED: "ROBOT_SPECIFICATION",
-                        ABORT: "ROBOT_SPECIFICATION",
+            transitions={SUCCEED: "PARAMETER_CONFIG",
+                        ABORT: "PARAMETER_CONFIG",
                         TIMEOUT: ABORT}) #This state is just added in case that etasl is already running. If not possible (ABORT) still the task continues
 
-    sm.add_state("ROBOT_SPECIFICATION", ReadTaskSpecificationFile(robot_path),
-            transitions={SUCCEED: "TASK_SPECIFICATION",
+    sm.add_state("PARAMETER_CONFIG", ReadTaskParameters(name),
+            transitions={SUCCEED: "ROBOT_SPECIFICATION",
                         ABORT: ABORT,
                         TIMEOUT: ABORT})
 
-    sm.add_state("TASK_SPECIFICATION", ReadTaskSpecificationFile(file_path),
+    sm.add_state("ROBOT_SPECIFICATION", ReadRobotSpecificationFile(name),
+            transitions={SUCCEED: "TASK_SPECIFICATION",
+                        ABORT: ABORT,
+                        TIMEOUT: ABORT})
+    
+    sm.add_state("TASK_SPECIFICATION", ReadTaskSpecificationFile(name),
             transitions={SUCCEED: "CONFIG_ETASL",
                         ABORT: ABORT,
                         TIMEOUT: ABORT})
@@ -341,3 +459,26 @@ def validate_json(json_data, schema):
         print("Schema path:", list(err.schema_path))
         return False
     return True
+
+def load_parameters( json_file_name: str, blackboard: Blackboard) -> None:
+    with open(json_file_name, 'r') as json_file:
+        parameters = json.load(json_file)
+        blackboard["tasks"] = parameters["tasks"]
+
+    # Function to find a task by its name
+def get_task( task_name: str, blackboard: Blackboard)-> dict:
+    for task in blackboard["tasks"]:
+        if task.get("name") == task_name:
+            return task
+    # print(f"Task with name '{task_name}' was not found.")
+    raise Exception(f"Task with name '{task_name}' was not found.")
+    
+def get_index( task_name: str, blackboard: Blackboard)-> int:
+
+    # Find the index of the dictionary with the matching property name
+    index = next((i for i, task in enumerate(blackboard["tasks"]) if task['name'] == task_name), -1)
+
+    if index == -1:
+        raise Exception(f"Task with name '{task_name}' was not found.")
+
+    return index
