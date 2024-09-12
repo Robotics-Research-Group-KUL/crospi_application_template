@@ -20,6 +20,7 @@ set(WORK_DIR ${CMAKE_SOURCE_DIR}/etasl/task_json_schemas)
 set(BASH_SCRIPT ${CMAKE_SOURCE_DIR}/generate_json_schemas_tasks.bash)
 set(TASK_SPECIFICATIONS_DIR ${CMAKE_SOURCE_DIR}/etasl/task_specifications) #Directory containing all task specifications whose json schema is going to be generated automatically
 set(ROBOT_SPECIFICATION_FILE ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/ur10.etasl.lua) #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
+# set(ROBOT_SPECIFICATION_FILE ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/kuka_iiwa.etasl.lua) #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
 # set(WORK_DIR ${CMAKE_SOURCE_DIR}/etasl/task_specifications)
 # set(LUA_SCRIPT ${WORK_DIR}/etasl_parameters.lua)
 # set(LUA_SCRIPT ${WORK_DIR}/move_cartesianspace.etasl.lua)
@@ -57,6 +58,4 @@ endif()
 
 
 ament_package()
-
-
 

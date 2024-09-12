@@ -290,7 +290,7 @@ class ReadTaskParameters(ServiceState):
         task = get_task(self.task_name,blackboard)
 
         # Specify the parameters to exclude
-        excluded_params = {'file_path', 'is-move_cartesianspace', 'is-move_joystick', 'is-move_jointspace_trap'} #TODO delete this names
+        excluded_params = {'file_path', 'is-move_cartesianspace', 'is-move_joystick', 'is-move_jointspace_trap','is-kuka_iiwa_jointspace_trap'} #TODO delete this names
 
         # Create a string with each parameter and its corresponding value, excluding specified parameters
         param_string = "\n".join([

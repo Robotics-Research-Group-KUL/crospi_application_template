@@ -82,16 +82,20 @@ def main(args=None):
 
     
     sm_out.add_state("CONFIGURING", Configuring(serv_manager),
-                    transitions={SUCCEED: "MovingDown"})
+                    transitions={SUCCEED: "MovingHome"})
+    
+    sm_out.add_state("MovingHome", etasl_utils.nested_etasl_state(name="MovingHome", blackboard=blackboard, display_in_viewer=True),
+                transitions={SUCCEED: "finish", 
+                                ABORT: ABORT})
     
 
-    sm_out.add_state("MovingDown", etasl_utils.nested_etasl_state(name="MovingDown", blackboard=blackboard, display_in_viewer=True),
-                    transitions={SUCCEED: "MovingUp", 
-                                 ABORT: ABORT})
+    # sm_out.add_state("MovingDown", etasl_utils.nested_etasl_state(name="MovingDown", blackboard=blackboard, display_in_viewer=True),
+    #                 transitions={SUCCEED: "MovingUp", 
+    #                              ABORT: ABORT})
     
-    sm_out.add_state("MovingUp", etasl_utils.nested_etasl_state(name="MovingUp", blackboard=blackboard, display_in_viewer=True),
-                transitions={SUCCEED: "MovingDown", 
-                                 ABORT: ABORT})
+    # sm_out.add_state("MovingUp", etasl_utils.nested_etasl_state(name="MovingUp", blackboard=blackboard, display_in_viewer=True),
+    #             transitions={SUCCEED: "MovingDown", 
+    #                              ABORT: ABORT})
     
     # sm_out.add_state("MovingCartesian", etasl_utils.nested_etasl_state(name="MovingCartesian", blackboard=blackboard, display_in_viewer=True),
     #             transitions={SUCCEED: "MovingJoystick", 

@@ -2,6 +2,7 @@ require("context")
 require("geometric")
 -- worldmodel=require("worldmodel")
 require("math")
+require("etasl_parameters")
 
 -- ========================================= PARAMETERS ===================================
 -- TODO: remove parameters from here
