@@ -395,7 +395,7 @@ class Executing(EventState):
         # time.sleep(1)
 
 # def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
-def nested_etasl_state(name: str, blackboard: Blackboard, display_in_viewer: bool= False):
+def nested_etasl_state(name: str, display_in_viewer: bool= False):
 
 
     

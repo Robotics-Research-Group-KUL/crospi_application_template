@@ -1,1 +1,6 @@
 *.etasl.json
+tasks-schema.json
+__pycache__
+.ilua_history
+*.pyc
+
