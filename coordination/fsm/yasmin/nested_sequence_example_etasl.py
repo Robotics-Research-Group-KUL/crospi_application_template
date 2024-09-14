@@ -85,11 +85,11 @@ def main(args=None):
                     transitions={SUCCEED: "MovingDown"})
     
 
-    sm_out.add_state("MovingDown", etasl_utils.nested_etasl_state(name="MovingDown", blackboard=blackboard, display_in_viewer=True),
+    sm_out.add_state("MovingDown", etasl_utils.nested_etasl_state(name="MovingDown",  display_in_viewer=True),
                     transitions={SUCCEED: "MovingUp", 
                                  ABORT: ABORT})
     
-    sm_out.add_state("MovingUp", etasl_utils.nested_etasl_state(name="MovingUp", blackboard=blackboard, display_in_viewer=True),
+    sm_out.add_state("MovingUp", etasl_utils.nested_etasl_state(name="MovingUp",  display_in_viewer=True),
                 transitions={SUCCEED: "MovingDown", 
                                  ABORT: ABORT})
     
