@@ -32,6 +32,15 @@ set(ROBOT_SPECIFICATION_FILE ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/ur10
 #     COMMENT "Generating JSON schema..."
 # )
 
+
+add_custom_target(
+  TASKS_SCHEMA_JSON
+  ALL
+  COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${ROBOT_SPECIFICATION_FILE}
+  WORKING_DIRECTORY ${WORK_DIR} #Will change the current directory and thus the generated files will be saved here
+  COMMENT "constructing tasks-schema.json file"
+)
+
 # execute_process (
 #   COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${ROBOT_SPECIFICATION_FILE}
 #   WORKING_DIRECTORY ${WORK_DIR} #Will change the current directory and thus the generated files will be saved here
@@ -63,10 +72,3 @@ endif()
 
 ament_package()
 
-add_custom_target(
-  TASKS_SCHEMA_JSON
-  ALL
-  COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${ROBOT_SPECIFICATION_FILE}
-  WORKING_DIRECTORY ${WORK_DIR} #Will change the current directory and thus the generated files will be saved here
-  COMMENT "constructing tasks-schema.json file"
-)
