@@ -167,8 +167,33 @@ class MyStateMachine(cbStateMachine):
         #         }
         # """)
    
+class MovingDown(cbStateMachine):
+    """
+    """
+    def __init__(self):
+        super().__init__(outcomes=["success","cancel"],statecb=action_state_cb)
+      
+        self.add_state("CONFIGURING", Configuring(),
+                        transitions={SUCCEED: "MovingDown"})
+       
+        self.add_state("MovingDown", etasl_utils.nested_etasl_state(name="MovingDown", display_in_viewer=True),
+                        transitions={SUCCEED: "success", 
+                                    ABORT: "cancel"})
+        self.set_start_state("CONFIGURING")
 
-
+class MovingUp(cbStateMachine):
+    """
+    """
+    def __init__(self,maxcount=5):
+        super().__init__(outcomes=["success","cancel"],statecb=action_state_cb)
+      
+        self.add_state("CONFIGURING", Configuring(),
+                        transitions={SUCCEED: "MovingUp"})
+               
+        self.add_state("MovingUp", etasl_utils.nested_etasl_state(name="MovingUp", display_in_viewer=True),
+                    transitions={SUCCEED:  "success", 
+                                    ABORT: "cancel"})
+        self.set_start_state("CONFIGURING")
 
 # main
 def main(args=None):
@@ -179,14 +204,13 @@ def main(args=None):
     blackboard = Blackboard()
     etasl_utils.load_parameters("task_configuration/nested_sequence_example_etasl.json",blackboard)
 
-
-
-
-
     sm = MyStateMachine(maxcount=3)
-    statemachines = {"nested_sequence":sm}
+    md = MovingDown()
+    mu = MovingUp()
+    statemachines = {"nested_sequence":sm,"MovingDown":md,"MovingUp":mu}
+
     empty_statemachine = EmptyStateMachine()
-    action_server = YasminActionServer(blackboard,statemachines)
+    action_server = YasminActionServer(blackboard,statemachines,name="yasmin_action_server")
     pub = YasminViewerPub("error", sm,10,node=action_server)
     action_server.set_viewer(pub)
     set_logger(action_server)
