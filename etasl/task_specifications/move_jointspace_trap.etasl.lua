@@ -6,11 +6,27 @@ require("etasl_parameters")
 
 -- ========================================= PARAMETERS ===================================
 -- TODO: remove parameters from here
-maxvel = constant(0.4)
-maxacc = constant(0.4)
 
-end_j = { 240/180*math.pi, -110/180*math.pi, 110/180*math.pi, -90/180*math.pi, -90/180*math.pi, 45/180*math.pi }
+
+
 -- end_j = { 30/180*math.pi, 0/180*math.pi, 0/180*math.pi, 0/180*math.pi, 0/180*math.pi,0/180*math.pi }
+
+maxvel    = createScalarParameter("maxvel" ,0.1, "Maximum velocity rad/s")
+maxacc    = createScalarParameter("maxacc" , 0.1, "Maximum acceleration rad/s^2")
+
+-- end_j = { 31/180*math.pi, 72/180*math.pi, -25/180*math.pi, -77/180*math.pi, -25/180*math.pi, 50/180*math.pi,  43/180*math.pi }
+
+joint_1    = createScalarParameter("joint_1" ,0.0, "Target angle for joint_1 in radians")/180*math.pi
+joint_2    = createScalarParameter("joint_2" ,0.0, "Target angle for joint_2 in radians")/180*math.pi
+joint_3    = createScalarParameter("joint_3" ,0.0, "Target angle for joint_3 in radians")/180*math.pi
+joint_4    = createScalarParameter("joint_4" ,0.0, "Target angle for joint_4 in radians")/180*math.pi
+joint_5    = createScalarParameter("joint_5" ,0.0, "Target angle for joint_5 in radians")/180*math.pi
+joint_6    = createScalarParameter("joint_6" ,0.0, "Target angle for joint_6 in radians")/180*math.pi
+joint_7    = createScalarParameter("joint_7" ,0.0, "Target angle for joint_7 in radians")/180*math.pi
+--maxvel = constant(0.4)
+--maxacc = constant(0.4)
+-- end_j = { 240/180*math.pi, -110/180*math.pi, 110/180*math.pi, -90/180*math.pi, -90/180*math.pi, 45/180*math.pi }
+end_j = { joint_1, joint_2,joint_3,joint_4,joint_5,joint_6, joint_7}
 
 -- ========================================= VELOCITY PROFILE ===================================
 
@@ -21,7 +37,7 @@ current_jnt = {} -- current joint value
 
 for i=1,#robot_joints do
     current_jnt[i]   = ctx:getScalarExpr(robot_joints[i])
-    mp:addOutput( initial_value(time, current_jnt[i]), constant(end_j[i]), maxvel, maxacc)
+    mp:addOutput( initial_value(time, current_jnt[i]), end_j[i], maxvel, maxacc)
 end
 
 
