@@ -5,18 +5,18 @@ require("math")
 require("etasl_parameters")
 
 -- ========================================= PARAMETERS ===================================
-maxvel    = createScalarParameter("maxvel" ,0.1, "Maximum velocity rad/s")
-maxacc    = createScalarParameter("maxacc" , 0.1, "Maximum acceleration rad/s^2")
+maxvel    = constant(createScalarParameter("maxvel" ,0.1, "Maximum velocity rad/s"))
+maxacc    = constant(createScalarParameter("maxacc" , 0.1, "Maximum acceleration rad/s^2"))
 
 -- end_j = { 31/180*math.pi, 72/180*math.pi, -25/180*math.pi, -77/180*math.pi, -25/180*math.pi, 50/180*math.pi,  43/180*math.pi }
 
-joint_1    = createScalarParameter("joint_1" ,0.0, "Target angle for joint_1 in radians")
-joint_2    = createScalarParameter("joint_2" ,0.0, "Target angle for joint_2 in radians")
-joint_3    = createScalarParameter("joint_3" ,0.0, "Target angle for joint_3 in radians")
-joint_4    = createScalarParameter("joint_4" ,0.0, "Target angle for joint_4 in radians")
-joint_5    = createScalarParameter("joint_5" ,0.0, "Target angle for joint_5 in radians")
-joint_6    = createScalarParameter("joint_6" ,0.0, "Target angle for joint_6 in radians")
-joint_7    = createScalarParameter("joint_7" ,0.0, "Target angle for joint_7 in radians")
+joint_1    = constant(createScalarParameter("joint_1" ,0.0, "Target angle for joint_1 in radians"))
+joint_2    = constant(createScalarParameter("joint_2" ,0.0, "Target angle for joint_2 in radians"))
+joint_3    = constant(createScalarParameter("joint_3" ,0.0, "Target angle for joint_3 in radians"))
+joint_4    = constant(createScalarParameter("joint_4" ,0.0, "Target angle for joint_4 in radians"))
+joint_5    = constant(createScalarParameter("joint_5" ,0.0, "Target angle for joint_5 in radians"))
+joint_6    = constant(createScalarParameter("joint_6" ,0.0, "Target angle for joint_6 in radians"))
+joint_7    = constant(createScalarParameter("joint_7" ,0.0, "Target angle for joint_7 in radians"))
 end_j = { joint_1, joint_2,joint_3,joint_4,joint_5,joint_6, joint_7}
 -- ========================================= VELOCITY PROFILE ===================================
 

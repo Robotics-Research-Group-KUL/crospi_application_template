@@ -5,28 +5,37 @@ require("math")
 require("etasl_parameters")
 
 -- ========================================= PARAMETERS ===================================
--- TODO: remove parameters from here
-
-
-
--- end_j = { 30/180*math.pi, 0/180*math.pi, 0/180*math.pi, 0/180*math.pi, 0/180*math.pi,0/180*math.pi }
-
-maxvel    = createScalarParameter("maxvel" ,0.1, "Maximum velocity rad/s")
-maxacc    = createScalarParameter("maxacc" , 0.1, "Maximum acceleration rad/s^2")
-
--- end_j = { 31/180*math.pi, 72/180*math.pi, -25/180*math.pi, -77/180*math.pi, -25/180*math.pi, 50/180*math.pi,  43/180*math.pi }
-
-joint_1    = createScalarParameter("joint_1" ,0.0, "Target angle for joint_1 in radians")/180*math.pi
-joint_2    = createScalarParameter("joint_2" ,0.0, "Target angle for joint_2 in radians")/180*math.pi
-joint_3    = createScalarParameter("joint_3" ,0.0, "Target angle for joint_3 in radians")/180*math.pi
-joint_4    = createScalarParameter("joint_4" ,0.0, "Target angle for joint_4 in radians")/180*math.pi
-joint_5    = createScalarParameter("joint_5" ,0.0, "Target angle for joint_5 in radians")/180*math.pi
-joint_6    = createScalarParameter("joint_6" ,0.0, "Target angle for joint_6 in radians")/180*math.pi
-joint_7    = createScalarParameter("joint_7" ,0.0, "Target angle for joint_7 in radians")/180*math.pi
 --maxvel = constant(0.4)
 --maxacc = constant(0.4)
 -- end_j = { 240/180*math.pi, -110/180*math.pi, 110/180*math.pi, -90/180*math.pi, -90/180*math.pi, 45/180*math.pi }
-end_j = { joint_1, joint_2,joint_3,joint_4,joint_5,joint_6, joint_7}
+-- end_j = { 30/180*math.pi, 0/180*math.pi, 0/180*math.pi, 0/180*math.pi, 0/180*math.pi,0/180*math.pi }
+-- end_j = { 31/180*math.pi, 72/180*math.pi, -25/180*math.pi, -77/180*math.pi, -25/180*math.pi, 50/180*math.pi,  43/180*math.pi }
+
+set_task_description("Moves in joint space to a target pose specified using joint angles.")
+maxvel    = constant(createScalarParameter("maxvel" ,0.1, "Maximum velocity rad/s"))
+maxacc    = constant(createScalarParameter("maxacc" , 0.1, "Maximum acceleration rad/s^2"))
+
+joint_1    = constant(createScalarParameter("joint_1" ,0.0, "Target angle for joint_1 in radians"))
+joint_2    = constant(createScalarParameter("joint_2" ,0.0, "Target angle for joint_2 in radians"))
+joint_3    = constant(createScalarParameter("joint_3" ,0.0, "Target angle for joint_3 in radians"))
+joint_4    = constant(createScalarParameter("joint_4" ,0.0, "Target angle for joint_4 in radians"))
+joint_5    = constant(createScalarParameter("joint_5" ,0.0, "Target angle for joint_5 in radians"))
+joint_6    = constant(createScalarParameter("joint_6" ,0.0, "Target angle for joint_6 in radians"))
+
+additional_joint    = createScalarParameter("joint_7" ,0.0, "Target angle for joint_7 in radians",true)
+if additional_joint ~=nil then
+    if #robot_joints<7 then
+        error("joint_7 specified for 6 degree of freedom robot")
+    end
+    joint_7 = constant(additional_joint)
+    end_j = { joint_1, joint_2,joint_3,joint_4,joint_5,joint_6, joint_7}
+else
+    end_j = { joint_1, joint_2,joint_3,joint_4,joint_5,joint_6}
+end
+
+units = createEnumeratedParameter("units",{"degrees","radians"},"radians","units to be used for specifying the joints",true)
+print("units: ",units)
+end_j = adapt_to_units(end_j,units)
 
 -- ========================================= VELOCITY PROFILE ===================================
 

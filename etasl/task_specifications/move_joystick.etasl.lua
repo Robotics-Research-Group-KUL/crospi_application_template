@@ -4,10 +4,11 @@ require("geometric")
 require("math")
 require("etasl_parameters")
 
-set_task_description("This task specification allows to control the angular and linear velocity the end effector via a 6D joystick (a.k.a. spacemouse).")
+
 
 -- ========================================= PARAMETERS ===================================
-K_joystick    = createScalarParameter("K_joystick" ,0.2, "K_joystick")
+set_task_description("This task specification allows to control the angular and linear velocity the end effector via a 6D joystick (a.k.a. spacemouse).")
+K_joystick    = constant(createScalarParameter("K_joystick" ,0.2, "K_joystick"))
 joystick_input   = ctx:createInputChannelTwist("joystick_input")
 -- joystick_input = twist(vector(0,0,-0.05),vector(0,0,0))
 
