@@ -18,6 +18,9 @@ sudo luarocks install dkjson
 
 ## Questions and remarks from Erwin
 
+- Does not make sense to publish on /fsm/event, it makes much more sense to publish on /etasl_node/event.  The statemachine needs to be able to differentiate between possibly different etasl nodes that
+are running.
+
 - parameters of tasks:  why do you adapt them with "constant( ...)" ?  They are more powerfull if they
   are normal numbers (useable in "if" statements e.g.).  Users can always do "constant(..)" themselves.
   **I've adapted the code to return values and not expressions, this allows to use nil to communicate
