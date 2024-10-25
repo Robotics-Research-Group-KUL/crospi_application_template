@@ -1,5 +1,7 @@
 require("context")
 require("geometric")
+ament = require("libamentlua")
+
 -- worldmodel=require("worldmodel")
 urdfreader=require("urdfreader")
 
@@ -7,13 +9,7 @@ urdfreader=require("urdfreader")
 -- read robot model:
 --
 
-handle = io.popen("ros2 pkg prefix etasl_ros2_application_template")
-etasl_application_prefix_dir = handle:read("*a")
-handle:close()
-etasl_application_prefix_dir = etasl_application_prefix_dir:gsub("%s+$", "") -- Trim any trailing newline
-
-etasl_application_share_dir = etasl_application_prefix_dir .. "/share/etasl_ros2_application_template"
-
+etasl_application_share_dir = ament.get_package_share_directory("etasl_ros2_application_template")
 xmlstr = urdfreader.loadFile(etasl_application_share_dir .. "/robot_description/urdf/kuka_iiwa/use_case_setup_iiwa.urdf")
 robot = urdfreader.readUrdf(xmlstr,{})
 -- robot:writeDot("kuka_iiwa_robot.dot")
