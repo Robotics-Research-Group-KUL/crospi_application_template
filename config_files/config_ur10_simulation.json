@@ -1,5 +1,5 @@
 {
-    "$schema": "../schema/blackboard-schema.json",
+    "$schema": "../../etasl_ros2/scripts/schema/blackboard-schema.json",
     "blackboard": {
         "default-etasl": {
             "sample_time": 0.01,
