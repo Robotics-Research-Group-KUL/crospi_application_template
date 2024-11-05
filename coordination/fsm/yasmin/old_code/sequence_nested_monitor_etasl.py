@@ -156,7 +156,7 @@ class WaitingEtasl(MonitorState):
     def __init__(self, node: Node) -> None:
         super().__init__(node,  # node
                          String,  # msg type
-                         "fsm/events",  # topic name
+                         "etasl/events",  # topic name
                          [SUCCEED,"outcome_continue"],  # outcomes
                          self.monitor_handler,  # monitor handler callback
                          qos=qos_profile_sensor_data,  # qos for the topic sbscription

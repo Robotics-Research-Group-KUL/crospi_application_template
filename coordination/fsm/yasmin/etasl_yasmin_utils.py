@@ -380,7 +380,7 @@ class ReadRobotSpecificationFile(ServiceState):
 class Executing(EventState):
     def __init__(self, name: str) -> None:
         super().__init__(
-                         topic_name="fsm/events",  # topic name
+                         topic_name="etasl/events",  # topic name
                          outcomes=["e_finished@etasl_node",],  # explicitly list the events that can be received through the topic. Events that are not specified are ignored
                          entry_handler = None,  # entry handler callback, called once when entering
                          monitor_handler = None,  # monitor handler callback, called several times. If omitted or set to None, the default behavior is to match the topic msg to the outcome
