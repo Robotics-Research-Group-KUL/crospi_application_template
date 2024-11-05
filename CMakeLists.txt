@@ -33,19 +33,20 @@ set(ROBOT_SPECIFICATION_FILE ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/ur10
 # )
 
 
-# add_custom_target(
-#   TASKS_SCHEMA_JSON
-#   ALL
-#   COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${ROBOT_SPECIFICATION_FILE}
-#   WORKING_DIRECTORY ${WORK_DIR} #Will change the current directory and thus the generated files will be saved here
-#   COMMENT "constructing tasks-schema.json file"
-# )
-
-execute_process (
+# [Santiago]: add_custom_target works and generates the task-schema.json, but the execute process doesn't
+add_custom_target(
+  TASKS_SCHEMA_JSON
+  ALL
   COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${ROBOT_SPECIFICATION_FILE}
   WORKING_DIRECTORY ${WORK_DIR} #Will change the current directory and thus the generated files will be saved here
-  COMMAND_ECHO STDOUT
-) 
+  COMMENT "constructing tasks-schema.json file"
+)
+
+# execute_process (
+#   COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${ROBOT_SPECIFICATION_FILE}
+#   WORKING_DIRECTORY ${WORK_DIR} #Will change the current directory and thus the generated files will be saved here
+#   COMMAND_ECHO STDOUT
+# ) 
 
 # this will be always called:
 
@@ -71,4 +72,3 @@ endif()
 
 
 ament_package()
-

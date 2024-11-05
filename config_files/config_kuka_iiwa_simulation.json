@@ -2,7 +2,10 @@
     "$schema": "../../etasl_ros2/scripts/schema/blackboard-schema.json",
     "blackboard": {
         "default-etasl": {
-            "sample_time": 0.01,
+            "general": {
+                "event_topic": "etasl/events",
+                "sample_time": 0.01
+            },
             "initializer": {
                 "full": true,
                 "sample_time": 0.01,
@@ -21,6 +24,9 @@
                 "periodicity": 0.01,
                 "initial_joints": [0.5410, 1.2566, -0.4363, -1.344, -0.4363, 0.8726,  0.61],
                 "joint_names": ["right_joint_a1","right_joint_a2","right_joint_a3","right_joint_a4","right_joint_a5","right_joint_a6","right_joint_a7"]
+            },
+            "robotspecification":{
+                "is-emptyrobotspecification": true
             },
             "outputhandlers": [
                 {
