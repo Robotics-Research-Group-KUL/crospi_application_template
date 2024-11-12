@@ -2,17 +2,29 @@ require("context")
 require("geometric")
 -- worldmodel=require("worldmodel")
 require("math")
-require("etasl_parameters")
+-- require("etasl_parameters")
+reqs = require("task_requirements")
 
-set_task_description("This task specification allows to move the position of the end effector in cartesian space relative to the initial pose, while maintaining a constant orientation.")
+task_description = "This task specification allows to move the position of the end effector in cartesian space relative to the initial pose, while maintaining a constant orientation."
+
+
+param = reqs.parameters(task_description,{
+    reqs.params.scalar({name="maxvel", description="Maximum velocity", default = 0.1, required=true, maximum = 0.5}),
+    reqs.params.scalar({name="maxacc", description="Maximum acceleration", default = 0.1, required=true, maximum = 0.5}),
+    reqs.params.scalar({name="eq_r", description="Equivalent radius", default = 0.08, required=false}),
+    reqs.params.array({name="delta_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="3D array of distances [m] that the robot will move w.r.t. the starting position in the X,Y,Z coordinates", required=true,minimum = -3, maximum=3,minItems = 3, maxItems = 3}),
+})
+
 
 -- ========================================= PARAMETERS ===================================
-maxvel    = constant(createScalarParameter("maxvel" ,0.1, "Maximum velocity"))
-maxacc    = constant(createScalarParameter("maxacc" , 0.1, "Maximum acceleration"))
-eqradius  = constant(createScalarParameter("eq_r"   ,0.08, "Equivalent radius"))
-delta_x   = constant(createScalarParameter("delta_x",0.0, "Distance [m] that the robot will move w.r.t. the starting position in the X coordinate"))
-delta_y   = constant(createScalarParameter("delta_y",0.0, "Distance [m] that the robot will move w.r.t. the starting position in the Y coordinate"))
-delta_z   = constant(createScalarParameter("delta_z",0.0, "Distance [m] that the robot will move w.r.t. the starting position in the Z coordinate"))
+maxvel    = constant(param.get("maxvel"))
+maxacc    = constant(param.get("maxacc"))
+eqradius  = constant(param.get("eq_r"))
+
+delta_pos = param.get("delta_pos")
+delta_x   = constant(delta_pos[1])
+delta_y   = constant(delta_pos[2])
+delta_z   = constant(delta_pos[3])
 
 -- ======================================== FRAMES ========================================
 

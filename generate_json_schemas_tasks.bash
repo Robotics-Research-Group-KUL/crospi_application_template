@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Check if a directory is provided as an argument
-if [ -z "$1" ]; then
-  echo "Usage: $0 <directory_with_lua_files> <path_to_etasl_robot_specification(optional)>" 
+if [ -z "$2" ]; then
+  echo "Usage: $0 <directory_with_lua_files> <directory_to_save_individual_json_schemas> <path_to_etasl_robot_specification(optional)>" 
   exit 1
 fi
 
@@ -10,7 +10,11 @@ fi
 LUA_ETASL_DIR="$1"
 
 # Directory containing robot specification (passed as a command-line argument)
-LUA_ROBOT_FILE="$2"
+JSON_SCHEMAS_DIR="$2"
+
+# Directory containing robot specification (passed as a command-line argument)
+LUA_ROBOT_FILE="$3"
+
 
 # Check if the directory exists
 if [ ! -d "$LUA_ETASL_DIR" ]; then
@@ -20,15 +24,15 @@ fi
 
 # ------------------Generate one JSON schema per task specification located in $LUA_ETASL_DIR---------------------
 
-command_string_robot="print('No robot specification defined')"
-# Check if the LUA_ROBOT_FILE exists
-if [ -f "$LUA_ROBOT_FILE" ]; then
-  command_string_robot="dofile('${LUA_ROBOT_FILE}')" # LUA_ROBOT_FILE was provided and therefore used before task specification
-else
-  echo "Error: No valid LUA_ROBOT_FILE robot specification file was provided: $LUA_ROBOT_FILE does not exist."
+# command_string_robot="print('No robot specification defined')"
+# # Check if the LUA_ROBOT_FILE exists
+# if [ -f "$LUA_ROBOT_FILE" ]; then
+#   command_string_robot="dofile('${LUA_ROBOT_FILE}')" # LUA_ROBOT_FILE was provided and therefore used before task specification
+# else
+#   echo "Error: No valid LUA_ROBOT_FILE robot specification file was provided: $LUA_ROBOT_FILE does not exist."
 
-fi
-echo $command_string_robot
+# fi
+# echo $command_string_robot
 
 # Loop through each Lua file in the directory
 for lua_file_dir in "$LUA_ETASL_DIR"/*.etasl.lua; do #extensions with .etasl.lua
@@ -39,8 +43,9 @@ for lua_file_dir in "$LUA_ETASL_DIR"/*.etasl.lua; do #extensions with .etasl.lua
     filename=$(basename "$lua_file_dir")
     filename_without_ext="${filename%.lua}"
     # dir_luafile="/home/santiregui/ros2_ws/src/etasl_ros2_application_template/etasl/task_specifications/test/${lua_file_dir}"
-    command_string="require('etasl_parameters');${command_string_robot};dofile('${lua_file_dir}'); write_json_schema('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
-    
+    # command_string="require('etasl_parameters');${command_string_robot};dofile('${lua_file_dir}'); write_json_schema('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
+    command_string="require('task_requirements');_LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA='${JSON_SCHEMAS_DIR}';dofile('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
+
     # echo $command_string
     lua -e "${command_string}"
   else
@@ -50,7 +55,7 @@ for lua_file_dir in "$LUA_ETASL_DIR"/*.etasl.lua; do #extensions with .etasl.lua
 done
 
 
-# ------------------Generate one JSON schema enum whose elements correspond to the robot specifications located in base path of $LUA_ROBOT_FILE---------------------
+# ------------------Generate one JSON schema constant string whose elements correspond to the robot specifications located in base path of $LUA_ROBOT_FILE---------------------
 ROBOT_PATH_DIR=$(dirname "$LUA_ROBOT_FILE")
 
 enum_string="["

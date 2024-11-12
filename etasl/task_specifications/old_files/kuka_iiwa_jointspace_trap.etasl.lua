@@ -2,7 +2,8 @@ require("context")
 require("geometric")
 -- worldmodel=require("worldmodel")
 require("math")
-require("etasl_parameters")
+-- require("etasl_parameters")
+require("etasl_requirements")
 
 -- ========================================= PARAMETERS ===================================
 maxvel    = constant(createScalarParameter("maxvel" ,0.1, "Maximum velocity rad/s"))

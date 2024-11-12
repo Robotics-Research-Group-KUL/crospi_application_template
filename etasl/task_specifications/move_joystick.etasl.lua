@@ -2,13 +2,23 @@ require("context")
 require("geometric")
 -- worldmodel=require("worldmodel")
 require("math")
-require("etasl_parameters")
+reqs = require("task_requirements")
 
+task_description = "This task specification allows to control the angular and linear velocity the end effector via a 6D joystick (a.k.a. spacemouse)."
+
+
+param = reqs.parameters(task_description,{
+    reqs.params.scalar({name="linear_scale", description="Scales the magnitude of the linear velocity coming from the joystick", default = 1, required=false}),
+    reqs.params.scalar({name="angular_scale", description="Scales the magnitude of the angular velocity coming from the joystick", default = 1, required=false}),
+})
 
 
 -- ========================================= PARAMETERS ===================================
-set_task_description("This task specification allows to control the angular and linear velocity the end effector via a 6D joystick (a.k.a. spacemouse).")
-K_joystick    = constant(createScalarParameter("K_joystick" ,0.2, "K_joystick"))
+linear_scale    = constant(param.get("linear_scale"))
+angular_scale    = constant(param.get("angular_scale"))
+
+
+-- ========================================= Variables coming from topics ===================================
 joystick_input   = ctx:createInputChannelTwist("joystick_input")
 -- joystick_input = twist(vector(0,0,-0.05),vector(0,0,0))
 
@@ -16,19 +26,17 @@ joystick_input   = ctx:createInputChannelTwist("joystick_input")
 
 tf = ee
 
-
-
 -- =============================== INSTANTANEOUS FRAME ==============================
 
 -- tf_inst = inv(make_constant(tf))*tf
 
-desired_vel_x = coord_x(transvel(joystick_input)) 
-desired_vel_y = coord_y(transvel(joystick_input)) 
-desired_vel_z = coord_z(transvel(joystick_input)) 
+desired_vel_x = coord_x(transvel(joystick_input))*linear_scale
+desired_vel_y = coord_y(transvel(joystick_input))*linear_scale
+desired_vel_z = coord_z(transvel(joystick_input))*linear_scale
 
-desired_omega_x = coord_x(rotvel(joystick_input)) 
-desired_omega_y = coord_y(rotvel(joystick_input)) 
-desired_omega_z = coord_z(rotvel(joystick_input)) 
+desired_omega_x = coord_x(rotvel(joystick_input))*angular_scale
+desired_omega_y = coord_y(rotvel(joystick_input))*angular_scale
+desired_omega_z = coord_z(rotvel(joystick_input))*angular_scale
 
 -- Translation velocities
 Constraint{

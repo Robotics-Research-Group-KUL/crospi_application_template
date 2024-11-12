@@ -2,40 +2,32 @@ require("context")
 require("geometric")
 -- worldmodel=require("worldmodel")
 require("math")
-require("etasl_parameters")
+reqs = require("task_requirements")
+
+task_description = "Moves in joint space to a target pose specified using joint angles."
+
+param = reqs.parameters(task_description,{
+    reqs.params.scalar({name="maxvel", description="Maximum velocity rad/s", default = 0.1, required=true, maximum = 0.5}),
+    reqs.params.scalar({name="maxacc", description="Maximum acceleration rad/s^2", default = 0.1, required=true, maximum = 0.5}),
+    reqs.params.array({name="target_joints", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, description="Array with target angles. Its values correspond to the defined robot_joints in the same order", required=true, minimum = -2*math.pi, maximum=2*math.pi, minItems = 1}),
+    reqs.params.enum({name="units", type=reqs.enum_types.string, default="radians", description="Units to be used for specifying the joints", required=false, accepted_vals = {"degrees","radians"}}),
+})
 
 -- ========================================= PARAMETERS ===================================
---maxvel = constant(0.4)
---maxacc = constant(0.4)
--- end_j = { 240/180*math.pi, -110/180*math.pi, 110/180*math.pi, -90/180*math.pi, -90/180*math.pi, 45/180*math.pi }
--- end_j = { 30/180*math.pi, 0/180*math.pi, 0/180*math.pi, 0/180*math.pi, 0/180*math.pi,0/180*math.pi }
--- end_j = { 31/180*math.pi, 72/180*math.pi, -25/180*math.pi, -77/180*math.pi, -25/180*math.pi, 50/180*math.pi,  43/180*math.pi }
+maxvel    = constant(param.get("maxvel"))
+maxacc    = constant(param.get("maxacc"))
 
-set_task_description("Moves in joint space to a target pose specified using joint angles.")
-maxvel    = constant(createScalarParameter("maxvel" ,0.1, "Maximum velocity rad/s"))
-maxacc    = constant(createScalarParameter("maxacc" , 0.1, "Maximum acceleration rad/s^2"))
+target_joints = param.get("target_joints")
 
-joint_1    = constant(createScalarParameter("joint_1" ,0.0, "Target angle for joint_1 in radians"))
-joint_2    = constant(createScalarParameter("joint_2" ,0.0, "Target angle for joint_2 in radians"))
-joint_3    = constant(createScalarParameter("joint_3" ,0.0, "Target angle for joint_3 in radians"))
-joint_4    = constant(createScalarParameter("joint_4" ,0.0, "Target angle for joint_4 in radians"))
-joint_5    = constant(createScalarParameter("joint_5" ,0.0, "Target angle for joint_5 in radians"))
-joint_6    = constant(createScalarParameter("joint_6" ,0.0, "Target angle for joint_6 in radians"))
 
-additional_joint    = createScalarParameter("joint_7" ,0.0, "Target angle for joint_7 in radians",true)
-if additional_joint ~=nil then
-    if #robot_joints<7 then
-        error("joint_7 specified for 6 degree of freedom robot")
-    end
-    joint_7 = constant(additional_joint)
-    end_j = { joint_1, joint_2,joint_3,joint_4,joint_5,joint_6, joint_7}
-else
-    end_j = { joint_1, joint_2,joint_3,joint_4,joint_5,joint_6}
+if #robot_joints ~= #target_joints then
+    error("The number of robot_joints and the specified number of target_joints must coincide")
 end
 
-units = createEnumeratedParameter("units",{"degrees","radians"},"radians","units to be used for specifying the joints",true)
+
+units = param.get("units")
 print("units: ",units)
-end_j = adapt_to_units(end_j,units)
+target_joints = reqs.adapt_to_units(target_joints,units)
 
 -- ========================================= VELOCITY PROFILE ===================================
 
@@ -46,7 +38,7 @@ current_jnt = {} -- current joint value
 
 for i=1,#robot_joints do
     current_jnt[i]   = ctx:getScalarExpr(robot_joints[i])
-    mp:addOutput( initial_value(time, current_jnt[i]), end_j[i], maxvel, maxacc)
+    mp:addOutput( initial_value(time, current_jnt[i]), constant(target_joints[i]), maxvel, maxacc)
 end
 
 
@@ -59,7 +51,7 @@ end
 -- for i=1,#robot_joints do
 --     current_jnt[i]   = ctx:getScalarExpr(robot_joints[i])
 --     local theta_init = initial_value(time, current_jnt[i])
---     local theta_final_raw = end_j[i]
+--     local theta_final_raw = target_joints[i]
 --     print(theta_final_raw)
 --     local difference_theta = cached(acos(cos(theta_init)*cos(theta_final_raw)+sin(theta_init)*sin(theta_final_raw))) --Shortest angle between two unit vectors (basic formula: 'cos(alpha) = dot(a,b)'. where a and b are two unit vectors)
 --     local error_difference_theta = cached(acos(cos(theta_init + difference_theta)*cos(theta_final_raw)+sin(theta_init + difference_theta)*sin(theta_final_raw))) --Shortest angle computation also. If the sign is correct, it should be zero
@@ -98,7 +90,7 @@ for i=1,#robot_joints do
     -- Constraint{
     --     context=ctx,
     --     name="joint_trajectory"..i,
-    --     expr= current_jnt[i] - end_j[i] ,
+    --     expr= current_jnt[i] - target_joints[i] ,
     --     priority = 2,
     --     K=1
     -- };
