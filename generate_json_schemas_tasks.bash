@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Check if a directory is provided as an argument
-if [ -z "$2" ]; then
-  echo "Usage: $0 <directory_with_lua_files> <directory_to_save_individual_json_schemas> <path_to_etasl_robot_specification(optional)>" 
+if [ -z "$3" ]; then
+  echo "Usage: $0 <directory_with_lua_files> <directory_to_save_individual_json_schemas> <path_to_etasl_robot_specification>" 
   exit 1
 fi
 
@@ -14,6 +14,7 @@ JSON_SCHEMAS_DIR="$2"
 
 # Directory containing robot specification (passed as a command-line argument)
 LUA_ROBOT_FILE="$3"
+
 
 
 # Check if the directory exists
@@ -105,13 +106,13 @@ beginning_of_json_schema_1='{
                         "description":"Name of the task (unique to the task instance)",
                         "type":"string"
                       },
-                      "robot_specification_file":{
+                    "robot_specification_file":{
                         "description":"Name of the etasl lua file containing the robot specification",
                         "enum": '
 
 beginning_of_json_schema_2='
                       },
-                    "parameters":{
+                    "task_specification":{
                         "oneOf": ['
                         
 beginning_of_json_schema="${beginning_of_json_schema_1} ${enum_string} ${beginning_of_json_schema_2}"
@@ -148,7 +149,7 @@ echo '
                         ]
                     }
                 },
-                "required": ["name","robot_specification_file","parameters"]
+                "required": ["name","robot_specification_file","task_specification"]
             }
         }
     },

@@ -19,6 +19,7 @@ find_package(ament_cmake REQUIRED)
 set(WORK_DIR ${CMAKE_SOURCE_DIR}/etasl/task_json_schemas)
 set(BASH_SCRIPT ${CMAKE_SOURCE_DIR}/generate_json_schemas_tasks.bash)
 set(TASK_SPECIFICATIONS_DIR ${CMAKE_SOURCE_DIR}/etasl/task_specifications) #Directory containing all task specifications whose json schema is going to be generated automatically
+set(TASK_SPECIFICATIONS_DIR_INTERPOLATE "\$[${CMAKE_PROJECT_NAME}]/etasl/task_specifications") #Directory containing all task specifications whose json schema is going to be generated automatically
 set(JSON_SCHEMAS_DIR ${CMAKE_SOURCE_DIR}/etasl/task_json_schemas/) #Directory containing all task specifications whose json schema is going to be generated automatically
 set(ROBOT_SPECIFICATION_FILE ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/ur10.etasl.lua) #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
 # set(ROBOT_SPECIFICATION_FILE ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/kuka_iiwa.etasl.lua) #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
@@ -33,7 +34,7 @@ set(ROBOT_SPECIFICATION_FILE ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/ur10
 #     COMMENT "Generating JSON schema..."
 # )
 
-message(The json schema dir is: ${JSON_SCHEMAS_DIR})
+# message(The json schema dir is: ${JSON_SCHEMAS_DIR})
 
 # [Santiago]: add_custom_target works and generates the task-schema.json, but the execute process doesn't
 add_custom_target(
@@ -42,6 +43,7 @@ add_custom_target(
   COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${JSON_SCHEMAS_DIR} ${ROBOT_SPECIFICATION_FILE} 
   WORKING_DIRECTORY ${WORK_DIR} #Will change the current directory and thus the generated files will be saved here
   COMMENT "constructing tasks-schema.json file"
+  VERBATIM #This allows to pass $[ in strings such as defined in TASK_SPECIFICATIONS_DIR_INTERPOLATE
 )
 
 # execute_process (

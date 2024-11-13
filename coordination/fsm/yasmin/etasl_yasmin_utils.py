@@ -290,14 +290,15 @@ class ReadTaskParameters(ServiceState):
         task = get_task(self.task_name,blackboard)
 
         # Specify the parameters to exclude
-        excluded_params = {'file_path', 'is-move_cartesianspace', 'is-move_joystick', 'is-move_jointspace_trap','is-kuka_iiwa_jointspace_trap'} #TODO delete this names
+        excluded_params = {} #TODO delete this names
 
         # Create a string with each parameter and its corresponding value, excluding specified parameters
-        param_string = "\n".join([
-            f"{key}={str(value).lower() if isinstance(value, bool) else value};"
-            for key, value in task["parameters"].items() if key not in excluded_params
-        ])
+        # param_string = "\n".join([
+        #     f"{key}={str(value).lower() if isinstance(value, bool) else value};"
+        #     for key, value in task["task_specification"]["parameters"].items() if key not in excluded_params
+        # ])
 
+        param_string = "_JSON_TASK_SPECIFICATION_PARAMETERS_STRING='{}'".format(json.dumps(task["task_specification"]["parameters"]))
         req.str = param_string
 
         # print(param_string)
@@ -331,7 +332,7 @@ class ReadTaskSpecificationFile(ServiceState):
         req = TaskSpecificationFile.Request()
         task = get_task(self.task_name,blackboard)
 
-        req.file_path = task["parameters"]["file_path"]
+        req.file_path = task["task_specification"]["file_path"]
         print(task)
         # print("ReadTaskSpecificationFile")
         return req

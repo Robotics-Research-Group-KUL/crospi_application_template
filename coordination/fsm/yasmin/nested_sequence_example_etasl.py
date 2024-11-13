@@ -53,7 +53,7 @@ class Configuring(State):
         # time.sleep(1)
 
         task_index = etasl_utils.get_index("MovingDown",blackboard)
-        blackboard["tasks"][task_index]["parameters"]["maxacc"] = 2
+        blackboard["tasks"][task_index]["task_specification"]["parameters"]["maxacc"] = 2
 
         print(Style.BRIGHT + Fore.RED + 'EXITING STATE CONFIGURING' + Style.RESET_ALL) #EtaslState does this automatically
 
