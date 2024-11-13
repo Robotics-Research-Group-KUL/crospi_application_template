@@ -26,7 +26,7 @@ end
 
 
 units = param.get("units")
-print("units: ",units)
+-- print("units: ",units)
 target_joints = reqs.adapt_to_units(target_joints,units)
 
 -- ========================================= VELOCITY PROFILE ===================================

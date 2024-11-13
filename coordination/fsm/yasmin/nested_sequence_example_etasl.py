@@ -67,8 +67,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     blackboard = Blackboard()
-    etasl_utils.load_parameters("task_configuration/nested_sequence_example_etasl.json",blackboard)
-
+    etasl_utils.load_tasks("task_configuration/nested_sequence_example_etasl.json",blackboard)
 
 
     # task_spec_cb = partial(etasl.readTaskSpecificationFile,file_name= "move_cartesianspace.lua")
@@ -82,8 +81,12 @@ def main(args=None):
 
     
     sm_out.add_state("CONFIGURING", Configuring(serv_manager),
-                    transitions={SUCCEED: "MovingDown"})
+                    transitions={SUCCEED: "MovingHome"})
     
+
+    sm_out.add_state("MovingHome", etasl_utils.nested_etasl_state(name="MovingHome",  display_in_viewer=True),
+                    transitions={SUCCEED: "MovingDown", 
+                                 ABORT: ABORT})
 
     sm_out.add_state("MovingDown", etasl_utils.nested_etasl_state(name="MovingDown",  display_in_viewer=True),
                     transitions={SUCCEED: "MovingUp", 

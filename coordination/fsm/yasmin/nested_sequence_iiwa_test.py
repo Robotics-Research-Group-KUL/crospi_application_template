@@ -68,7 +68,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     blackboard = Blackboard()
-    etasl_utils.load_parameters("task_configuration/nested_sequence_iiwa_test.json",blackboard)
+    etasl_utils.load_tasks("task_configuration/nested_sequence_iiwa_test.json",blackboard)
 
 
 

@@ -274,7 +274,7 @@ class ReadTaskParameters(ServiceState):
     def __init__(self, task_name: str) -> None:
         super().__init__(
             TaskSpecificationString,  # srv type
-            "/etasl_node/readTaskSpecificationString",  # service name
+            "/etasl_node/readTaskParameters",  # service name
             self.create_request_handler,  # cb to create the request
             [],  # outcomes. Includes SUCCEED, ABORT, TIMEOUT by default
             self.response_handler,  # cb to process the response
@@ -289,17 +289,7 @@ class ReadTaskParameters(ServiceState):
 
         task = get_task(self.task_name,blackboard)
 
-        # Specify the parameters to exclude
-        excluded_params = {} #TODO delete this names
-
-        # Create a string with each parameter and its corresponding value, excluding specified parameters
-        # param_string = "\n".join([
-        #     f"{key}={str(value).lower() if isinstance(value, bool) else value};"
-        #     for key, value in task["task_specification"]["parameters"].items() if key not in excluded_params
-        # ])
-
-        param_string = "_JSON_TASK_SPECIFICATION_PARAMETERS_STRING='{}'".format(json.dumps(task["task_specification"]["parameters"]))
-        req.str = param_string
+        req.str = json.dumps(task["task_specification"]["parameters"])
 
         # print(param_string)
         # print("ReadTaskSpecificationString")
@@ -461,7 +451,7 @@ def validate_json(json_data, schema):
         return False
     return True
 
-def load_parameters( json_file_name: str, blackboard: Blackboard) -> None:
+def load_tasks( json_file_name: str, blackboard: Blackboard) -> None:
     with open(json_file_name, 'r') as json_file:
         parameters = json.load(json_file)
         blackboard["tasks"] = parameters["tasks"]
