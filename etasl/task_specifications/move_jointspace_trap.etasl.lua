@@ -9,9 +9,16 @@ task_description = "Moves in joint space to a target pose specified using joint 
 param = reqs.parameters(task_description,{
     reqs.params.scalar({name="maxvel", description="Maximum velocity rad/s", default = 0.1, required=true, maximum = 0.5}),
     reqs.params.scalar({name="maxacc", description="Maximum acceleration rad/s^2", default = 0.1, required=true, maximum = 0.5}),
-    reqs.params.array({name="target_joints", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, description="Array with target angles. Its values correspond to the defined robot_joints in the same order", required=true, minimum = -2*math.pi, maximum=2*math.pi, minItems = 1}),
+    reqs.params.array({name="target_joints", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, description="Array with target angles. Its values correspond to the defined robot.robot_joints in the same order", required=true, minimum = -2*math.pi, maximum=2*math.pi, minItems = 1}),
     reqs.params.enum({name="units", type=reqs.enum_types.string, default="radians", description="Units to be used for specifying the joints", required=false, accepted_vals = {"degrees","radians"}}),
 })
+
+robot = reqs.robot_model({
+    -- "tcp_frame",
+    -- "forearm",
+    --Add all frames that are required by the task specification
+})
+
 
 -- ========================================= PARAMETERS ===================================
 maxvel    = constant(param.get("maxvel"))
@@ -20,8 +27,8 @@ maxacc    = constant(param.get("maxacc"))
 target_joints = param.get("target_joints")
 
 
-if #robot_joints ~= #target_joints then
-    error("The number of robot_joints and the specified number of target_joints must coincide")
+if #robot.robot_joints ~= #target_joints then
+    error("The number of robot.robot_joints and the specified number of target_joints must coincide")
 end
 
 
@@ -36,8 +43,8 @@ mp:setProgress(time)
 current_jnt = {} -- current joint value
 
 
-for i=1,#robot_joints do
-    current_jnt[i]   = ctx:getScalarExpr(robot_joints[i])
+for i=1,#robot.robot_joints do
+    current_jnt[i]   = ctx:getScalarExpr(robot.robot_joints[i])
     mp:addOutput( initial_value(time, current_jnt[i]), constant(target_joints[i]), maxvel, maxacc)
 end
 
@@ -48,8 +55,8 @@ end
 -- and if it is continuous it takes the shortest path towards the angle. This makes the skill generic to any type of robot (e.g. the Kinova).
 -- The old version used the above commented method, which is the one that is explained in the etasl tutorial.
 -- print("kasdjaksjdhkahskdhajkshdjkahsjkhdkjahsdhka")
--- for i=1,#robot_joints do
---     current_jnt[i]   = ctx:getScalarExpr(robot_joints[i])
+-- for i=1,#robot.robot_joints do
+--     current_jnt[i]   = ctx:getScalarExpr(robot.robot_joints[i])
 --     local theta_init = initial_value(time, current_jnt[i])
 --     local theta_final_raw = target_joints[i]
 --     print(theta_final_raw)
@@ -68,7 +75,7 @@ duration = get_duration(mp)
 -- ========================= CONSTRAINT SPECIFICATION ========================
 
 tgt         = {} -- target value
-for i=1,#robot_joints do
+for i=1,#robot.robot_joints do
     tgt[i]        = get_output_profile(mp,i-1)
     Constraint{
         context=ctx,
@@ -138,6 +145,6 @@ Monitor{
 
 ctx:setOutputExpression("time",time)
 
-for i=1,#robot_joints do
+for i=1,#robot.robot_joints do
     ctx:setOutputExpression("jpos"..i,current_jnt[i])
 end

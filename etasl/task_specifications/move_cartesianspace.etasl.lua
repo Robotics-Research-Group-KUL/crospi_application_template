@@ -7,14 +7,24 @@ reqs = require("task_requirements")
 
 task_description = "This task specification allows to move the position of the end effector in cartesian space relative to the initial pose, while maintaining a constant orientation."
 
-
+-- ========================================= PARAMETERS ===================================
 param = reqs.parameters(task_description,{
     reqs.params.scalar({name="maxvel", description="Maximum velocity", default = 0.1, required=true, maximum = 0.5}),
     reqs.params.scalar({name="maxacc", description="Maximum acceleration", default = 0.1, required=true, maximum = 0.5}),
     reqs.params.scalar({name="eq_r", description="Equivalent radius", default = 0.08, required=false}),
+    reqs.params.string({name="task_frame", description="Frame used to control the robot in cartesian space", default = "tcp_frame", required=false}),
     reqs.params.array({name="delta_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="3D array of distances [m] that the robot will move w.r.t. the starting position in the X,Y,Z coordinates", required=true,minimum = -3, maximum=3,minItems = 3, maxItems = 3}),
 })
 
+-- ======================================== Robot model requirements ========================================
+robot = reqs.robot_model({--This function loads the robot model and checks that all required frames are available
+    param.get("task_frame"), --The frame is selected as a parameter, to make the skill even more reusable
+    -- "forearm"
+    -- "tcp_frame"
+    --Add all frames that are required by the task specification
+})
+robot_joints = robot.robot_joints
+task_frame = robot.getFrame(param.get("task_frame"))
 
 -- ========================================= PARAMETERS ===================================
 maxvel    = constant(param.get("maxvel"))
@@ -26,15 +36,10 @@ delta_x   = constant(delta_pos[1])
 delta_y   = constant(delta_pos[2])
 delta_z   = constant(delta_pos[3])
 
--- ======================================== FRAMES ========================================
-
-tf = ee
-
--- tf = frame(vector(0,0,0))
 
 -- =============================== INITIAL POSE ==============================
 
-startpose = initial_value(time, tf)
+startpose = initial_value(time, task_frame)
 startpos  = origin(startpose)
 startrot  = rotation(startpose)
 
@@ -81,7 +86,7 @@ target    = frame(targetrot,targetpos)
 Constraint{
     context = ctx,
     name    = "follow_path",
-    expr    = inv(target)*tf,
+    expr    = inv(target)*task_frame,
     K       = 3,
     weight  = 1,
     priority= 2
@@ -116,18 +121,18 @@ Monitor{
 
 
 ctx:setOutputExpression("time",time)
-ctx:setOutputExpression("x_tcp",coord_x(origin(tf)))
-ctx:setOutputExpression("y_tcp",coord_y(origin(tf)))
-ctx:setOutputExpression("z_tcp",coord_z(origin(tf)))
+ctx:setOutputExpression("x_tcp",coord_x(origin(task_frame)))
+ctx:setOutputExpression("y_tcp",coord_y(origin(task_frame)))
+ctx:setOutputExpression("z_tcp",coord_z(origin(task_frame)))
 
 
 
 -- ============================== OUTPUT THROUGH PORTS===================================
--- ctx:setOutputExpression("x_tf",coord_x(origin(tf)))
--- ctx:setOutputExpression("y_tf",coord_y(origin(tf)))
--- ctx:setOutputExpression("z_tf",coord_z(origin(tf)))
+-- ctx:setOutputExpression("x_tf",coord_x(origin(task_frame)))
+-- ctx:setOutputExpression("y_tf",coord_y(origin(task_frame)))
+-- ctx:setOutputExpression("z_tf",coord_z(origin(task_frame)))
 --
--- roll_tf,pitch_tf,yaw_tf = getRPY(rotation(tf))
+-- roll_tf,pitch_tf,yaw_tf = getRPY(rotation(task_frame))
 -- ctx:setOutputExpression("roll_tf",roll_tf)
 -- ctx:setOutputExpression("pitch_tf",pitch_tf)
 -- ctx:setOutputExpression("yaw_tf",yaw_tf)

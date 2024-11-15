@@ -89,7 +89,7 @@ output_schema="../tasks-schema.json"
 
 # Start building the main schema
 beginning_of_json_schema_1='{
-    "$schema":"http://json-schema.org/draft-04/schema",
+    "$schema":"http://json-schema.org/draft-06/schema",
     "$id":"test_task_instances.json",
     "title":"Tasks configuration",
     "type":"object",

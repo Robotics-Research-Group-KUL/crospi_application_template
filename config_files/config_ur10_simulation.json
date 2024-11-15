@@ -23,11 +23,11 @@
                 "is-simulationrobotdriver": true,
                 "periodicity": 0.01,
                 "initial_joints": [3.1416, -1.5708, 1.5708, -1.5708, -1.5708, 0],
-                "joint_names": ["shoulder_pan_joint","shoulder_lift_joint","elbow_joint","wrist_1_joint","wrist_2_joint","wrist_3_joint"]
+                "robot_joints": ["shoulder_pan_joint","shoulder_lift_joint","elbow_joint","wrist_1_joint","wrist_2_joint","wrist_3_joint"]
             },
             "robotspecification": {
                 "is-inline_robotspecification": true,
-                "joint_names": ["shoulder_pan_joint","shoulder_lift_joint","elbow_joint","wrist_1_joint","wrist_2_joint","wrist_3_joint"],
+                "robot_joints": ["shoulder_pan_joint","shoulder_lift_joint","elbow_joint","wrist_1_joint","wrist_2_joint","wrist_3_joint"],
                 "urdf_path": "$[etasl_ros2_application_template]/robot_description/urdf/ur10/use_case_setup_ur10.urdf",
                 "tcp_frame": {
                     "parent_link": "base_link",
@@ -35,14 +35,14 @@
                 },
                 "additional_frames": [
                     {
-                        "name": "frame_a",
-                        "parent_link": "parent_link_a",
-                        "child_link": "child_link_a"
+                        "name": "forearm",
+                        "parent_link": "base_link",
+                        "child_link": "forearm_link"
                     },
                     {
-                        "name": "frame_b",
-                        "parent_link": "parent_link_b",
-                        "child_link": "child_link_b"
+                        "name": "load_cell",
+                        "parent_link": "base_link",
+                        "child_link": "load_cell_link"
                     }
                 ]
             },
