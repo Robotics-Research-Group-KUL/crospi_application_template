@@ -22,28 +22,17 @@
             "robotdriver":{
                 "is-simulationrobotdriver": true,
                 "periodicity": 0.01,
-                "initial_joints": [3.1416, -1.5708, 1.5708, -1.5708, -1.5708, 0],
-                "robot_joints": ["shoulder_pan_joint","shoulder_lift_joint","elbow_joint","wrist_1_joint","wrist_2_joint","wrist_3_joint"]
-            },
-            "robotspecification": {
-                "is-inline_robotspecification": true,
-                "robot_joints": ["shoulder_pan_joint","shoulder_lift_joint","elbow_joint","wrist_1_joint","wrist_2_joint","wrist_3_joint"],
-                "urdf_path": "$[etasl_ros2_application_template]/robot_description/urdf/ur10/use_case_setup_ur10.urdf",
-                "tcp_frame": {
-                    "parent_link": "base_link",
-                    "child_link": "tool0"
-                },
-                "additional_frames": [
-                    {
-                        "name": "forearm",
-                        "parent_link": "base_link",
-                        "child_link": "forearm_link"
-                    },
-                    {
-                        "name": "load_cell",
-                        "parent_link": "base_link",
-                        "child_link": "load_cell_link"
-                    }
+                "initial_joints": [3.1416, -1.5708, 1.5708, -1.5708, -1.5708, 0]            },
+            "default_robot_specification": {
+                "is-lua_robotspecification": true,
+                "file_path": "$[etasl_ros2_application_template]/etasl/robot_specifications/ur10.etasl.lua",
+                "robot_joints": [
+                    "shoulder_pan_joint",
+                    "shoulder_lift_joint",
+                    "elbow_joint",
+                    "wrist_1_joint",
+                    "wrist_2_joint",
+                    "wrist_3_joint"
                 ]
             },
             "outputhandlers": [

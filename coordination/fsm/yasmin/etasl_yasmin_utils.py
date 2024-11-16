@@ -340,7 +340,7 @@ class ReadRobotSpecificationFile(ServiceState):
     def __init__(self, task_name: str) -> None:
         super().__init__(
             TaskSpecificationFile,  # srv type
-            "/etasl_node/readTaskSpecificationFile",  # service name
+            "/etasl_node/readRobotSpecification",  # service name
             self.create_request_handler,  # cb to create the request
             [],  # outcomes. Includes SUCCEED, ABORT, TIMEOUT by default
             self.response_handler,  # cb to process the response
@@ -353,7 +353,12 @@ class ReadRobotSpecificationFile(ServiceState):
 
         req = TaskSpecificationFile.Request()
         task = get_task(self.task_name,blackboard)
-        robot_path = "$[etasl_ros2_application_template]/etasl/robot_specifications/{}".format(task["robot_specification_file"])
+        robot_path = ""
+        print("helooooo dudeeee")
+        if "robot_specification_file" in task and task["robot_specification_file"]:
+            robot_path = "$[etasl_ros2_application_template]/etasl/robot_specifications/{}".format(task["robot_specification_file"])
+        print(robot_path)
+        print("jijiji")
         req.file_path = robot_path
         # print(task)
         # print("ReadTaskSpecificationFile")

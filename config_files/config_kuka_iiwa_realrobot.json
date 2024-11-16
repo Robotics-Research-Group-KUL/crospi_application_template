@@ -22,11 +22,11 @@
             "robotdriver":{
                 "is-kukaiiwarobotdriver": true,           
                 "fri_port": 30200,
-                "ip_address": "192.170.10.2",
-                "robot_joints": ["right_joint_a1","right_joint_a2","right_joint_a3","right_joint_a4","right_joint_a5","right_joint_a6","right_joint_a7"]
+                "ip_address": "192.170.10.2"
             },
-            "robotspecification":{
-                "is-emptyrobotspecification": true
+            "default_robot_specification":{
+                "is-emptyrobotspecification": true,
+                "robot_joints": ["right_joint_a1","right_joint_a2","right_joint_a3","right_joint_a4","right_joint_a5","right_joint_a6","right_joint_a7"]
             },
             "outputhandlers": [
                 {

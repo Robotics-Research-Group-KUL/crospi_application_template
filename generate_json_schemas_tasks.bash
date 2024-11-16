@@ -107,7 +107,7 @@ beginning_of_json_schema_1='{
                         "type":"string"
                       },
                     "robot_specification_file":{
-                        "description":"Name of the etasl lua file containing the robot specification",
+                        "description":"(optional) If overriding the default_robot_specification, provide the name of the etasl lua file containing the robot specification.",
                         "enum": '
 
 beginning_of_json_schema_2='
@@ -149,7 +149,7 @@ echo '
                         ]
                     }
                 },
-                "required": ["name","robot_specification_file","task_specification"]
+                "required": ["name","task_specification"]
             }
         }
     },
