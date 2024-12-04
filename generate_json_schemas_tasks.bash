@@ -1,20 +1,22 @@
 #!/bin/bash
 
 # Check if a directory is provided as an argument
-if [ -z "$3" ]; then
-  echo "Usage: $0 <directory_with_lua_files> <directory_to_save_individual_json_schemas> <path_to_etasl_robot_specification>" 
+if [ -z "$4" ]; then
+  echo "Usage: $0 <directory_with_lua_files> <directory_to_save_individual_json_schemas> <path_to_etasl_robot_specification> <path_to_etasl_robot_specification_to_be_interpolated>" 
   exit 1
 fi
 
 # Directory containing etasl Lua files (passed as a command-line argument)
 LUA_ETASL_DIR="$1"
 
-# Directory containing robot specification (passed as a command-line argument)
+# Directory containing json schemas directory (passed as a command-line argument)
 JSON_SCHEMAS_DIR="$2"
 
 # Directory containing robot specification (passed as a command-line argument)
-LUA_ROBOT_FILE="$3"
+LUA_ROBOT_SPEC_DIR="$3"
 
+# Directory containing robot specification with format to be interpolated (passed as a command-line argument)
+LUA_ROBOT_SPEC_DIR_INTERPOLATE="$4"
 
 
 # Check if the directory exists
@@ -25,15 +27,6 @@ fi
 
 # ------------------Generate one JSON schema per task specification located in $LUA_ETASL_DIR---------------------
 
-# command_string_robot="print('No robot specification defined')"
-# # Check if the LUA_ROBOT_FILE exists
-# if [ -f "$LUA_ROBOT_FILE" ]; then
-#   command_string_robot="dofile('${LUA_ROBOT_FILE}')" # LUA_ROBOT_FILE was provided and therefore used before task specification
-# else
-#   echo "Error: No valid LUA_ROBOT_FILE robot specification file was provided: $LUA_ROBOT_FILE does not exist."
-
-# fi
-# echo $command_string_robot
 
 # Loop through each Lua file in the directory
 for lua_file_dir in "$LUA_ETASL_DIR"/*.etasl.lua; do #extensions with .etasl.lua
@@ -56,31 +49,30 @@ for lua_file_dir in "$LUA_ETASL_DIR"/*.etasl.lua; do #extensions with .etasl.lua
 done
 
 
-# ------------------Generate one JSON schema constant string whose elements correspond to the robot specifications located in base path of $LUA_ROBOT_FILE---------------------
-ROBOT_PATH_DIR=$(dirname "$LUA_ROBOT_FILE")
+# ------------------Generate one JSON schema constant string whose elements correspond to the robot specifications located in base path of $LUA_ROBOT_SPEC_DIR---------------------
 
-enum_string="["
+robot_spec_string="["
 # Loop through each Lua file in the directory
-for robot_file_path in "$ROBOT_PATH_DIR"/*.etasl.lua; do #extensions with .etasl.lua
+for robot_file_path in "$LUA_ROBOT_SPEC_DIR"/*.etasl.lua; do #extensions with .etasl.lua
   # Check if any Lua files exist
   echo "-------------------"
   if [ -f "$robot_file_path" ]; then
     echo "Generating JSON-SCHEMA file for task specification: $robot_file_path..."
     filename_robot=$(basename "$robot_file_path")
     # filename_robot_without_ext="${filename_robot%.lua}"   
-    enum_string="${enum_string}\"${filename_robot}\", "
+    robot_spec_string="${robot_spec_string}\"${LUA_ROBOT_SPEC_DIR_INTERPOLATE}/${filename_robot}\", "
   else
-    echo "Error: No Lua files found in $ROBOT_PATH_DIR"
+    echo "Error: No Lua files found in $LUA_ROBOT_SPEC_DIR"
     exit 1
   fi
 done
 
 if [ -f "$robot_file_path" ]; then
-  # truncate -s-2 "$enum_string"  # Remove the last comma from the last sub-schema entry
-  enum_string="${enum_string%,*}"
+  # truncate -s-2 "$robot_spec_string"  # Remove the last comma from the last sub-schema entry
+  robot_spec_string="${robot_spec_string%,*}"
 fi
 
-enum_string="${enum_string} ]"
+robot_spec_string="${robot_spec_string} ]"
 
 
 # ------------------Generate a main schema file that references all the previously generated schemas ---------------------
@@ -108,14 +100,16 @@ beginning_of_json_schema_1='{
                       },
                     "robot_specification_file":{
                         "description":"(optional) If overriding the default_robot_specification, provide the name of the etasl lua file containing the robot specification.",
-                        "enum": '
+                        "type": "string",
+                        "pattern": ".*\\.lua$",
+                        "examples": '
 
 beginning_of_json_schema_2='
                       },
                     "task_specification":{
                         "oneOf": ['
                         
-beginning_of_json_schema="${beginning_of_json_schema_1} ${enum_string} ${beginning_of_json_schema_2}"
+beginning_of_json_schema="${beginning_of_json_schema_1} ${robot_spec_string} ${beginning_of_json_schema_2}"
 
 
 echo "$beginning_of_json_schema" > "$output_schema"

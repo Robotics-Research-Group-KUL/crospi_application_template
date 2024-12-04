@@ -21,8 +21,11 @@ set(BASH_SCRIPT ${CMAKE_SOURCE_DIR}/generate_json_schemas_tasks.bash)
 set(TASK_SPECIFICATIONS_DIR ${CMAKE_SOURCE_DIR}/etasl/task_specifications) #Directory containing all task specifications whose json schema is going to be generated automatically
 set(TASK_SPECIFICATIONS_DIR_INTERPOLATE "\$[${CMAKE_PROJECT_NAME}]/etasl/task_specifications") #Directory containing all task specifications whose json schema is going to be generated automatically
 set(JSON_SCHEMAS_DIR ${CMAKE_SOURCE_DIR}/etasl/task_json_schemas/) #Directory containing all task specifications whose json schema is going to be generated automatically
-set(ROBOT_SPECIFICATION_FILE ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/ur10.etasl.lua) #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
-# set(ROBOT_SPECIFICATION_FILE ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/kuka_iiwa.etasl.lua) #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
+set(LUA_ROBOT_SPEC_DIR ${CMAKE_SOURCE_DIR}/etasl/robot_specifications) #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
+set(LUA_ROBOT_SPEC_DIR_INTERPOLATE "\$[${CMAKE_PROJECT_NAME}]/etasl/robot_specifications") #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
+
+
+# set(LUA_ROBOT_SPEC_DIR ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/kuka_iiwa.etasl.lua) #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
 # set(WORK_DIR ${CMAKE_SOURCE_DIR}/etasl/task_specifications)
 # set(LUA_SCRIPT ${WORK_DIR}/etasl_parameters.lua)
 # set(LUA_SCRIPT ${WORK_DIR}/move_cartesianspace.etasl.lua)
@@ -40,14 +43,14 @@ set(ROBOT_SPECIFICATION_FILE ${CMAKE_SOURCE_DIR}/etasl/robot_specifications/ur10
 add_custom_target(
   TASKS_SCHEMA_JSON
   ALL
-  COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${JSON_SCHEMAS_DIR} ${ROBOT_SPECIFICATION_FILE} 
+  COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${JSON_SCHEMAS_DIR} ${LUA_ROBOT_SPEC_DIR}  ${LUA_ROBOT_SPEC_DIR_INTERPOLATE}
   WORKING_DIRECTORY ${WORK_DIR} #Will change the current directory and thus the generated files will be saved here
   COMMENT "constructing tasks-schema.json file"
   VERBATIM #This allows to pass $[ in strings such as defined in TASK_SPECIFICATIONS_DIR_INTERPOLATE
 )
 
 # execute_process (
-#   COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${ROBOT_SPECIFICATION_FILE}
+#   COMMAND bash ${BASH_SCRIPT} ${TASK_SPECIFICATIONS_DIR} ${LUA_ROBOT_SPEC_DIR}
 #   WORKING_DIRECTORY ${WORK_DIR} #Will change the current directory and thus the generated files will be saved here
 #   COMMAND_ECHO STDOUT
 # ) 

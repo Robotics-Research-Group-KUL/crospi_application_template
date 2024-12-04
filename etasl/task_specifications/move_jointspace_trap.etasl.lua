@@ -9,7 +9,7 @@ task_description = "Moves in joint space to a target pose specified using joint 
 param = reqs.parameters(task_description,{
     reqs.params.scalar({name="maxvel", description="Maximum velocity rad/s", default = 0.1, required=true, maximum = 0.5}),
     reqs.params.scalar({name="maxacc", description="Maximum acceleration rad/s^2", default = 0.1, required=true, maximum = 0.5}),
-    reqs.params.array({name="target_joints", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, description="Array with target angles. Its values correspond to the defined robot.robot_joints in the same order", required=true, minimum = -2*math.pi, maximum=2*math.pi, minItems = 1}),
+    reqs.params.array({name="target_joints", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, description="Array with target angles. Its values correspond to the defined robot.robot_joints in the same order", required=true, minimum = -360, maximum=360, minItems = 1}),
     reqs.params.enum({name="units", type=reqs.enum_types.string, default="radians", description="Units to be used for specifying the joints", required=false, accepted_vals = {"degrees","radians"}}),
 })
 

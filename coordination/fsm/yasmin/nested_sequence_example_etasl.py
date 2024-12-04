@@ -42,18 +42,14 @@ from jsonschema import validate, ValidationError
 
 
 class Configuring(State):
-    def __init__(self, serv_manager) -> None:
+    def __init__(self) -> None:
         super().__init__([SUCCEED,])
-        self.serv_manager = serv_manager
 
     def execute(self, blackboard: Blackboard) -> str:
         print(Style.BRIGHT + Fore.GREEN + 'ENTERING STATE CONFIGURING' + Style.RESET_ALL) #EtaslState does this automatically
-        # self.serv_manager.deactivate()
-        # self.serv_manager.cleanup()
-        # time.sleep(1)
 
-        task_index = etasl_utils.get_index("MovingDown",blackboard)
-        blackboard["tasks"][task_index]["task_specification"]["parameters"]["maxacc"] = 2
+        # task_index = etasl_utils.get_index("MovingDown",blackboard)
+        # blackboard["tasks"][task_index]["task_specification"]["parameters"]["maxacc"] = 2
 
         print(Style.BRIGHT + Fore.RED + 'EXITING STATE CONFIGURING' + Style.RESET_ALL) #EtaslState does this automatically
 
@@ -67,20 +63,15 @@ def main(args=None):
     rclpy.init(args=args)
 
     blackboard = Blackboard()
-    etasl_utils.load_tasks("task_configuration/nested_sequence_example_etasl.json",blackboard)
+    etasl_utils.load_task_list("$[etasl_ros2_application_template]/coordination/fsm/yasmin/task_configuration/nested_sequence_example_etasl.json",blackboard)
 
 
     # task_spec_cb = partial(etasl.readTaskSpecificationFile,file_name= "move_cartesianspace.lua")
     
     sm_out = StateMachine(outcomes=["finish", ABORT])
     YasminViewerPub("Complete FSM", sm_out)
-
-
-    serv_manager = etasl_utils.ServiceManager()
-    serv_manager.define_services() #Creates all the etasl service clients and adds them to self.etasl_clients 
-
     
-    sm_out.add_state("CONFIGURING", Configuring(serv_manager),
+    sm_out.add_state("CONFIGURING", Configuring(),
                     transitions={SUCCEED: "MovingHome"})
     
 

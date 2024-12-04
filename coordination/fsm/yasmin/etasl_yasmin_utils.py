@@ -32,97 +32,12 @@ from typing import List, Callable, Union, Type
 from event_state import EventState
 
 import json
-from jsonschema import validate, exceptions
+
+from etasl_ros2_py import etasl_params
 
 
 import time
 
-
-class ServiceManager():
-
-    def __init__(self) -> None:
-        self.node = YasminNode.get_instance()
-        self.etasl_clients = {} #used to add service clients on the fly
-    
-    def add_client(self, name: str, service_type):
-        self.etasl_clients[name] = self.node.create_client(service_type, 'etasl_node/{}'.format(name))
-        self.node.get_logger().info("adding service: etasl_node/{}".format(name))
-        return
-    
-    def call_service(self, srv_name: str, req_task):
-        
-        return self.etasl_clients[srv_name].call(req_task)
-
-
-    def define_services(self):
-        # node.add_client("configure", ChangeState)
-        # node.add_client("cleanup", ChangeState)
-        # node.add_client("activate", ChangeState)
-        # node.add_client("deactivate", ChangeState)
-        self.add_client("change_state", ChangeState)
-        self.add_client("readTaskSpecificationFile", TaskSpecificationFile)
-        self.add_client("readTaskSpecificationString", TaskSpecificationString)
-
-        #Add all the etasl services here
-
-
-    def readTaskSpecificationFile(self, blackboard: Blackboard, file_name: String):
-        req_task = TaskSpecificationFile.Request()
-        req_task.file_path = file_name
-        repl = self.call_service('readTaskSpecificationFile', req_task)
-        # time.sleep(1)
-        # print(repl)
-        # print("readTaskSpecificationFile")
-
-        return repl
-
-    def readTaskSpecificationString(self, blackboard: Blackboard, string_p: String):
-
-        req_task = TaskSpecificationString.Request()
-        req_task.str = string_p
-        repl = self.call_service('readTaskSpecificationString', req_task)
-        # print(repl)
-        # print("readTaskSpecificationString")
-
-        return repl
-
-    def configure(self):
-        req = ChangeState.Request()
-        req.transition.id = 1 #I don't think that the id makes any difference
-        req.transition.label = "configure"
-        repl = self.call_service('change_state', req)
-        # print(repl)
-        # print("configuring")
-        return repl
-
-    def cleanup(self):
-        req = ChangeState.Request()
-        req.transition.id = 2 #I don't think that the id makes any difference
-        req.transition.label = "cleanup"
-        repl = self.call_service('change_state', req)
-        # print("cleanup")
-
-        return repl
-
-    def activate(self):
-        req = ChangeState.Request()
-        req.transition.id = 3 #I don't think that the id makes any difference
-        req.transition.label = "activate"
-        repl = self.call_service('change_state', req)
-        # print("activate")
-
-        return repl
-        
-    def deactivate(self):
-        # print("===============")
-        req = ChangeState.Request()
-        req.transition.id = 4 #I don't think that the id makes any difference
-        req.transition.label = "deactivate"
-        repl = self.call_service('change_state', req)
-        # print("deactivate")
-
-        return repl
-    
 
 
 class ConfigureEtasl(ServiceState):
@@ -287,9 +202,10 @@ class ReadTaskParameters(ServiceState):
 
         req = TaskSpecificationString.Request()
 
-        task = get_task(self.task_name,blackboard)
+        task = etasl_params.get_task(blackboard,self.task_name)
 
-        req.str = json.dumps(task["task_specification"]["parameters"])
+        # req.str = json.dumps(task["task_specification"]["parameters"])
+        req.str = json.dumps(etasl_params.get_task_parameters_filled(blackboard,self.task_name))
 
         # print(param_string)
         # print("ReadTaskSpecificationString")
@@ -320,7 +236,7 @@ class ReadTaskSpecificationFile(ServiceState):
     def create_request_handler(self, blackboard: Blackboard) -> TaskSpecificationFile.Request:
 
         req = TaskSpecificationFile.Request()
-        task = get_task(self.task_name,blackboard)
+        task = etasl_params.get_task(blackboard,self.task_name)
 
         req.file_path = task["task_specification"]["file_path"]
         print(task)
@@ -352,14 +268,7 @@ class ReadRobotSpecificationFile(ServiceState):
     def create_request_handler(self, blackboard: Blackboard) -> TaskSpecificationFile.Request:
 
         req = TaskSpecificationFile.Request()
-        task = get_task(self.task_name,blackboard)
-        robot_path = ""
-        print("helooooo dudeeee")
-        if "robot_specification_file" in task and task["robot_specification_file"]:
-            robot_path = "$[etasl_ros2_application_template]/etasl/robot_specifications/{}".format(task["robot_specification_file"])
-        print(robot_path)
-        print("jijiji")
-        req.file_path = robot_path
+        req.file_path = etasl_params.get_robot_specification_for_task(blackboard,self.task_name)
         # print(task)
         # print("ReadTaskSpecificationFile")
         return req
@@ -390,7 +299,6 @@ class Executing(EventState):
         return
         # time.sleep(1)
 
-# def nested_etasl_state(name: str, file_path: str, robot_path: str, display_in_viewer: bool= False):
 def nested_etasl_state(name: str, display_in_viewer: bool= False):
 
 
@@ -445,36 +353,104 @@ def nested_etasl_state(name: str, display_in_viewer: bool= False):
     return sm
 
 
-def validate_json(json_data, schema):
-    try:
-        validate(instance=json_data, schema=schema)
-        print("JSON is valid.")
-    except exceptions.ValidationError as err:
-        print("JSON validation error:", err.message)
-        print("Error path:", list(err.path))
-        print("Schema path:", list(err.schema_path))
-        return False
-    return True
+def load_task_list( json_file_name: str, blackboard: Blackboard) -> None:
+    etasl_params.load_task_list(json_file_name, blackboard)
 
-def load_tasks( json_file_name: str, blackboard: Blackboard) -> None:
-    with open(json_file_name, 'r') as json_file:
-        parameters = json.load(json_file)
-        blackboard["tasks"] = parameters["tasks"]
-
-    # Function to find a task by its name
-def get_task( task_name: str, blackboard: Blackboard)-> dict:
-    for task in blackboard["tasks"]:
-        if task.get("name") == task_name:
-            return task
-    # print(f"Task with name '{task_name}' was not found.")
-    raise Exception(f"Task with name '{task_name}' was not found.")
     
-def get_index( task_name: str, blackboard: Blackboard)-> int:
+# def get_index( task_name: str, blackboard: Blackboard)-> int:
 
-    # Find the index of the dictionary with the matching property name
-    index = next((i for i, task in enumerate(blackboard["tasks"]) if task['name'] == task_name), -1)
+#     # Find the index of the dictionary with the matching property name
+#     index = next((i for i, task in enumerate(blackboard["tasks"]) if task['name'] == task_name), -1)
 
-    if index == -1:
-        raise Exception(f"Task with name '{task_name}' was not found.")
+#     if index == -1:
+#         raise Exception(f"Task with name '{task_name}' was not found.")
 
-    return index
+#     return index
+
+
+
+# class ServiceManager():
+
+#     def __init__(self) -> None:
+#         self.node = YasminNode.get_instance()
+#         self.etasl_clients = {} #used to add service clients on the fly
+    
+#     def add_client(self, name: str, service_type):
+#         self.etasl_clients[name] = self.node.create_client(service_type, 'etasl_node/{}'.format(name))
+#         self.node.get_logger().info("adding service: etasl_node/{}".format(name))
+#         return
+    
+#     def call_service(self, srv_name: str, req_task):
+        
+#         return self.etasl_clients[srv_name].call(req_task)
+
+
+#     def define_services(self):
+#         # node.add_client("configure", ChangeState)
+#         # node.add_client("cleanup", ChangeState)
+#         # node.add_client("activate", ChangeState)
+#         # node.add_client("deactivate", ChangeState)
+#         self.add_client("change_state", ChangeState)
+#         self.add_client("readTaskSpecificationFile", TaskSpecificationFile)
+#         self.add_client("readTaskSpecificationString", TaskSpecificationString)
+
+#         #Add all the etasl services here
+
+
+#     def readTaskSpecificationFile(self, blackboard: Blackboard, file_name: String):
+#         req_task = TaskSpecificationFile.Request()
+#         req_task.file_path = file_name
+#         repl = self.call_service('readTaskSpecificationFile', req_task)
+#         # time.sleep(1)
+#         # print(repl)
+#         # print("readTaskSpecificationFile")
+
+#         return repl
+
+#     def readTaskSpecificationString(self, blackboard: Blackboard, string_p: String):
+
+#         req_task = TaskSpecificationString.Request()
+#         req_task.str = string_p
+#         repl = self.call_service('readTaskSpecificationString', req_task)
+#         # print(repl)
+#         # print("readTaskSpecificationString")
+
+#         return repl
+
+#     def configure(self):
+#         req = ChangeState.Request()
+#         req.transition.id = 1 #I don't think that the id makes any difference
+#         req.transition.label = "configure"
+#         repl = self.call_service('change_state', req)
+#         # print(repl)
+#         # print("configuring")
+#         return repl
+
+#     def cleanup(self):
+#         req = ChangeState.Request()
+#         req.transition.id = 2 #I don't think that the id makes any difference
+#         req.transition.label = "cleanup"
+#         repl = self.call_service('change_state', req)
+#         # print("cleanup")
+
+#         return repl
+
+#     def activate(self):
+#         req = ChangeState.Request()
+#         req.transition.id = 3 #I don't think that the id makes any difference
+#         req.transition.label = "activate"
+#         repl = self.call_service('change_state', req)
+#         # print("activate")
+
+#         return repl
+        
+#     def deactivate(self):
+#         # print("===============")
+#         req = ChangeState.Request()
+#         req.transition.id = 4 #I don't think that the id makes any difference
+#         req.transition.label = "deactivate"
+#         repl = self.call_service('change_state', req)
+#         # print("deactivate")
+
+#         return repl
+    

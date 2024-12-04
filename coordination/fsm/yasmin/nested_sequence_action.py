@@ -202,7 +202,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     blackboard = Blackboard()
-    etasl_utils.load_tasks("task_configuration/nested_sequence_action.json",blackboard)
+    etasl_utils.load_task_list("task_configuration/nested_sequence_action.json",blackboard)
 
     sm = MyStateMachine(maxcount=3)
     md = MovingDown()

@@ -3,7 +3,7 @@
     "tasks": [
         {
             "name": "MovingHome",
-            "robot_specification_file": "ur10.etasl.lua",
+            "robot_specification_file": "$[etasl_ros2_application_template]/etasl/robot_specifications/ur10.etasl.lua",
             "task_specification": {
                 "is-move_jointspace_trap": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_jointspace_trap.etasl.lua",
@@ -17,7 +17,6 @@
         },
         {
             "name": "MovingCartesian",
-            "robot_specification_file": "ur10.etasl.lua",
             "task_specification": {
                 "is-move_cartesianspace": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_cartesianspace.etasl.lua",
@@ -31,7 +30,7 @@
         },
         {
             "name": "MovingJoystick",
-            "robot_specification_file": "ur10.etasl.lua",
+            "robot_specification_file": "$[etasl_ros2_application_template]/etasl/robot_specifications/ur10.etasl.lua",
             "task_specification": {
                 "is-move_joystick": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_joystick.etasl.lua",
@@ -43,21 +42,21 @@
         },
         {
             "name": "MovingDown",
-            "robot_specification_file": "ur10.etasl.lua",
+            "robot_specification_file": "$[etasl_ros2_application_template]/etasl/robot_specifications/ur10.etasl.lua",
             "task_specification": {
                 "is-move_cartesianspace": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_cartesianspace.etasl.lua",
                 "parameters": {
                     "delta_pos": [0, 0, -0.2],
                     "eq_r": 0.08,
-                    "maxacc": "external",
+                    "maxacc": "$blackboard/output_param/MovingUp/maxacc",
                     "maxvel": 0.1
                 }
             }
         },
         {
             "name": "MovingUp",
-            "robot_specification_file": "ur10.etasl.lua",
+            "robot_specification_file": "$[etasl_ros2_application_template]/etasl/robot_specifications/ur10.etasl.lua",
             "task_specification": {
                 "is-move_cartesianspace": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/task_specifications/move_cartesianspace.etasl.lua",

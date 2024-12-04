@@ -35,15 +35,12 @@ import etasl_yasmin_utils as etasl_utils
 
 
 class Configuring(State):
-    def __init__(self, serv_manager) -> None:
+    def __init__(self) -> None:
         super().__init__([SUCCEED,])
-        self.serv_manager = serv_manager
 
     def execute(self, blackboard: Blackboard) -> str:
         print(Style.BRIGHT + Fore.GREEN + 'ENTERING STATE CONFIGURING' + Style.RESET_ALL) #EtaslState does this automatically
-        # self.serv_manager.deactivate()
-        # self.serv_manager.cleanup()
-        # time.sleep(1)
+
         print(Style.BRIGHT + Fore.RED + 'EXITING STATE CONFIGURING' + Style.RESET_ALL) #EtaslState does this automatically
 
         return SUCCEED
@@ -61,11 +58,7 @@ def main(args=None):
     YasminViewerPub("Complete FSM", sm_out)
 
 
-    serv_manager = etasl_utils.ServiceManager()
-    serv_manager.define_services() #Creates all the etasl service clients and adds them to self.etasl_clients 
-
-    
-    sm_out.add_state("CONFIGURING", Configuring(serv_manager),
+    sm_out.add_state("CONFIGURING", Configuring(),
                     transitions={SUCCEED: "MovingHome"})
 
     # sm_out.add_state("MovingHome", etasl_utils.nested_etasl_state(name="MovingHome", file_path="kuka_iiwa_test_etasl.lua", rel_shared_dir=True, display_in_viewer=True),
