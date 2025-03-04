@@ -1,16 +1,17 @@
 require("context")
 require("geometric")
+require("math")
 
 
 local M = {}
 
 
-local function trap_velprofile(maxvel,maxacc,s_start,s_end)
-  local sc = conditional( constant(0.5)-maxvel*maxvel/(constant(2)*maxacc) , maxvel*maxvel/(constant(2)*maxacc), constant(0.5) )
-  local s_p_3_4   = conditional(s_end-s , make_constant( sqrt( constant(2)*maxacc*(s_end-s) ) ) , constant(0))
-  local s_p_2_4   = conditional( (s_end-sc)-s , maxvel , s_p_3_4)
-  local s_p_1_4   = conditional((sc+s_start)-s , make_constant( sqrt( constant(2)*maxacc*(s-s_start) ) ) , s_p_2_4)
-  local s_p_0_4 = conditional(s_start-s , constant(0) , s_p_1_4)
+local function trap_velprofile(maxvel,maxacc,s_start,s_end, s_progress_var)
+    local sc = conditional( constant(0.5)-maxvel*maxvel/(constant(2)*maxacc) , maxvel*maxvel/(constant(2)*maxacc), constant(0.5) )
+    local s_p_3_4   = conditional(s_end-s_progress_var , make_constant( sqrt( constant(2)*maxacc*(s_end-s_progress_var) ) ) , constant(0))
+    local s_p_2_4   = conditional( (s_end-sc)-s_progress_var , maxvel , s_p_3_4)
+    local s_p_1_4   = conditional((sc+s_start)-s_progress_var , make_constant( sqrt( constant(2)*maxacc*(s_progress_var-s_start) ) ) , s_p_2_4)
+    local s_p_0_4 = conditional(s_start-s_progress_var , constant(0) , s_p_1_4)
 
   return s_p_0_4
 end

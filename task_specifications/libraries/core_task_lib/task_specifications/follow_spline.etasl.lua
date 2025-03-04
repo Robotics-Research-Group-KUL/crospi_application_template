@@ -55,13 +55,13 @@ diff_rot                = cached(getRotVec( inv(startrot)*R_end ))
 diff_rot, angle         = utils_ts.normalize( diff_rot )
 --
 r_inst = angle*progress_variable
+
 -- ========================================== GENERATE PROFILES ============================
 
 spl        = CubicSpline(0)
 csv_file = utils_ts.path_interpolate(csv_file_path)
 spl:readPoints(csv_file," \t,",0)
 spl:setInput(progress_variable)
-
 -- =========================== VELOCITY PROFILE ============================================
 d_time = constant(0)
 mt=constant(1)
@@ -73,9 +73,7 @@ sb_n = 1
 
 sa = constant(sa_n)
 sb = constant(sb_n)
-
-s_p_mp  = utils_ts.trap_velprofile( maxvel , maxacc , constant(0.0) , constant(1.0) )
-
+s_p_mp  = utils_ts.trap_velprofile( maxvel , maxacc , constant(0.0) , constant(1.0),  progress_variable)
 s_p = conditional( time-d_time , s_p_mp , constant(0) )
 
 
