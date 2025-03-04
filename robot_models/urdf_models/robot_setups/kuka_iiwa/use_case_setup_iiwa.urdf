@@ -272,7 +272,7 @@
   <!-- RIGHT FRAMES -->
   <link name="right_ft_sensor_frame"/>
   <joint name="right_ft_sensor_joint" type="fixed">
-    <origin rpy="0 3.1416 -0.7854" xyz="0 0 0.0225"/>
+    <origin rpy="0 0 3.1416" xyz="0 0 0.0225"/>
     <parent link="right_tool0"/>
     <child link="right_ft_sensor_frame"/>
   </joint>

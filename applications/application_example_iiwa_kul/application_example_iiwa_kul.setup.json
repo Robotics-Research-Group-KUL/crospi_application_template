@@ -53,6 +53,15 @@
                     "topic-name": "/spacenav/twist",
                     "when_unpublished": "use_default",
                     "varname": "joystick_input"
+                },
+                {
+                    "is-wrenchinputhandler": true,
+                    "topic-name": "/schunk/wrench",
+                    "number_of_tries": 10,
+                    "depth": 1,
+                    "default_wrench": {"force": {"x": 0, "y": 0, "z": 0},"torque": {"x": 0, "y": 0, "z": 0}},
+                    "when_unpublished": "use_default",
+                    "varname": "wrench_input"
                 }
             ]
         }

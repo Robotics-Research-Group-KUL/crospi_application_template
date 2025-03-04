@@ -63,7 +63,7 @@
 <!-- RIGHT FRAMES -->
   <link name="${prefix_right}ft_sensor_frame"/>
   	<joint name="${prefix_right}ft_sensor_joint" type="fixed">
-  		<origin xyz="0 0 ${0.01 + 0.025/2}" rpy="${0} ${3.1416} ${-3.1416/4}"/>
+  		<origin xyz="0 0 ${0.01 + 0.025/2}" rpy="${0} ${0} ${3.1416}"/>
   		<parent link="${prefix_right}tool0"/>
   		<child link="${prefix_right}ft_sensor_frame"/>
   </joint>

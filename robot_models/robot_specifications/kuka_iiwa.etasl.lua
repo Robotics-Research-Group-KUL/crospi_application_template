@@ -17,7 +17,7 @@ local xmlstr = urdfreader.loadFile(etasl_application_share_dir .. "/robot_models
 local robot_worldmodel = urdfreader.readUrdf(xmlstr,{})
 -- robot:writeDot("kuka_iiwa_robot.dot")
 local VL = {}
-local frames = robot_worldmodel:getExpressions(VL,ctx,{tcp_frame={'right_tool0','world'}})
+local frames = robot_worldmodel:getExpressions(VL,ctx,{tcp_frame = {'right_tool0','world'}, FT_frame = {'right_ft_sensor_frame', 'world'}})
 
 M.frames= frames
 M.xmlstr = xmlstr
