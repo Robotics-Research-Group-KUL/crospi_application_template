@@ -1,0 +1,61 @@
+{
+    "$schema": "../../../etasl_ros2/scripts/schema/blackboard-schema.json",
+    "blackboard": {
+        "default-etasl": {
+            "general": {
+                "event_topic": "etasl/events",
+                "sample_time": 0.01
+            },
+            "initializer": {
+                "full": true,
+                "sample_time": 0.01,
+                "duration": 3.0,
+                "convergence_criterion": 1E-8,
+                "weightfactor": 1E4
+            },
+            "solver": {
+                "is-qpoasessolver": true,
+                "nWSR": 100,
+                "regularization_factor": 1E-8,
+                "cputime": 10
+            },
+            "robotdriver":{
+                "is-kukaiiwarobotdriver": true,           
+                "fri_port": 30200,
+                "ip_address": "192.170.10.2"
+            },
+            "default_robot_specification":{
+                "is-lua_robotspecification": true,
+                "file_path": "$[etasl_ros2_application_template]/etasl/robot_specifications/kuka_iiwa.etasl.lua",
+                "robot_joints": ["right_joint_a1","right_joint_a2","right_joint_a3","right_joint_a4","right_joint_a5","right_joint_a6","right_joint_a7"]
+            },
+            "outputhandlers": [
+                {
+                    "is-jointstateoutputhandler": true,
+                    "topic-name": "/velcmd"
+                },
+                {
+                    "is-jointstateoutputhandler": true,
+                    "topic-name": "/joint_states"
+                },
+                {
+                    "is-topicoutputhandler" : true,
+                    "topic-name" : "/my_topic",
+                    "variable-names" : []
+                 }
+            ],
+            "inputhandlers": [
+                {
+                    "is-twistinputhandler": true,
+                    "default_twist": {"linear": {"x": 0, "y": 0, "z": 0},"angular": {"x": 0, "y": 0, "z": 0}},
+                    "depth": 1,
+                    "number_of_tries": 10,
+                    "topic-name": "/spacenav/twist",
+                    "when_unpublished": "use_default",
+                    "varname": "joystick_input"
+                }
+            ]
+        }
+    },
+    "$defs":{}
+}

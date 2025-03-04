@@ -1,0 +1,29 @@
+{
+    "$schema": "../skill_library.schema.json",
+    "name": "skill_lib_example",
+    "description": "Example of a skill library based on etasl task specifications",
+    "license": "GNU GPLv3",
+    "version": "0.1.0",
+    "required_task_libs": [
+        {
+            "lib_name": "core_task_lib",
+            "repo_url": "git@gitlab.kuleuven.be:todo.git",
+            "version": "0.0.0"
+        }
+    ],
+    "authors": [
+        {
+            "name": "Santiago Iregui",
+            "affiliation": "KU Leuven",
+            "email": "santiago.iregui@kuleuven.be"
+        }
+    ],
+    "maintainers": [
+        {
+            "name": "Santiago Iregui",
+            "affiliation": "KU Leuven",
+            "email": "santiago.iregui@kuleuven.be"
+        }
+    ],
+    "acknowledgements": "The authors acknowledge the financial support of EU project AI-Prism (TODO)"
+}
