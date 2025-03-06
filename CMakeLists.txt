@@ -28,7 +28,7 @@ set(LUA_ROBOT_SPEC_DIR_INTERPOLATE "\$[${CMAKE_PROJECT_NAME}]/robot_models/robot
 add_custom_target(
   TASKS_SCHEMA_JSON
   ALL
-  COMMAND bash ${BASH_SCRIPT} ${TASK_LIBRARIES_DIR} ${LUA_ROBOT_SPEC_DIR}  ${LUA_ROBOT_SPEC_DIR_INTERPOLATE}
+  COMMAND bash ${BASH_SCRIPT} ${TASK_LIBRARIES_DIR} ${LUA_ROBOT_SPEC_DIR}  ${LUA_ROBOT_SPEC_DIR_INTERPOLATE} 2>&1 | tee ${CMAKE_SOURCE_DIR}/task_specifications/tasks-schema.log
   WORKING_DIRECTORY ${WORK_DIR}
   COMMENT "constructing tasks-schema.json file"
   VERBATIM #This allows to pass $[ in strings such as defined in LUA_ROBOT_SPEC_DIR_INTERPOLATE
