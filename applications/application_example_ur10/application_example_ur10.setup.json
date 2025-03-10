@@ -1,7 +1,7 @@
 {
     "$schema": "../../../etasl_ros2/scripts/schema/blackboard-schema.json",
     "blackboard": {
-        "default-etasl": {
+        "etasl": {
             "general": {
                 "event_topic": "etasl/events",
                 "sample_time": 0.01
@@ -18,6 +18,13 @@
                 "nWSR": 100,
                 "regularization_factor": 1E-8,
                 "cputime": 10
+            }
+        },
+        "robot": {
+            "simulation": {
+                "is-simple_kinematic_simulation": true,
+                "initial_joints": [3.1416, -1.5708, 1.5708, -1.5708, -1.5708, 0],
+                "periodicity": 0.01
             },
             "robotdriver":{
                 "is-ur10_e_driver_etasl": true,
@@ -47,34 +54,36 @@
                     "wrist_2_joint",
                     "wrist_3_joint"
                 ]
-            },
-            "outputhandlers": [
-                {
-                    "is-jointstateoutputhandler": true,
-                    "topic-name": "/velcmd"
-                },
-                {
-                    "is-jointstateoutputhandler": true,
-                    "topic-name": "/joint_states"
-                },
-                {
-                    "is-topicoutputhandler" : true,
-                    "topic-name" : "/my_topic",
-                    "variable-names" : []
-                 }
-            ],
-            "inputhandlers": [
-                {
-                    "is-twistinputhandler": true,
-                    "default_twist": {"linear": {"x": 0, "y": 0, "z": 0},"angular": {"x": 0, "y": 0, "z": 0}},
-                    "depth": 1,
-                    "number_of_tries": 10,
-                    "topic-name": "/spacenav/twist",
-                    "when_unpublished": "use_default",
-                    "varname": "joystick_input"
-                }
-            ]
-        }
+            }
+        },
+        "iohandlers": {
+                "outputhandlers": [
+                    {
+                        "is-jointstateoutputhandler": true,
+                        "topic-name": "/velcmd"
+                    },
+                    {
+                        "is-jointstateoutputhandler": true,
+                        "topic-name": "/joint_states"
+                    },
+                    {
+                        "is-topicoutputhandler" : true,
+                        "topic-name" : "/my_topic",
+                        "variable-names" : []
+                    }
+                ],
+                "inputhandlers": [
+                    {
+                        "is-twistinputhandler": true,
+                        "default_twist": {"linear": {"x": 0, "y": 0, "z": 0},"angular": {"x": 0, "y": 0, "z": 0}},
+                        "depth": 1,
+                        "number_of_tries": 10,
+                        "topic-name": "/spacenav/twist",
+                        "when_unpublished": "use_default",
+                        "varname": "joystick_input"
+                    }
+                ]
+            }
     },
     "$defs":{}
 }

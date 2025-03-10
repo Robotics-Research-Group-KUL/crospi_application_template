@@ -1,7 +1,7 @@
 {
     "$schema": "../../../etasl_ros2/scripts/schema/blackboard-schema.json",
     "blackboard": {
-        "default-etasl": {
+        "etasl": {
             "general": {
                 "event_topic": "etasl/events",
                 "sample_time": 0.01
@@ -18,17 +18,27 @@
                 "nWSR": 100,
                 "regularization_factor": 1E-8,
                 "cputime": 10
+            }
+        },
+        "robot": {
+            "simulation":{
+                "is-simple_kinematic_simulation": true,
+                "periodicity": 0.01,
+                "initial_joints": [0.5410, 1.2566, -0.4363, -1.344, -0.4363, 0.8726,  0.61]
             },
             "robotdriver":{
-                "is-kukaiiwarobotdriver": true,           
+                "is-kuka_iiwa_driver": true,
                 "fri_port": 30200,
-                "ip_address": "192.170.10.2"
+                "ip_address": "192.170.10.2",
+                "periodicity": 0
             },
             "default_robot_specification":{
                 "is-lua_robotspecification": true,
                 "file_path": "$[etasl_ros2_application_template]/etasl/robot_specifications/kuka_iiwa.etasl.lua",
                 "robot_joints": ["right_joint_a1","right_joint_a2","right_joint_a3","right_joint_a4","right_joint_a5","right_joint_a6","right_joint_a7"]
-            },
+            }
+        },
+        "iohandlers": {
             "outputhandlers": [
                 {
                     "is-jointstateoutputhandler": true,
