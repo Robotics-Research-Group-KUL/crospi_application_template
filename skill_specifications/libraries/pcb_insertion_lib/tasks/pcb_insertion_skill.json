@@ -1,0 +1,146 @@
+{
+    "$schema": "../../../../task_specifications/tasks-schema.json",
+    "tasks": [
+        {
+            "name": "MovingHome",
+            "robot_specification_file": "$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_jointspace_trap": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "target_joints": [
+                        -26,
+                        18,
+                        18,
+                        -85,
+                        39,
+                        87,
+                        0
+                    ],
+                    "units": "degrees"
+                }
+            }
+        },
+        {
+            "name": "MovingToPick",
+            "robot_specification_file": "$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_absolute_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "parameters": {
+                    "desired_pose": "$blackboard/output_param/my_task/desired_pose",
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "task_frame": "tcp_frame",
+                    "eq_r": 0.08
+                }
+            }
+        },
+        {
+            "name": "Reducing_z",
+            "robot_specification_file": "$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
+            "task_specification":{
+                "from-insertions_lib-version-0.1.0": true,
+                "is-guarded_z_world": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/insertions_lib/task_specifications/guarded_z_world.etasl.lua",
+                "parameters": {
+                    "contact_force": 5,
+                    "force_threshold": 0.5,
+                    "torque_threshold": 0.05,
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "task_frame": "tcp_frame",
+                    "maxvel": 0.1,
+                    "K_F": [
+                        2700,
+                        2700,
+                        2700
+                    ],
+                    "K_T": [
+                        200,
+                        200,
+                        200
+                    ],
+                    "R_tf_2_insframe": "$blackboard/output_param/fixture_detection/R_tf_2_insframe",
+                    "tool_COG": [
+                        -0.0031757,
+                        0.001138889,
+                        0.0667538
+                    ],
+                    "tool_weight": 11.10748
+                }            
+            }
+        },
+        {
+            "name": "Reducing_x",
+            "robot_specification_file": "$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
+            "task_specification":{
+                "from-insertions_lib-version-0.1.0": true,
+                "is-guarded_x_world": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/insertions_lib/task_specifications/guarded_x_world.etasl.lua",
+                "parameters": {
+                    "contact_force": 5,
+                    "force_threshold": 0.5,
+                    "torque_threshold": 0.05,
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "task_frame": "tcp_frame",
+                    "maxvel": 0.1,
+                    "K_F": [
+                        2700,
+                        2700,
+                        2700
+                    ],
+                    "K_T": [
+                        200,
+                        200,
+                        200
+                    ],
+                    "R_tf_2_insframe": "$blackboard/output_param/fixture_detection/R_tf_2_insframe",
+                    "tool_COG": [
+                        -0.0031757,
+                        0.001138889,
+                        0.0667538
+                    ],
+                    "tool_weight": 11.10748
+                }
+            }
+        },
+        {
+            "name": "Reducing_y",
+            "robot_specification_file": "$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
+            "task_specification":{
+                "from-insertions_lib-version-0.1.0": true,
+                "is-guarded_y_world": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/insertions_lib/task_specifications/guarded_y_world.etasl.lua",
+                "parameters": {
+                    "contact_force": 5,
+                    "force_threshold": 0.5,
+                    "torque_threshold": 0.05,
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "task_frame": "tcp_frame",
+                    "maxvel": 0.1,
+                    "K_F": [
+                        2700,
+                        2700,
+                        2700
+                    ],
+                    "K_T": [
+                        200,
+                        200,
+                        200
+                    ],
+                    "R_tf_2_insframe": "$blackboard/output_param/fixture_detection/R_tf_2_insframe",
+                    "tool_COG": [
+                        -0.0031757,
+                        0.001138889,
+                        0.0667538
+                    ],
+                    "tool_weight": 11.10748
+                }
+            }
+        }
+    ]
+}
