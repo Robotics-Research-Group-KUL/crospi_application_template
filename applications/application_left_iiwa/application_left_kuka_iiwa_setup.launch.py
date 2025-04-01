@@ -2,8 +2,8 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node
-
+from launch_ros.actions import Node, ComposableNodeContainer
+from launch_ros.descriptions import ComposableNode
 
 def generate_launch_description():
 
@@ -39,16 +39,32 @@ def generate_launch_description():
             output='screen',
             arguments=['-d', rviz_file]  # Replace with your RViz config file path
         ),
-        # Node(
-        # package='schunk_control_egh80',
-        # executable='egh80_control_node',
-        # name='egh80_driver_node',
-        # output='screen',
-        # parameters=[
-        #     {'ip_address': '172.168.1.253'},
-        #     {'device_port': 502},
-        #     {'gripper_stroke': 40.683074951171875},
-        #     {'gripper_joint_state_topic': 'schunk/schunk_egh80/joint_states'}
+        Node(
+        package='schunk_control_egh80',
+        executable='egh80_control_node',
+        name='egh80_driver_node',
+        output='screen',
+        parameters=[
+            {'ip_address': '172.168.1.253'},
+            {'device_port': 502},
+            {'gripper_stroke': 40.683074951171875},
+            {'gripper_joint_state_topic': 'schunk/schunk_egh80/joint_states'}
 
-        # ])
+        ]),
+        ComposableNodeContainer(
+        name="two_nodes",
+        namespace="",
+        package="rclcpp_components",
+        # executable="component_container", # SingleThreadedExecutor
+        executable="component_container_mt", # MultiThreadedExecutor
+        composable_node_descriptions=[
+            ComposableNode(
+                package="sensor_components",
+                plugin="sensor_components::SchunkSensor",
+                name="sensor",
+                parameters=[{"ip_address": "192.168.2.1"}]
+            )
+        ],
+        output="screen",
+        )
     ])

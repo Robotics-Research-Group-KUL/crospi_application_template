@@ -11,7 +11,7 @@ local M = {}
 --
 
 local etasl_application_share_dir = ament.get_package_share_directory("etasl_ros2_application_template")
-local xmlstr = urdfreader.loadFile(etasl_application_share_dir .. "/robot_models/urdf_models/robot_setups/ur10/use_case_setup_ur10.urdf")
+local xmlstr = urdfreader.loadFile(etasl_application_share_dir .. "/robot_models/urdf_models/robot_setups/ur10e/use_case_setup_ur10e.urdf")
 local robot_worldmodel = urdfreader.readUrdf(xmlstr,{})
 -- robot:writeDot("ur10_robot.dot")
 local VL = {}

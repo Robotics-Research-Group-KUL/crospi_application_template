@@ -129,87 +129,60 @@ start_pose_diff  = inv(startpose)*task_frame_c
 
 -- =============================== CONSTRAINT SPECIFICATION ==============================
 Constraint{
-	context=ctx,
-	name="follow_force_x",
-	model = -K_F_x*coord_x(origin(task_frame_inst)),
-	meas = Fx,
-	target = -contact_force/2,
-	K = constant(4),
-	priority = 2,
-	weight = constant(1),
+    context = ctx,
+    name    = "Constant_position",
+    expr    = origin(start_pose_diff),
+    K       = 4,
+    weight  = 100000,
+    priority= 2
 };
 
-Constraint{
-	context=ctx,
-	name="follow_force_y",
-	model = -K_F_y*coord_y(origin(task_frame_inst)),
-	meas = Fy,
-	target = -contact_force,
-	K = constant(4),
-	priority = 2,
-	weight = constant(1),
-};
-
-Constraint{
-	context=ctx,
-	name="follow_force_z",
-	model = -K_F_z*coord_z(origin(task_frame_inst)),
-	meas = Fz,
-	target = contact_force/2,
-	K = constant(4),
-	priority = 2,
-	weight = constant(1),
-};
+contact_torque = 0.3
 
 Constraint{
     context = ctx,
-    name    = "constant_orientation",
-    expr    = rotation(start_pose_diff),
+    name    = "constant_orientation_x",
+    expr    = coord_x(getRotVec(rotation(start_pose_diff))),
     K       = 4,
     weight  = 1,
     priority= 2
 };
 
--- Max insertion velocity
+Constraint{
+	context=ctx,
+	name="follow_torque_y",
+	model = -K_T_y*coord_y(getRotVec(rotation(task_frame_inst))),
+	meas = Ty,
+	target = contact_torque,
+	K = constant(4),
+	priority = 2,
+	weight = constant(1),
+};
+
 Constraint{
     context = ctx,
-    name    = "y_velocity",
-    expr    = coord_y(origin(task_frame_inst)),
-	target_upper = maxvel*time,
-	target_lower = -maxvel*time,
-    K       = 0,
-    weight  = 10,
-    priority= 1
+    name    = "constant_orientation_z",
+    expr    = coord_z(getRotVec(rotation(start_pose_diff))),
+    K       = 4,
+    weight  = 1,
+    priority= 2
 };
 
 time_start = conditional(time-1,2,0)
 
-monitor_F = Monitor{context=ctx,
-					name='finish_force',
-					upper=0.9,
-					actionname='exit',
-					expr=time_start*abs(Fy)/contact_force
+-- Monitor{
+--     context=ctx,
+--     name='finish_and_trigger_console',
+--     upper=0.0,
+--     actionname='debug',
+--     expr=time - constant(0)
+-- }
+
+monitor_F = Monitor{context=ctx, 
+					name='finish_torque',
+					upper=0.6,
+					actionname='exit', 
+					expr=time_start*abs(Ty)/contact_torque
 				};
 
-roll_tf, pitch_tf, yaw_tf = getRPY(rotation(task_frame_c))
-
-ctx:setOutputExpression("x_tf"		,coord_x(origin(task_frame_c)))
-ctx:setOutputExpression("y_tf"		,coord_y(origin(task_frame_c)))
-ctx:setOutputExpression("z_tf"		,coord_z(origin(task_frame_c)))
-ctx:setOutputExpression("roll_tf"	,roll_tf)
-ctx:setOutputExpression("pitch_tf"  ,pitch_tf)
-ctx:setOutputExpression("yaw_tf"	,yaw_tf)
-
-ctx:setOutputExpression("Fx"      ,Fx)
-ctx:setOutputExpression("Fy"      ,Fy)
-ctx:setOutputExpression("Fz"      ,Fz)
-ctx:setOutputExpression("Tx"      ,Tx)
-ctx:setOutputExpression("Ty"      ,Ty)
-ctx:setOutputExpression("Tz"      ,Tz)
-
-ctx:setOutputExpression("task_frame_x"	,coord_x(origin(task_frame)))
-ctx:setOutputExpression("task_frame_y"	,coord_y(origin(task_frame)))
-ctx:setOutputExpression("task_frame_z"	,coord_z(origin(task_frame)))
-
--- ctx:setOutputExpression("tcp_frame"   , tcp_frame)
-ctx:setOutputExpression("task_frame_c"  ,task_frame_c)
+roll_tf, pitch_tf, yaw_tf = getRPY(rotation(task_frame))

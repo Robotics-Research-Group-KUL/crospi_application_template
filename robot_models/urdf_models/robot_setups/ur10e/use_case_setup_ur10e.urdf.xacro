@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="etasl_vision_scene" >
+	<!-- robot -->
+	<xacro:include filename="$(find ur_description)/urdf/ur_macro.xacro" />
+
+	<!-- create link fixed to the "world" -->
+	<link name="world" />
+
+	<xacro:ur_robot 
+		name="ur10e_robot"
+		tf_prefix=""
+		parent="world"
+		joint_limits_parameters_file="$(find ur_description)/config/ur10e/joint_limits.yaml"
+		kinematics_parameters_file="$(find ur_description)/config/ur10e/default_kinematics.yaml"
+		physical_parameters_file="$(find ur_description)/config/ur10e/physical_parameters.yaml"
+		visual_parameters_file="$(find ur_description)/config/ur10e/visual_parameters.yaml"
+		>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+	</xacro:ur_robot>
+
+	<!-- environment
+	<xacro:include filename="$(find etasl_ros2_application_template)/robot_models/urdf_models/robot_setups/ur10e/environment.urdf.xacro"/>
+
+	<xacro:property name="pi" value="3.14159265" />
+	<xacro:property name="x_w" value="0"/>
+	<xacro:property name="y_w" value="0"/>
+	<xacro:property name="z_w" value="0"/>
+	<xacro:property name="roll_w" value="0.0"/>
+	<xacro:property name="pitch_w" value="0.0"/>
+	<xacro:property name="yaw_w" value="0.0"/> -->
+	
+</robot>

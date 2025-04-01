@@ -21,8 +21,8 @@ param = reqs.parameters(task_description,{
     reqs.params.scalar({name="torque_threshold", description="Torque dead zone [Nm]", default = 0.05, required=false}),
     reqs.params.array({name="tool_COG", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, 
                             description="Array with the center of gravity of the tool w.r.t FT_sensor_frame [m]", required=true, minItems = 3, maxItems = 3}),
-    reqs.params.array({name="R_tf_2_insframe", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 1.0}, 
-                            description="Quaternion with the rotation matrix from the task_frame to the insertion_frame in [qx,qy,qz,qw]", required=true, minItems = 4, maxItems = 4}),
+    reqs.params.array({name="tf_2_insframe", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}, 
+                            description="Transformation from the task_frame to the insertion_frame in [x,y,z,qx,qy,qz,qw]", required=true, minItems = 7, maxItems = 7}),
     reqs.params.scalar({name="tool_weight", description="Weight of the tool attached to the end-effector [N]", default = 0.0, required=true}),
     reqs.params.string({name="task_frame", description="Name of frame used to control the robot in cartesian space", default = "tcp_frame", required=true}),
     reqs.params.string({name="FT_sensor_frame", description="Name of frame where the forces and torques a measured", default = "FT_sensor_frame", required=true}),
@@ -53,7 +53,7 @@ tool_COG            = param.get("tool_COG")
 tool_weight         = constant(param.get("tool_weight"))
 K_F                 = param.get("K_F")
 K_T                 = param.get("K_T")
-R_tf_2_insframe     = param.get("R_tf_2_insframe")
+tf_2_insframe     = param.get("tf_2_insframe")
 
 tool_COG_x = constant(tool_COG[1])
 tool_COG_y = constant(tool_COG[2])
@@ -67,14 +67,17 @@ K_T_x = constant(K_T[1])
 K_T_y = constant(K_T[2])
 K_T_z = constant(K_T[3])
 
-q_i     = constant(R_tf_2_insframe[1])
-q_j     = constant(R_tf_2_insframe[2])
-q_k     = constant(R_tf_2_insframe[3])
-q_real  = constant(R_tf_2_insframe[4])
+tcp_tf_x = constant(tf_2_insframe[1])
+tcp_tf_y = constant(tf_2_insframe[2])
+tcp_tf_z = constant(tf_2_insframe[3])
+q_i     = constant(tf_2_insframe[4])
+q_j     = constant(tf_2_insframe[5])
+q_k     = constant(tf_2_insframe[6])
+q_real  = constant(tf_2_insframe[7])
 
 -- compute orientation from quaternion
 quat_tf_2_insframe = quaternion(q_real,vector(q_i,q_j,q_k))
-tf_2_insframe = frame(toRot(quat_tf_2_insframe), vector(0,0,0))
+tf_2_insframe = frame(toRot(quat_tf_2_insframe), vector(tcp_tf_x,tcp_tf_y,tcp_tf_z))
 
 -- ========================================= Variables coming from topic input handlers ===================================
 sensed_wrench   = ctx:createInputChannelWrench("wrench_input")
@@ -106,9 +109,9 @@ wrench_FT_frame = ref_point(wrench_cog_ftframe, -origin(FT_sensor_frame_to_cog))
 wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame - virtual_wrench
 
 -- =============================== TRANSLATE FT TO TASK_FRAME ==============================
-task_frame = task_frame*tf_2_insframe
+task_frame_c = task_frame*tf_2_insframe
 
-wrench_task_frame   = ref_point(transform(rotation(inv(task_frame)*FT_sensor_frame), wrench_dead_zone) , -origin(inv(task_frame)*FT_sensor_frame))
+wrench_task_frame   = ref_point(transform(rotation(inv(task_frame_c)*FT_sensor_frame), wrench_dead_zone) , -origin(inv(task_frame_c)*FT_sensor_frame))
 
 Fx = coord_x(force(wrench_task_frame))
 Fy = coord_y(force(wrench_task_frame))
@@ -118,11 +121,11 @@ Ty = coord_y(torque(wrench_task_frame))
 Tz = coord_z(torque(wrench_task_frame))
 
 -- =============================== INSTANTANEOUS FRAME ==============================
-task_frame_inst = inv(make_constant(task_frame))*task_frame
+task_frame_inst = inv(make_constant(task_frame_c))*task_frame_c
 
 -- =============================== INITIAL VALUES ==============================
-startpose = initial_value(time, task_frame)
-start_pose_diff  = inv(startpose)*task_frame
+startpose = initial_value(time, task_frame_c)
+start_pose_diff  = inv(startpose)*task_frame_c
 
 -- =============================== CONSTRAINT SPECIFICATION ==============================
 Constraint{
@@ -146,7 +149,7 @@ Constraint{
 Constraint{
 	context=ctx,
 	name="follow_force_z",
-	model = -K_Fz*coord_z(origin(task_frame_inst)),
+	model = -K_F_z*coord_z(origin(task_frame_inst)),
 	meas = Fz,
 	target = contact_force,
 	K = constant(4),
@@ -168,8 +171,8 @@ Constraint{
     context = ctx,
     name    = "z_velocity",
     expr    = coord_z(origin(task_frame_inst)),
-	target_upper = max_v*time,
-	target_lower = -max_v*time,
+	target_upper = maxvel*time,
+	target_lower = -maxvel*time,
     K       = 0,
     weight  = 10,
     priority= 1
@@ -187,7 +190,7 @@ traveled_distance_z = Variable{
 Constraint{
 	context=ctx,
 	name="distance_integrator",
-	expr=traveled_distance_z - make_constant(previous_velocity(time, coord_z(origin(task_frame))))*time,
+	expr=traveled_distance_z - make_constant(previous_velocity(time, coord_z(origin(task_frame_c))))*time,
 	K = 0,
 	priority = 2,
 	weight = constant(1),
@@ -204,16 +207,16 @@ Constraint{
 
 Monitor{context=ctx,
         name='finish_force',
-        upper=0.9,
+        upper=0.5,
         actionname='exit',
         expr=abs(Fz)/contact_force
     };
 
-roll_tf, pitch_tf, yaw_tf = getRPY(rotation(task_frame))
+roll_tf, pitch_tf, yaw_tf = getRPY(rotation(task_frame_c))
 
-ctx:setOutputExpression("x_tf"		,coord_x(origin(task_frame)))
-ctx:setOutputExpression("y_tf"		,coord_y(origin(task_frame)))
-ctx:setOutputExpression("z_tf"		,coord_z(origin(task_frame)))
+ctx:setOutputExpression("x_tf"		,coord_x(origin(task_frame_c)))
+ctx:setOutputExpression("y_tf"		,coord_y(origin(task_frame_c)))
+ctx:setOutputExpression("z_tf"		,coord_z(origin(task_frame_c)))
 ctx:setOutputExpression("roll_tf"	,roll_tf)
 ctx:setOutputExpression("pitch_tf"  ,pitch_tf)
 ctx:setOutputExpression("yaw_tf"	,yaw_tf)
@@ -226,4 +229,4 @@ ctx:setOutputExpression("Ty"      ,Ty)
 ctx:setOutputExpression("Tz"      ,Tz)
 
 -- ctx:setOutputExpression("tcp_frame"   , tcp_frame)
-ctx:setOutputExpression("task_frame"  ,task_frame)
+ctx:setOutputExpression("task_frame_c"  ,task_frame_c)
