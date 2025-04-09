@@ -27,6 +27,10 @@ fi
 for task_libraries in "$TASK_LIBRARIES_DIR"/*; do
   if [ -d "$task_libraries" ] && [ -f "$task_libraries/task_library.json" ]; then
 
+  if [ ! -d "$task_libraries/task_json_schemas" ]; then
+    mkdir "$task_libraries/task_json_schemas" #If the directory does not exist, create it
+  fi
+
   # find . -name "*.bak" -type f -delete
   find "$task_libraries/task_json_schemas" -name "*.etasl.json" -type f -delete #Deletes all json schemas first. This avoids having non-existing json schema files, e.g. when you change the name of a task specification
 
