@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robelix_neura_robot" >
+
+  <xacro:arg name="prefix" default="maira7M_"/>
+
+  <xacro:property name="prefix" value="maira7M_" />
+
+  <xacro:arg name="robot_ns" default="mav" />
+
+
+    <xacro:include filename="$(find mav_description)/urdf/mav/mav_plus_macro.xacro" />
+
+
+	<xacro:mav_plus axes_config="fixed" gripper="" arm_name="maira7M"  
+            backpack="" lin_axis_base_x="0.52" lin_axis_base_z="0.8125" lin_axis_height="0.345"  
+            robot_base_yaw="0.0" camera_setup="link6" complex_mav_urdf="true" fixed_wheels="true"
+            klt_box="false" small_klt_box="false"/>
+
+
+	<link name="world" />
+	
+
+    <joint name="world_joint_mav" type="fixed">
+        <parent link="world" />
+        <child link = "$(arg robot_ns)_base_link" />
+        <origin xyz="$(arg tx) $(arg ty) $(arg tz)" rpy="$(arg rr) $(arg rp) $(arg ry)" />
+    </joint>
+    
+
+</robot>

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robelix_neura_robot" >
+
+  <xacro:arg name="prefix" default="maira7M_"/>
+
+	<!-- robot -->
+  <xacro:include filename="$(find mav_description)/urdf/maira7M/urdf/maira7M_macro.xacro" />
+
+
+	<xacro:maira7M_robot prefix="$(arg prefix)"
+						parameter_file_name="maira7M_kinematic_parameters_nominal" 
+						dynamic_parameter_file_name="maira7M_dynamic_parameters_nominal" 
+						limits_file_name="maira7M_limits"/>
+
+
+
+
+	<link name="world" />
+	<joint name="world_joint" type="fixed">
+	<parent link="world" />
+	<child link = "$(arg prefix)root_link" />
+	<origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+	</joint>
+
+</robot>

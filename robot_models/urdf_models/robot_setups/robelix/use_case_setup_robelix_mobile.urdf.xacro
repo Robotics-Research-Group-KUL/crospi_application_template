@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robelix_neura_robot" >
+
+  <xacro:arg name="prefix" default="maira7M_"/>
+
+  <xacro:property name="prefix" value="maira7M_" />
+
+  <xacro:arg name="robot_ns" default="mav" />
+  <xacro:arg name="fixed_base" default="false" />
+
+
+    <xacro:include filename="$(find mav_description)/urdf/mav/mav_plus_macro.xacro" />
+
+
+	<xacro:mav_plus axes_config="fixed" gripper="" arm_name="maira7M"  
+            backpack="" lin_axis_base_x="0.52" lin_axis_base_z="0.8125" lin_axis_height="0.345"  
+            robot_base_yaw="0.0" camera_setup="link6" complex_mav_urdf="true" fixed_wheels="true"
+            klt_box="false" small_klt_box="false"/>
+
+
+	<link name="world" />
+	
+
+	<xacro:if value="$(arg fixed_base)">
+	    <joint name="world_joint_mav" type="fixed">
+	        <parent link="world" />
+	        <child link = "$(arg robot_ns)_base_link" />
+	        <origin xyz="$(arg tx) $(arg ty) $(arg tz)" rpy="$(arg rr) $(arg rp) $(arg ry)" />
+	    </joint>
+	</xacro:if>
+
+	<xacro:unless value="$(arg fixed_base)">
+	
+        <link name="x_mobile_link" />
+        <joint name="x_mobile_joint" type="prismatic">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <parent link="world" />
+                <child link="x_mobile_link" />
+                <axis xyz="1 0 0" />
+                <limit lower="-100" upper="100" effort="100000" velocity="0.5" />
+        </joint>
+
+        <link name="y_mobile_link" />
+        <joint name="y_mobile_joint" type="prismatic">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <parent link="x_mobile_link" />
+                <child link="y_mobile_link" />
+                <axis xyz="0 1 0" />
+                <limit lower="-100" upper="100" effort="100000" velocity="0.5" />
+        </joint>
+
+        <!-- TODO: change the following to continous when Erwin enables that type of joint in the urdf reader -->
+        <joint name="theta_mobile_joint" type="revolute">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <parent link="y_mobile_link" />
+                <child link="$(arg robot_ns)_base_link" />
+                <axis xyz="0 0 1" />
+                <limit lower="-30" upper="30" effort="100000" velocity="0.51" />
+	    </joint>
+
+	</xacro:unless>
+
+
+
+
+
+</robot>

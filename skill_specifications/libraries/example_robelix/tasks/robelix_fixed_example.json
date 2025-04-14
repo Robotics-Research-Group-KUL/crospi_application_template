@@ -1,0 +1,61 @@
+{
+    "$schema": "../../../../task_specifications/tasks-schema.json",
+    "tasks": [
+        {
+            "name": "MovingHome",
+            "task_specification": {
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_jointspace_trap": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "target_joints": [0, -0.483, 0, 2.043, 0, 1.519, 0],
+                    "units": "radians"
+                }
+            }
+        },
+        {
+            "name": "MovingSpline",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-follow_spline": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/follow_spline.etasl.lua",
+                "parameters": {
+                    "csv_file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/misc/example_spline.csv",
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "MovingDown",
+            "task_specification": {
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [0, 0, -0.2],
+                    "eq_r": 0.08,
+                    "maxacc": 0.1,
+                    "maxvel": 0.1
+                }
+            }
+        },
+        {
+            "name": "MovingUp",
+            "task_specification": {
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [0, 0, 0.2],
+                    "eq_r": 0.08,
+                    "maxacc": 0.1,
+                    "maxvel": 0.1
+                }
+            }
+        }
+    ]
+}
