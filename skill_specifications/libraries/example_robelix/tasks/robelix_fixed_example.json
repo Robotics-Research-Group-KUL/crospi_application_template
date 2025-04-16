@@ -8,8 +8,8 @@
                 "is-move_jointspace_trap": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
                 "parameters": {
-                    "maxacc": 0.1,
-                    "maxvel": 0.1,
+                    "maxacc": 0.5,
+                    "maxvel": 0.5,
                     "target_joints": [0, -0.483, 0, 2.043, 0, 1.519, 0],
                     "units": "radians"
                 }
@@ -23,8 +23,8 @@
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/follow_spline.etasl.lua",
                 "parameters": {
                     "csv_file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/misc/example_spline.csv",
-                    "maxacc": 0.1,
-                    "maxvel": 0.1,
+                    "maxacc": 0.5,
+                    "maxvel": 0.5,
                     "task_frame": "tcp_frame"
                 }
             }
@@ -38,8 +38,8 @@
                 "parameters": {
                     "delta_pos": [0, 0, -0.2],
                     "eq_r": 0.08,
-                    "maxacc": 0.1,
-                    "maxvel": 0.1
+                    "maxacc": 0.5,
+                    "maxvel": 0.5
                 }
             }
         },
@@ -52,8 +52,8 @@
                 "parameters": {
                     "delta_pos": [0, 0, 0.2],
                     "eq_r": 0.08,
-                    "maxacc": 0.1,
-                    "maxvel": 0.1
+                    "maxacc": 0.5,
+                    "maxvel": 0.5
                 }
             }
         }

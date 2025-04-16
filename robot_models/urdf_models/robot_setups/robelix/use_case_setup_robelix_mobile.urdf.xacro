@@ -37,7 +37,7 @@
                 <parent link="world" />
                 <child link="x_mobile_link" />
                 <axis xyz="1 0 0" />
-                <limit lower="-100" upper="100" effort="100000" velocity="0.5" />
+                <limit lower="-100" upper="100" effort="100000" velocity="0.2" />
         </joint>
 
         <link name="y_mobile_link" />
@@ -46,7 +46,7 @@
                 <parent link="x_mobile_link" />
                 <child link="y_mobile_link" />
                 <axis xyz="0 1 0" />
-                <limit lower="-100" upper="100" effort="100000" velocity="0.5" />
+                <limit lower="-100" upper="100" effort="100000" velocity="0.2" />
         </joint>
 
         <!-- TODO: change the following to continous when Erwin enables that type of joint in the urdf reader -->
@@ -55,7 +55,7 @@
                 <parent link="y_mobile_link" />
                 <child link="$(arg robot_ns)_base_link" />
                 <axis xyz="0 0 1" />
-                <limit lower="-30" upper="30" effort="100000" velocity="0.51" />
+                <limit lower="-30" upper="30" effort="100000" velocity="0.3" />
 	    </joint>
 
 	</xacro:unless>

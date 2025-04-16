@@ -75,27 +75,32 @@ class MyStateMachine(TickingStateMachine):
 
         self.add_state(
             eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
-            transitions={SUCCEED: "MovingDown", 
+            transitions={SUCCEED: "MovingJoystick", 
                         ABORT: ABORT}
         )
-
         self.add_state(
-            eTaSL_StateMachine("MovingDown","MovingDown",node=None), 
-            transitions={SUCCEED: "MovingUp", 
-                        ABORT: ABORT}
-        )
-
-        self.add_state(
-            eTaSL_StateMachine("MovingUp","MovingUp",node=None), 
-            transitions={SUCCEED: "MovingSpline", 
-                        ABORT: ABORT}
-        )
-
-        self.add_state(
-            eTaSL_StateMachine("MovingSpline","MovingSpline",node=None), 
+            eTaSL_StateMachine("MovingJoystick","MovingJoystick",node=None), 
             transitions={SUCCEED: "MovingHome", 
                         ABORT: ABORT}
         )
+
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingDown","MovingDown",node=None), 
+        #     transitions={SUCCEED: "MovingUp", 
+        #                 ABORT: ABORT}
+        # )
+
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingUp","MovingUp",node=None), 
+        #     transitions={SUCCEED: "MovingSpline", 
+        #                 ABORT: ABORT}
+        # )
+
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingSpline","MovingSpline",node=None), 
+        #     transitions={SUCCEED: "MovingHome", 
+        #                 ABORT: ABORT}
+        # )
 
     #         sm_out.add_state("MovingHome", etasl_utils.nested_etasl_state(name="MovingHome",  display_in_viewer=True),
     #                 transitions={SUCCEED: "MovingDown", 

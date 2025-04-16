@@ -1034,7 +1034,7 @@
     <parent link="world"/>
     <child link="x_mobile_link"/>
     <axis xyz="1 0 0"/>
-    <limit effort="100000" lower="-100" upper="100" velocity="0.5"/>
+    <limit effort="100000" lower="-100" upper="100" velocity="0.2"/>
   </joint>
   <link name="y_mobile_link"/>
   <joint name="y_mobile_joint" type="prismatic">
@@ -1042,7 +1042,7 @@
     <parent link="x_mobile_link"/>
     <child link="y_mobile_link"/>
     <axis xyz="0 1 0"/>
-    <limit effort="100000" lower="-100" upper="100" velocity="0.5"/>
+    <limit effort="100000" lower="-100" upper="100" velocity="0.2"/>
   </joint>
   <!-- TODO: change the following to continous when Erwin enables that type of joint in the urdf reader -->
   <joint name="theta_mobile_joint" type="revolute">
@@ -1050,6 +1050,6 @@
     <parent link="y_mobile_link"/>
     <child link="mav_base_link"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100000" lower="-30" upper="30" velocity="0.51"/>
+    <limit effort="100000" lower="-30" upper="30" velocity="0.3"/>
   </joint>
 </robot>

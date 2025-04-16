@@ -28,7 +28,7 @@ target_joints = param.get("target_joints")
 
 
 if #robot.robot_joints ~= #target_joints then
-    error("The number of robot.robot_joints and the specified number of target_joints must coincide")
+    error("The number of robot.robot_joints (" .. tostring(#robot.robot_joints) .. ") and the specified number of target_joints (" .. tostring(#target_joints) ..  ") must coincide")
 end
 
 
