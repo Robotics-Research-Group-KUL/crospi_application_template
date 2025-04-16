@@ -48,8 +48,8 @@ function linear_weight(w_init,w_final,ind_var,ind_var_init, ind_var_final)
 end
   
 
-  radius_fixture = 1.2 --meters
-  vector_fixture = vector(coord_x(origin(frames["tcp_frame_wrt_link2"])), coord_y(origin(frames["tcp_frame_wrt_link2"])) , coord_z(origin(frames["tcp_frame_wrt_link2"])))
+radius_fixture = 1.2 --meters
+vector_fixture = vector(coord_x(origin(frames["tcp_frame_wrt_link2"])), coord_y(origin(frames["tcp_frame_wrt_link2"])) , coord_z(origin(frames["tcp_frame_wrt_link2"])))
 --   linear_weight(constant(1),constant(0),make_constant(norm(origin(tf) - virtual_fixture_path)),constant(1)*tube_radius_var+0.05, constant(1.5)*tube_radius_var+0.05)
 weight_fixture = linear_weight(constant(1) , constant(0), norm(vector_fixture),radius_fixture-0.02, radius_fixture-0.015)
 
@@ -59,31 +59,31 @@ weight_fixture = linear_weight(constant(1) , constant(0), norm(vector_fixture),r
 
 Constraint{
     context = ctx,
-    name    = "bounded_cilinder_end_effector_coord_x_mobile",
+    name    = "bounding_fixture_end_effector_coord_x_mobile",
     expr    = coord_x(origin(task_frame_inst_mobile_base)),
     target  = constant(0)*time, -- Zero velocity constraint
     K       = 0,
-    weight  = weight_fixture*100000,
+    weight  = weight_fixture*100000, --Deactivates motion of the mobile base when arm is within the fixture
     priority= 2
 };
 
 roll_mobile,pitch_mobile, yaw_mobile = getRPY( rotation(task_frame_inst_mobile_base))
 Constraint{
     context = ctx,
-    name    = "bounded_cilinder_end_effector_theta_mobile",
+    name    = "bounding_fixture_end_effector_theta_mobile",
     expr    = yaw_mobile,
     target  = constant(0)*time, -- Zero velocity constraint
     K       = 0,
-    weight  = weight_fixture*100000,
+    weight  = weight_fixture*100000, --Deactivates motion of the mobile base when arm is within the fixture
     priority= 2
 };
 
 
 Constraint{
     context = ctx,
-    name    = "bounded_cilinder_end_effector",
+    name    = "bounding_fixture_end_effector",
     expr    = norm(vector_fixture),
-    target_upper  = radius_fixture, -- Zero velocity constraint
+    target_upper  = radius_fixture, --Position constraint to bound the end effector within a spherical fixture 
     K       = 4,
     weight  = 10000000,
     priority= 2
