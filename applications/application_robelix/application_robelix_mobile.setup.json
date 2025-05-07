@@ -27,7 +27,17 @@
                 "periodicity": 0.01
             },
             "robotdriver":{
-                "is-no_driver": true
+                "is-no_driver": true,
+                "name_expr_joint_vel": "joint_vel",
+                "name_expr_joint_torque": "joint_torque",
+                "name_expr_joint_current": "joint_current",
+                "name_expr_cartesian_pos": "task_frame_pos",
+                "name_expr_cartesian_quat": "task_frame_quat",
+                "name_expr_cartesian_twist": "task_frame_twist",
+                "name_expr_cartesian_wrench": "task_frame_wrench",
+                "name_expr_base_pos": "base_pos",
+                "name_expr_base_quat": "base_quat",
+                "name_expr_base_twist": "base_twist"
             },
             "default_robot_specification": {
                 "is-lua_robotspecification": true,
