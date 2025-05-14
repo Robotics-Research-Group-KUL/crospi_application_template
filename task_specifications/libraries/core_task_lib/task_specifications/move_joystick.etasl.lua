@@ -19,7 +19,6 @@ param = reqs.parameters(task_description,{
 linear_scale    = constant(param.get("linear_scale"))
 angular_scale    = constant(param.get("angular_scale"))
 
-print("--------------------------------Task frame:" ..  param.get("task_frame") .. " ----------------------------------")
 -- ======================================== Robot model requirements ========================================
 robot = reqs.robot_model({ --This function loads the robot model and checks that all required frames are available
     param.get("task_frame"), --The frame is selected as a parameter, to make the skill even more reusable
@@ -30,6 +29,31 @@ task_frame = robot.getFrame(param.get("task_frame"))
 
 -- ========================================= Variables coming from topic input handlers ===================================
 joystick_input   = ctx:createInputChannelTwist("joystick_input")
+
+
+joint_vel_0   = ctx:createInputChannelScalar("joint_vel_0")
+joint_vel_1   = ctx:createInputChannelScalar("joint_vel_1")
+joint_vel_2   = ctx:createInputChannelScalar("joint_vel_2")
+joint_vel_3   = ctx:createInputChannelScalar("joint_vel_3")
+
+joint_torque_0   = ctx:createInputChannelScalar("joint_torque_0")
+joint_torque_1   = ctx:createInputChannelScalar("joint_torque_1")
+joint_torque_2   = ctx:createInputChannelScalar("joint_torque_2")
+joint_torque_3   = ctx:createInputChannelScalar("joint_torque_3")
+
+joint_current_0   = ctx:createInputChannelScalar("joint_current_0")
+joint_current_1   = ctx:createInputChannelScalar("joint_current_1")
+joint_current_2   = ctx:createInputChannelScalar("joint_current_2")
+joint_current_3   = ctx:createInputChannelScalar("joint_current_3")
+
+
+task_frame_pos   = ctx:createInputChannelVector("task_frame_pos")
+task_frame_quat   = ctx:createInputChannelRotation("task_frame_quat")
+task_frame_twist   = ctx:createInputChannelTwist("task_frame_twist")
+task_frame_wrench   = ctx:createInputChannelWrench("task_frame_wrench")
+base_pos   = ctx:createInputChannelVector("base_pos")
+base_quat   = ctx:createInputChannelRotation("base_quat")
+base_twist   = ctx:createInputChannelTwist("base_twist")
 -- joystick_input = twist(vector(0,0,-0.05),vector(0,0,0))
 
 
