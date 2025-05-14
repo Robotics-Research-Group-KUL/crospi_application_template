@@ -1,0 +1,21 @@
+{
+    "tool_radius": 0.025,
+    "align_tolerance": 0.0,
+    "channel_dist_min": 0.01,
+    "channel_dist_delta":0.06,
+    "slack": 0.05,
+    "pivot_radius": 0.05,
+    "pivot_dilated_radius": 0.05,
+    "channel_width": 0.05,
+    "channel_height": 0.05,
+    "maxvel": 0.5,
+    "maxacc": 0.5,
+    "cable_tension": 0.5,
+    "force_threshold": 0.5,
+    "torque_threshold": 0.5,
+    "eq_r": 0.5,
+    "k_x":2700,
+    "k_o": 1,
+    "tan_acc": 0.5,
+    "tan_vel": 0.5
+}

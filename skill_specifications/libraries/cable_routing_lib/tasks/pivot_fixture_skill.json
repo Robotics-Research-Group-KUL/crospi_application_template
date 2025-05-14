@@ -1,0 +1,89 @@
+{
+    "$schema": "../../../../task_specifications/tasks-schema.json",
+    "tasks": [
+        {
+            "name": "CableSliding",
+            "robot_specification_file":"$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
+            "task_specification":{
+                "from-cable_manipulation_lib-version-0.1.0": true,
+                "is-cable_sliding": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/cable_sliding.etasl.lua",
+                "parameters": {
+                    "a": 2.5,
+                    "C": 0.5,
+                    "cable_tens": "$blackboard/application_params/cable_tension",
+                    "force_threshold": "$blackboard/application_params/force_threshold",
+                    "torque_threshold": "$blackboard/application_params/torque_threshold",
+                    "turning_dir": "$application_defined_parameter",
+                    "desired_pose": "$application_defined_parameter",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "task_frame": "tcp_frame",
+                    "maxacc": "$blackboard/application_params/maxacc",
+                    "maxvel": "$blackboard/application_params/maxvel",
+                    "tool_COG": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "tool_weight": 0
+                }
+            }
+        },
+        {
+            "name": "PivotAligning",
+            "robot_specification_file":"$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
+            "task_specification":{
+                "from-cable_manipulation_lib-version-0.1.0": true,
+                "is-pivot_aligning": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/pivot_aligning.etasl.lua",
+                "parameters": {
+                    "cable_tens": "$blackboard/application_params/cable_tension",
+                    "force_threshold": "$blackboard/application_params/force_threshold",
+                    "torque_threshold": "$blackboard/application_params/torque_threshold",
+                    "maxacc": "$blackboard/application_params/maxacc",
+                    "maxvel": "$blackboard/application_params/maxvel",
+                    "eq_r": "$blackboard/application_params/eq_r",
+                    "k_x": "$blackboard/application_params/k_x",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "task_frame": "tcp_frame",
+                    "pos_next_fixture": "$application_defined_parameter",
+                    "z_down": "$application_defined_parameter",
+                    "tool_COG": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "tool_weight": 0
+                }
+            }
+        },
+        {
+            "name": "CablePivoting",
+            "robot_specification_file":"$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
+            "task_specification":{
+                "from-cable_manipulation_lib-version-0.1.0": true,
+                "is-cable_pivoting": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/cable_pivoting.etasl.lua",
+                "parameters": {
+                    "cable_tens": "$blackboard/application_params/cable_tension",
+                    "force_threshold": "$blackboard/application_params/force_threshold",
+                    "torque_threshold": "$blackboard/application_params/torque_threshold",
+                    "tan_acc": "$blackboard/application_params/tan_acc",
+                    "tan_vel": "$blackboard/application_params/tan_vel",
+                    "k_x": "$blackboard/application_params/k_x",
+                    "k_o": "$blackboard/application_params/k_o",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "task_frame": "tcp_frame",
+                    "frame_next_fixture": "$application_defined_parameter",
+                    "turning_dir": "$application_defined_parameter",
+                    "tool_COG": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "tool_weight": 0
+                }
+            }
+        }
+    ]
+}
