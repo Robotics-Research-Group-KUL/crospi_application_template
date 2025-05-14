@@ -14,7 +14,7 @@ param = reqs.parameters(task_description,{
     reqs.params.scalar({name="maxacc", description="Maximum acceleration [m/s^2]", default = 0.1, required=true, maximum = 0.5}),
     reqs.params.scalar({name="eq_r", description="Equivalent radius [m]", default = 0.08, required=false}),
     reqs.params.string({name="task_frame", description="Name of frame used to control the robot in cartesian space", default = "tcp_frame", required=false}),
-    reqs.params.array({name="desired_pose", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, description="Array with the desired pose of the task frame in [x,y,z,qx,qy,qz,qw]", required=true, minimum = -1.5, maximum = 1.5, minItems = 7, maxItems = 7}),
+    reqs.params.array({name="desired_pose", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}, description="Array with the desired pose of the task frame in [x,y,z,qx,qy,qz,qw]", required=true, minimum = -1.5, maximum = 1.5, minItems = 7, maxItems = 7}),
 })
 
 -- TODO: Change order of quaterinions in the skill.
