@@ -23,7 +23,7 @@
         "robot": {
             "simulation": {
                 "is-simple_kinematic_simulation": true,
-                "initial_joints": [3.1416, -1.5708, 1.5708, -1.5708, -1.5708, 0],
+                "initial_joints": [1.5708, -1.5708, 2.0944, -2.0944, -1.5708, 0.2],
                 "periodicity": 0.01
             },
             "robotdriver":{
@@ -41,8 +41,8 @@
                 },
                 "additional_frames": [
                     {
-                        "name": "forearm",
-                        "child_link": "forearm_link",
+                        "name": "FT_sensor_frame",
+                        "child_link": "ft_frame",
                         "parent_link": "base_link"
                     }
                 ],
@@ -70,6 +70,11 @@
                         "is-topicoutputhandler" : true,
                         "topic-name" : "/my_topic",
                         "variable-names" : []
+                    },
+                    {
+                        "is-topicoutputhandler" : true,
+                        "topic-name" : "/forces_etasl",
+                        "variable-names" : ["x_force", "y_force", "z_force"]
                     }
                 ],
                 "inputhandlers": [

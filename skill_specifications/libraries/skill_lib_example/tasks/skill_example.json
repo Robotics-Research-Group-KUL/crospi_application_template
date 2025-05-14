@@ -10,7 +10,7 @@
                 "parameters": {
                     "maxacc": 0.1,
                     "maxvel": 0.1,
-                    "target_joints": [3.0416, -1.5708, 1.3, -1.3, -1.2, 0],
+                    "target_joints": [1.5708, -1.5708, 2.0944, -2.0944, -1.5708, 0],
                     "units": "radians"
                 }
             }
@@ -54,6 +54,30 @@
                     "eq_r": 0.08,
                     "maxacc": 0.1,
                     "maxvel": 0.1
+                }
+            }
+        },
+        {
+            "name": "MovingAdmittance",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_admittance": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_admittance.etasl.lua",
+                "parameters": {
+                    "activate_angular": false,
+                    "activate_linear": false,
+                    "K_r": 400,
+                    "K_t": 4000,
+                    "task_frame": "tcp_frame",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "force_threshold": 0.5,
+                    "torque_threshold": 0.05,
+                    "tool_COG": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "tool_weight": 0
                 }
             }
         }

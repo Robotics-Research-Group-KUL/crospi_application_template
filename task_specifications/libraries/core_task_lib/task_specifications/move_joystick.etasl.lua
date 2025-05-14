@@ -19,7 +19,6 @@ param = reqs.parameters(task_description,{
 linear_scale    = constant(param.get("linear_scale"))
 angular_scale    = constant(param.get("angular_scale"))
 
-print("--------------------------------Task frame:" ..  param.get("task_frame") .. " ----------------------------------")
 -- ======================================== Robot model requirements ========================================
 robot = reqs.robot_model({ --This function loads the robot model and checks that all required frames are available
     param.get("task_frame"), --The frame is selected as a parameter, to make the skill even more reusable
