@@ -13,7 +13,8 @@ param = reqs.parameters(task_description,{
     reqs.params.scalar({name="maxacc", description="Maximum acceleration [m/s^2]", default = 0.1, required=true, maximum = 0.5}),
     reqs.params.scalar({name="eq_r", description="Equivalent radius", default = 0.08, required=false}),
     reqs.params.string({name="task_frame", description="Name of frame used to control the robot in cartesian space", default = "tcp_frame", required=false}),
-    reqs.params.array({name="delta_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="3D array of distances [m] that the robot will move w.r.t. the starting position in the X,Y,Z coordinates", required=true,minimum = -1.5, maximum=1.5,minItems = 3, maxItems = 3}),
+    reqs.params.array({name="delta_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="3D array of distances [m] that the robot will move w.r.t. the starting position in the X,Y,Z coordinates w.r.t. robot base", required=true,minimum = -1.5, maximum=1.5,minItems = 3, maxItems = 3}),
+    reqs.params.array({name="delta_euler", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="3D array of euler angles [rad] that the robot will move w.r.t. the starting orientation following RPY convention w.r.t the robot base", required=true,minimum = -6.28, maximum=6.28,minItems = 3, maxItems = 3}),
 })
 
 -- ======================================== Robot model requirements ========================================
@@ -36,6 +37,11 @@ delta_x   = constant(delta_pos[1])
 delta_y   = constant(delta_pos[2])
 delta_z   = constant(delta_pos[3])
 
+delta_euler = param.get("delta_euler")
+delta_roll   = constant(delta_euler[1])
+delta_pitch   = constant(delta_euler[2])
+delta_yaw   = constant(delta_euler[3])
+
 
 -- =============================== INITIAL POSE ==============================
 
@@ -45,7 +51,7 @@ startrot  = rotation(startpose)
 
 -- =============================== END POSE ==============================
 endpos    = origin(startpose) + vector(delta_x,delta_y,delta_z)
-endrot    = rotation(startpose)
+endrot    = rot_x(delta_roll)*rot_y(delta_pitch)*rot_z(delta_yaw)*rotation(startpose)
 
 -- =========================== VELOCITY PROFILE ============================================
 eps=constant(1E-14)

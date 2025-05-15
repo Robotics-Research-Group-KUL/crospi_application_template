@@ -24,11 +24,15 @@ import tf2_ros
 from geometry_msgs.msg import TransformStamped
 import numpy as np
 import casadi as cas         
+import random as rand
+import json
+import pickle
 
 
 
 
-from tf_transformations import quaternion_matrix, translation_matrix
+
+from tf_transformations import quaternion_matrix, translation_matrix, quaternion_from_matrix, translation_from_matrix, quaternion_from_euler
 
 
 #from betfsm.graphviz_visitor import *
@@ -66,8 +70,10 @@ class StorePose(Generator):
 
 
         # Append to blackboard
-        blackboard['calibration_poses_robot'].append(self.get_and_store_tf(blackboard, target_frame = "tool0", source_frame = "world"))
-        blackboard['calibration_poses_camera'].append(self.get_and_store_tf(blackboard, target_frame = "camera_frame", source_frame = "object_tracker_frame"))
+        blackboard['calibration_poses_robot'].append(self.get_tf(target_frame = "tool0", source_frame = "world"))
+        blackboard['calibration_poses_camera'].append(self.get_tf(target_frame = "camera_link", source_frame = "charuco_board"))
+        # blackboard['calibration_poses_camera'].append(blackboard['calibration_poses_robot'][-1])
+        # blackboard['calibration_poses_camera'].append(self.get_random_tf())
         self.etasl_node.get_logger().info("TF stored in blackboard.")
 
 
@@ -75,7 +81,7 @@ class StorePose(Generator):
         
         yield SUCCEED
 
-    def get_and_store_tf(self, blackboard, target_frame: str, source_frame: str):
+    def get_tf(self, target_frame: str, source_frame: str):
         try:
             # Lookup transform (latest available)
             transform: TransformStamped = self.tf_buffer.lookup_transform(
@@ -85,12 +91,8 @@ class StorePose(Generator):
                 timeout=rclpy.duration.Duration(seconds=1.0)
             )
 
-            # Convert to PyKDL.Frame
             t = transform.transform.translation
             q = transform.transform.rotation
-            # translation = PyKDL.Vector(t.x, t.y, t.z)
-            # rotation = PyKDL.Rotation.Quaternion(q.x, q.y, q.z, q.w)
-            # frame = PyKDL.Frame(rotation, translation)
 
             print("------------------Transform:-------------------")
             print(transform.transform)
@@ -125,17 +127,36 @@ class StorePose(Generator):
         except Exception as e:
             self.etasl_node.get_logger().warn(f"Failed to lookup transform: {e}")
 
-    def transform_to_matrix(transform_stamped):
-        translation = transform_stamped.transform.translation
-        quat = transform_stamped.transform.rotation
+    def get_random_tf(self):
 
-        # Convert quaternion to 4x4 rotation matrix
-        rot_matrix = quaternion_matrix([quat.x, quat.y, quat.z, quat.w])
+        # Random translation:
+        translation = [
+            rand.uniform(-1,1),
+            rand.uniform(-1,1),
+            rand.uniform(-1,1)
+        ]
 
-        # Set the translation part
-        rot_matrix[0:3, 3] = [translation.x, translation.y, translation.z]
+        # Random quaternion:
+        quaternion = quaternion_from_euler(rand.uniform(-2*np.pi,2*np.pi), rand.uniform(-2*np.pi,2*np.pi), rand.uniform(-2*np.pi,2*np.pi), axes='sxyz')
 
-        return rot_matrix
+
+        # quaternion = [
+        #     quat[0],
+        #     quat[1],
+        #     quat[2],
+        #     quat[3]
+        # ]
+
+        # Convert to homogeneous transformation matrix (4x4)
+        homogeneous_matrix = np.dot(translation_matrix(translation), quaternion_matrix(quaternion))
+        # print("Transformation matrix:")
+        # print(homogeneous_matrix)
+
+        return homogeneous_matrix
+
+
+
+
 
 
 class RunOptimization(Generator):
@@ -149,13 +170,68 @@ class RunOptimization(Generator):
 
         #TODO: put a good estimate here, specially the orientation part
         T_c_b_estimate = np.eye(4) #Estimate of pose robot base wrt camera
-        T_ee_o_estimate = np.eye(4) #Estimate of pose tracked object wrt end effector
+        # yaw rotation of -90 deg
+        T_c_b_estimate[:3, :3] = np.array([[0, -1, 0], 
+                                           [1, 0, 0], 
+                                           [0, 0, 1]]).T
+        T_ee_o_estimate = np.eye(4) #Estimate of pose tracked object wrt end effectory
+        # yaw rotation of 135 deg
+        T_ee_o_estimate[:3, :3] = np.array([[-0.707, -0.707, 0], 
+                                            [0.707, -0.707, 0], 
+                                            [0, 0, 1]])
+        
+        # T_b_c_estimate = np.linalg.inv(T_c_b_estimate) #Estimate of pose camera wrt robot base
+        estimate_pos = translation_from_matrix(T_ee_o_estimate)
+        estimate_quat = quaternion_from_matrix(T_ee_o_estimate)
+
+
+
+        # Print in format for launch file
+        print("[[[[[[[[[[[[[[[[[[[[[[[T_ee_o_estimate]]]]]]]]]]]]]]]]]]]]]]]")
+        print("Please copy-paste the following node into your ROS2 Launch file to utilize the calibration results in your application:")
+        print(" ")
+        print("Node(")
+        print("    package='tf2_ros',")
+        print("    executable='static_transform_publisher',")
+        print("    name='static_tf_pub_quat',")
+        print("    arguments=[")
+        print(f"        '{estimate_pos[0]:.6f}', '{estimate_pos[1]:.6f}', '{estimate_pos[2]:.6f}',       # translation x y z")
+        print(f"        '{estimate_quat[0]:.6f}', '{estimate_quat[1]:.6f}', '{estimate_quat[2]:.6f}', '{estimate_quat[3]:.6f}',# rotation quaternion x y z w")
+        print("        'base_link',               # parent frame")
+        print("        'camera_link'             # child frame")
+        print("    ],")
+        print("),")
+
+
+        T_b_c_estimate = np.linalg.inv(T_c_b_estimate) #Estimate of pose camera wrt robot base
+        estimate_pos = translation_from_matrix(T_b_c_estimate)
+        estimate_quat = quaternion_from_matrix(T_b_c_estimate)
+
+
+
+        # Print in format for launch file
+        print("[[[[[[[[[[[[[[[[[[[[[[[T_b_c_estimate]]]]]]]]]]]]]]]]]]]]]]]")
+        print("Please copy-paste the following node into your ROS2 Launch file to utilize the calibration results in your application:")
+        print(" ")
+        print("Node(")
+        print("    package='tf2_ros',")
+        print("    executable='static_transform_publisher',")
+        print("    name='static_tf_pub_quat',")
+        print("    arguments=[")
+        print(f"        '{estimate_pos[0]:.6f}', '{estimate_pos[1]:.6f}', '{estimate_pos[2]:.6f}',       # translation x y z")
+        print(f"        '{estimate_quat[0]:.6f}', '{estimate_quat[1]:.6f}', '{estimate_quat[2]:.6f}', '{estimate_quat[3]:.6f}',# rotation quaternion x y z w")
+        print("        'base_link',               # parent frame")
+        print("        'camera_link'             # child frame")
+        print("    ],")
+        print("),")
+
+
 
 
         T_b_ee = []
         T_c_o = []
 
-        assert len(blackboard['calibration_poses_robot']) == blackboard['calibration_poses_camera'], "The number of elements in calibration_poses_robot and calibration_poses_camera should match"
+        assert len(blackboard['calibration_poses_robot']) == len(blackboard['calibration_poses_camera']), "The number of elements in calibration_poses_robot and calibration_poses_camera should match"
 
 
         for pose in blackboard['calibration_poses_robot']:
@@ -165,6 +241,16 @@ class RunOptimization(Generator):
             T_c_o.append(pose)
 
      
+        data = {
+            "T_b_ee": T_b_ee,
+            "T_c_o": T_c_o,
+            "T_c_b_estimate": T_c_b_estimate,
+            "T_ee_o_estimate": T_ee_o_estimate
+        }
+
+            
+
+
         T_c_b, T_ee_o = self.optimize(T_b_ee,T_c_o,T_ee_o_estimate,T_c_b_estimate)
 
         print("The solution for the estimated pose of base robot wrt camera is:")
@@ -173,11 +259,37 @@ class RunOptimization(Generator):
         print("The solution for the estimated pose of the tracked object wrt end effector:")
         print(T_ee_o)
 
+        T_c_b_calib_4x4 = np.vstack((T_c_b, np.array([[0, 0, 0, 1]])))
+
+        calibrated_pos = translation_from_matrix(T_c_b_calib_4x4)
+        calibrated_quat = quaternion_from_matrix(T_c_b_calib_4x4)
+
+
+
+        # Print in format for launch file
+        print("Please copy-paste the following node into your ROS2 Launch file to utilize the calibration results in your application:")
+        print(" ")
+        print("Node(")
+        print("    package='tf2_ros',")
+        print("    executable='static_transform_publisher',")
+        print("    name='static_tf_pub_quat',")
+        print("    arguments=[")
+        print(f"        '{calibrated_pos[0]:.6f}', '{calibrated_pos[1]:.6f}', '{calibrated_pos[2]:.6f}',       # translation x y z")
+        print(f"        '{calibrated_quat[0]:.6f}', '{calibrated_quat[1]:.6f}', '{calibrated_quat[2]:.6f}', '{calibrated_quat[3]:.6f}',# rotation quaternion x y z w")
+        print("        'base_link',               # parent frame")
+        print("        'camera_link'             # child frame")
+        print("    ],")
+        print("),")
 
         # pdb.set_trace()
+
+        # save data to a file using pickle
+        with open('calibration_data.pkl', 'wb') as f:
+            pickle.dump(data, f)
+
         
         yield SUCCEED
-    def optimize(T_b_ee, T_c_o, T_ee_o_estimate = np.eye(4), T_c_b_estimate = np.eye(4)):
+    def optimize(self, T_b_ee, T_c_o, T_ee_o_estimate = np.eye(4), T_c_b_estimate = np.eye(4)):
         """
         Specification and solution of multi-pose calibration problem in Casadi.
         
@@ -259,11 +371,13 @@ class RunOptimization(Generator):
             
         x_opt = r['x']
         f_opt = float(r['f'])        
-        print("pose loop error: " + f_opt)
+        print("pose loop error: ")
+        print(f_opt)
         
-        T_c_b_calib = cas.reshape(x_opt[0:12],3,4).full()
-        T_ee_o_calib = cas.reshape(x_opt[12:],3,4).full()
-        
+        T_c_b_calib = cas.reshape(x_opt[0:12],3,4).full() #numpy matrix
+        T_ee_o_calib = cas.reshape(x_opt[12:],3,4).full() #Numpy matrix
+
+
         # Build frames from solution of nlp      
         # temp_frame = KDL.Frame()    
         # temp_frame.M = KDL.Rotation(float(T_c_b_calib[0,0]),float(T_c_b_calib[0,1]),float(T_c_b_calib[0,2]),
@@ -284,6 +398,78 @@ class RunOptimization(Generator):
         # print T_ee_o_calib
 
         return T_c_b_calib, T_ee_o_calib
+
+
+
+class PrintEstimates(Generator):
+    def __init__(self):
+        super().__init__("PrintEstimates",[SUCCEED])    
+        self.etasl_node = BeTFSMNode.get_instance()
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self.etasl_node)
+
+    def co_execute(self,blackboard):
+
+        
+        #TODO: put a good estimate here, specially the orientation part
+        T_c_b_estimate = np.eye(4) #Estimate of pose robot base wrt camera
+        # yaw rotation of -90 deg
+        T_c_b_estimate[:3, :3] = np.array([[0, -1, 0], 
+                                           [1, 0, 0], 
+                                           [0, 0, 1]]).T
+        T_ee_o_estimate = np.eye(4) #Estimate of pose tracked object wrt end effectory
+        # yaw rotation of 135 deg
+        T_ee_o_estimate[:3, :3] = np.array([[-0.707, -0.707, 0], 
+                                            [0.707, -0.707, 0], 
+                                            [0, 0, 1]])
+        
+        # T_b_c_estimate = np.linalg.inv(T_c_b_estimate) #Estimate of pose camera wrt robot base
+        estimate_pos = translation_from_matrix(T_ee_o_estimate)
+        estimate_quat = quaternion_from_matrix(T_ee_o_estimate)
+
+
+
+        # Print in format for launch file
+        print("[[[[[[[[[[[[[[[[[[[[[[[T_ee_o_estimate]]]]]]]]]]]]]]]]]]]]]]]")
+        print("Please copy-paste the following node into your ROS2 Launch file to utilize the calibration results in your application:")
+        print(" ")
+        print("Node(")
+        print("    package='tf2_ros',")
+        print("    executable='static_transform_publisher',")
+        print("    name='static_tf_pub_quat',")
+        print("    arguments=[")
+        print(f"        '{estimate_pos[0]:.6f}', '{estimate_pos[1]:.6f}', '{estimate_pos[2]:.6f}',       # translation x y z")
+        print(f"        '{estimate_quat[0]:.6f}', '{estimate_quat[1]:.6f}', '{estimate_quat[2]:.6f}', '{estimate_quat[3]:.6f}',# rotation quaternion x y z w")
+        print("        'base_link',               # parent frame")
+        print("        'camera_link'             # child frame")
+        print("    ],")
+        print("),")
+
+
+        T_b_c_estimate = np.linalg.inv(T_c_b_estimate) #Estimate of pose camera wrt robot base
+        estimate_pos = translation_from_matrix(T_b_c_estimate)
+        estimate_quat = quaternion_from_matrix(T_b_c_estimate)
+
+
+
+        # Print in format for launch file
+        print("[[[[[[[[[[[[[[[[[[[[[[[T_b_c_estimate]]]]]]]]]]]]]]]]]]]]]]]")
+        print("Please copy-paste the following node into your ROS2 Launch file to utilize the calibration results in your application:")
+        print(" ")
+        print("Node(")
+        print("    package='tf2_ros',")
+        print("    executable='static_transform_publisher',")
+        print("    name='static_tf_pub_quat',")
+        print("    arguments=[")
+        print(f"        '{estimate_pos[0]:.6f}', '{estimate_pos[1]:.6f}', '{estimate_pos[2]:.6f}',       # translation x y z")
+        print(f"        '{estimate_quat[0]:.6f}', '{estimate_quat[1]:.6f}', '{estimate_quat[2]:.6f}', '{estimate_quat[3]:.6f}',# rotation quaternion x y z w")
+        print("        'base_link',               # parent frame")
+        print("        'camera_link'             # child frame")
+        print("    ],")
+        print("),")
+
+
+        yield SUCCEED
 
 
 
@@ -333,19 +519,32 @@ def main(args=None):
     load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/robelix/tasks/camera_calibration.json",blackboard)
     
     sm  = Sequence("CalibrationRoutine", children=[
+                                                    PrintEstimates(),
                                                     eTaSL_StateMachine("MovingHome","MovingHome",node=None),
                                                     eTaSL_StateMachine("calibration_pose_1","calibration_pose_1",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
                                                     StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
                                                     eTaSL_StateMachine("calibration_pose_2","calibration_pose_2",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
                                                     StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
                                                     eTaSL_StateMachine("calibration_pose_3","calibration_pose_3",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
                                                     StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
                                                     eTaSL_StateMachine("calibration_pose_4","calibration_pose_4",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
                                                     StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
                                                     eTaSL_StateMachine("calibration_pose_5","calibration_pose_5",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
                                                     StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
                                                     eTaSL_StateMachine("calibration_pose_6","calibration_pose_6",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
                                                     StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
                                                     RunOptimization()
     ])
 
