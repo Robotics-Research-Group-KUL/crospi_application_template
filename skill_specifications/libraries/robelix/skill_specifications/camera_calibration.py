@@ -70,7 +70,7 @@ class StorePose(Generator):
 
 
         # Append to blackboard
-        blackboard['calibration_poses_robot'].append(self.get_tf(target_frame = "tool0", source_frame = "world"))
+        blackboard['calibration_poses_robot'].append(self.get_tf(target_frame = "tool0", source_frame = "base_link"))
         blackboard['calibration_poses_camera'].append(self.get_tf(target_frame = "camera_link", source_frame = "charuco_board"))
         # blackboard['calibration_poses_camera'].append(blackboard['calibration_poses_robot'][-1])
         # blackboard['calibration_poses_camera'].append(self.get_random_tf())
@@ -248,6 +248,9 @@ class RunOptimization(Generator):
             "T_ee_o_estimate": T_ee_o_estimate
         }
 
+        # save data to a file using pickle
+        with open('calibration_data.pkl', 'wb') as f:
+            pickle.dump(data, f)
             
 
 
@@ -283,9 +286,7 @@ class RunOptimization(Generator):
 
         # pdb.set_trace()
 
-        # save data to a file using pickle
-        with open('calibration_data.pkl', 'wb') as f:
-            pickle.dump(data, f)
+
 
         
         yield SUCCEED
