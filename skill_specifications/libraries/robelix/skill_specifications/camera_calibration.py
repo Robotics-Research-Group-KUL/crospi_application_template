@@ -70,8 +70,8 @@ class StorePose(Generator):
 
 
         # Append to blackboard
-        blackboard['calibration_poses_robot'].append(self.get_tf(target_frame = "tool0", source_frame = "base_link"))
-        blackboard['calibration_poses_camera'].append(self.get_tf(target_frame = "camera_link", source_frame = "charuco_board"))
+        blackboard['calibration_poses_robot'].append(self.get_tf(child_frame = "tool0", parent_frame = "base_link"))
+        blackboard['calibration_poses_camera'].append(self.get_tf(child_frame = "camera_link", parent_frame = "charuco_board"))
         # blackboard['calibration_poses_camera'].append(blackboard['calibration_poses_robot'][-1])
         # blackboard['calibration_poses_camera'].append(self.get_random_tf())
         self.etasl_node.get_logger().info("TF stored in blackboard.")
@@ -81,12 +81,12 @@ class StorePose(Generator):
         
         yield SUCCEED
 
-    def get_tf(self, target_frame: str, source_frame: str):
+    def get_tf(self, child_frame: str, parent_frame: str):
         try:
             # Lookup transform (latest available)
             transform: TransformStamped = self.tf_buffer.lookup_transform(
-                target_frame,
-                source_frame,
+                parent_frame,
+                child_frame, #The documentation of this function seems to be inverted. 
                 rclpy.time.Time(),
                 timeout=rclpy.duration.Duration(seconds=1.0)
             )
@@ -95,6 +95,8 @@ class StorePose(Generator):
             q = transform.transform.rotation
 
             print("------------------Transform:-------------------")
+            print("parent frame: ", parent_frame)
+            print("child frame: ", child_frame)
             print(transform.transform)
 
             # Extract translation and rotation (quaternion)
@@ -543,6 +545,30 @@ def main(args=None):
                                                     StorePose(),
                                                     eTaSL_StateMachine("MovingHome","MovingHome",node=None),
                                                     eTaSL_StateMachine("calibration_pose_6","calibration_pose_6",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
+                                                    StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
+                                                    eTaSL_StateMachine("calibration_pose_7","calibration_pose_7",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
+                                                    StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
+                                                    eTaSL_StateMachine("calibration_pose_8","calibration_pose_8",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
+                                                    StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
+                                                    eTaSL_StateMachine("calibration_pose_9","calibration_pose_9",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
+                                                    StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
+                                                    eTaSL_StateMachine("calibration_pose_10","calibration_pose_10",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
+                                                    StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
+                                                    eTaSL_StateMachine("calibration_pose_11","calibration_pose_11",node=None),
+                                                    TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
+                                                    StorePose(),
+                                                    eTaSL_StateMachine("MovingHome","MovingHome",node=None),
+                                                    eTaSL_StateMachine("calibration_pose_12","calibration_pose_12",node=None),
                                                     TimedWait("WaitForDelayOfVision", Duration(seconds=2.0), node=None),
                                                     StorePose(),
                                                     eTaSL_StateMachine("MovingHome","MovingHome",node=None),
