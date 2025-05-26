@@ -1,0 +1,307 @@
+{
+    "$schema": "../../../../task_specifications/tasks-schema.json",
+    "tasks": [
+        {
+            "name": "MovingHome",
+            "task_specification": {
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_jointspace_trap": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "target_joints": [1.5, -1.01, 1.8, -0.87, -1.6, 3.86],
+                    "units": "radians"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_1",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0.2,
+                        0,
+                        0
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_2",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        -0.2,
+                        0,
+                        0
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_3",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0,
+                        0.2
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_4",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0,
+                        -0.2
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_5",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0.35
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_6",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        -0.35
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_7",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0.2,
+                        0
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_8",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        -0.2,
+                        0
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_9",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "delta_euler": [
+                        0.35,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_10",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "delta_euler": [
+                        -0.35,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_11",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "delta_euler": [
+                        0,
+                        0.35,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "calibration_pose_12",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "delta_euler": [
+                        0,
+                        -0.35,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.2,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        }
+    ]
+}
