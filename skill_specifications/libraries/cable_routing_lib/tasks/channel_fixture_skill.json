@@ -14,8 +14,8 @@
                     "cable_tens": "$blackboard/application_params/cable_tension",
                     "force_threshold": "$blackboard/application_params/force_threshold",
                     "torque_threshold": "$blackboard/application_params/torque_threshold",
-                    "turning_dir": "$blackboard/output_param/planning/turning_dir",
-                    "desired_pose": "$blackboard/output_param/planning/desired_pose",
+                    "turning_dir": "$application_defined_parameter",
+                    "desired_pos": "$application_defined_parameter",
                     "FT_sensor_frame": "FT_sensor_frame",
                     "task_frame": "tcp_frame",
                     "maxacc": "$blackboard/application_params/maxacc",
@@ -37,7 +37,7 @@
                 "is-move_cartesianspace_absolute_pose": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
                 "parameters": {
-                    "desired_pose": "$blackboard/output_param/planning/channel_aligning_pose",
+                    "desired_pose": "$application_defined_parameter",
                     "maxacc": "$blackboard/application_params/maxacc",
                     "maxvel": "$blackboard/application_params/maxvel",
                     "eq_r": "$blackboard/application_params/eq_r",
@@ -53,7 +53,7 @@
                 "is-move_cartesianspace_absolute_pose": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
                 "parameters": {
-                    "desired_pose": "$blackboard/output_param/planning/channel_inserting_pose",
+                    "desired_pose": "$application_defined_parameter",
                     "maxacc": "$blackboard/application_params/maxacc",
                     "maxvel": "$blackboard/application_params/maxvel",
                     "eq_r": "$blackboard/application_params/eq_r",

@@ -28,7 +28,7 @@ param = reqs.parameters(task_description,{
     reqs.params.scalar({name="a", description="Cable interaction parameter a", default=2.5,  required=true, minimum = 1.0, maximum = 5.0}),
     reqs.params.scalar({name="C", description="Cable interaction parameter C", default=0.5,  required=true, minimum = 0.0, maximum = 1.0}),
     reqs.params.scalar({name="turning_dir", description="Turning direction of the cable sliding", default=1.0,  required=true, minimum = -1.0, maximum = 1.0}),
-    reqs.params.array({name="desired_pose", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, description="Array with the desired pose of the task frame in [x,y,z,qx,qy,qz,qw]", required=true, minimum = -1.5, maximum = 1.5, minItems = 7, maxItems = 7})
+    reqs.params.array({name="desired_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="Array with the desired pose of the task frame in [x,y,z]", required=true, minimum = -1.5, maximum = 1.5, minItems = 3, maxItems = 3})
 })
 
 -- ======================================== Robot model requirements ========================================
@@ -60,19 +60,15 @@ tool_COG_x = constant(tool_COG[1])
 tool_COG_y = constant(tool_COG[2])
 tool_COG_z = constant(tool_COG[3])
 
-desired_pose = param.get("desired_pose")
-x_coordinate   = constant(desired_pose[1])
-y_coordinate   = constant(desired_pose[2])
-z_coordinate   = constant(desired_pose[3])
-q_i            = constant(desired_pose[4])
-q_j            = constant(desired_pose[5])
-q_k            = constant(desired_pose[6])
-q_real         = constant(desired_pose[7])
+desired_pos = param.get("desired_pos")
+x_coordinate   = constant(desired_pos[1])
+y_coordinate   = constant(desired_pos[2])
+z_coordinate   = constant(desired_pos[3])
+
 -- compute orientation from quaternion
 quat = quaternion(q_real,vector(q_i,q_j,q_k))
 target_R = toRot(quat)
-target_P = vector(x_coordinate,y_coordinate,z_coordinate)
-target_pose = frame(target_R, target_P)
+target_pos = vector(x_coordinate,y_coordinate,z_coordinate)
 
 -- ========================================= Variables coming from topic input handlers ===================================
 sensed_wrench   = ctx:createInputChannelWrench("wrench_input")
@@ -129,7 +125,8 @@ start_pose = initial_value(time, task_frame)
 start_pose_diff  = inv(startpose)*task_frame
 start_position  = origin(start_pose)
 -- =============================== END POSE ==============================
-end_position    = origin(target_frame)
+end_position    = target_pos
+
 -- =========================== VELOCITY PROFILE ============================================
 
 -- compute distances for displacements and rotations:

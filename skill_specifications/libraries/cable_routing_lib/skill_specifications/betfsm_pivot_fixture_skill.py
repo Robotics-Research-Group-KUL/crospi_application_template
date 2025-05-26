@@ -37,47 +37,48 @@ class BeTFSMRunner:
 class PivotFixtureSkill(Sequence):
     """
     """
-    def __init__(self, node, id, params):
+    def __init__(self, node, id, skill_params):
         """
         Constructor for the PivotFixtureSkill class.
         :param node: The node instance.
         :param id: The ID of the skill.
-        :param params: A dictionary containing the parameters for the skill.
+        :param skill_params: A dictionary containing the parameters for the skill.
 
-        params is a dictionary with the following keys:
+        skill_params is a dictionary with the following keys:
         - "turning_dir_sliding" int: Direction of sliding (0 or 1).
-        - "desired_pose" [x,y,z]: Desired pose for sliding.
+        - "desired_pos" [x,y,z]: Desired pose for sliding.
         - "gripper_vel" int (0-100): Gripper velocity.
         - "gripper_force" int (0-100): Gripper force.
         - "gripper_direction" bool: Gripper direction (True or False).
-        - "pos_next_fixture" [x,y,z]: Position of the next fixture.
         - "z_down" int: Z-axis down position.
+        - "frame_next_fixture" [x,y,z,i,j,k,w]: Frame of the next fixture.
+        - "turning_dir_pivoting" int: Direction of pivoting (0 or 1).
         """
         super().__init__("Pivot_fixture_skill")
         self.node = node
-        self.params = params
+        self.skill_params = skill_params
 
         self.add_state(eTaSL_StateMachine("cableSliding","CableSliding",
                                                         lambda bb: {
-                                                            "turning_dir": params["turning_dir_sliding"],
-                                                            "desired_pose": params["desired_pose"]
+                                                            "turning_dir": skill_params["turning_dir_sliding"],
+                                                            "desired_pos": skill_params["desired_pos"]
                                                         },
                                                         node=node))
-        self.add_state(GripPart(gripping_velocity=params["gripper_vel"], gripping_force=params["gripper_force"], 
-                                gripping_direction=params["gripper_direction"], node=node))
+        self.add_state(GripPart(gripping_velocity=skill_params["gripper_vel"], gripping_force=skill_params["gripper_force"], 
+                                gripping_direction=skill_params["gripper_direction"], node=node))
         self.add_state(eTaSL_StateMachine("pivotAligning","PivotAligning",
                                                         lambda bb: {
-                                                            "pos_next_fixture": params["pos_next_fixture"],
-                                                            "z_down": params["z_down"]
+                                                            "pos_next_fixture": skill_params["pos_next_fixture"],
+                                                            "z_down": skill_params["z_down"]
                                                         },
                                                         node=node))
         self.add_state(eTaSL_StateMachine("cablePivoting","CablePivoting",
                                                         lambda bb: {
-                                                            "frame_next_fixture": params["frame_next_fixture"],
-                                                            "turning_dir_pivoting": params["turning_dir_pivoting"],
+                                                            "frame_next_fixture": skill_params["frame_next_fixture"],
+                                                            "turning_dir_pivoting": skill_params["turning_dir_pivoting"],
                                                         },
                                                         node=node))
-        self.add_state(MoveGripperToPosition(finger_position = params["cable_slide_pos"], gripping_velocity = params["gripper_vel"], node=node))
+        self.add_state(MoveGripperToPosition(finger_position = skill_params["cable_slide_pos"], gripping_velocity = skill_params["gripper_vel"], node=node))
 
 
 def test_gripper(node=None):

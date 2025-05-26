@@ -15,7 +15,7 @@
                     "force_threshold": "$blackboard/application_params/force_threshold",
                     "torque_threshold": "$blackboard/application_params/torque_threshold",
                     "turning_dir": "$application_defined_parameter",
-                    "desired_pose": "$application_defined_parameter",
+                    "desired_pos": "$application_defined_parameter",
                     "FT_sensor_frame": "FT_sensor_frame",
                     "task_frame": "tcp_frame",
                     "maxacc": "$blackboard/application_params/maxacc",
