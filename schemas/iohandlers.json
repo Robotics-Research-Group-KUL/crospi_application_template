@@ -1,0 +1,27 @@
+{
+    "$schema":"http://json-schema.org/draft-06/schema",
+    "$id":"iohandlers.json",
+    "title":"IO Handler configuration",
+    "type":"object",
+    "description":"Configuration to setup input and output handlers to the etasl node (e.g. input/output ROS2 topics)",
+    "required": [],
+    "properties": {
+        "outputhandlers": {
+            "title":"Outputhandlers",
+            "description":"Outputhandlers extract data from eTaSL and communicate it in some way to the outside world, such as writing to a file or using a ROS Topic",
+            "type" : "array",
+            "items" : {
+                "$ref" : "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/outputhandler.json"
+            }
+        },
+        "inputhandlers": {
+            "title":"Inputhandlers",
+            "description":"Inputhandlers get information from the outside world and puts it into eTaSL",
+            "type" : "array",
+            "items" : {
+                "$ref": "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/inputhandler.json"
+            }
+        }
+    },
+    "additionalProperties":false
+}

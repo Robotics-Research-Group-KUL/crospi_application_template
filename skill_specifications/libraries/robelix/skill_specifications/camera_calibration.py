@@ -71,7 +71,7 @@ class StorePose(Generator):
 
         # Append to blackboard
         blackboard['calibration_poses_robot'].append(self.get_tf(child_frame = "tool0", parent_frame = "base_link"))
-        blackboard['calibration_poses_camera'].append(self.get_tf(child_frame = "camera_link", parent_frame = "charuco_board"))
+        blackboard['calibration_poses_camera'].append(self.get_tf(child_frame = "charuco_board", parent_frame = "camera_link")) #TODO:Check the order or frames
         # blackboard['calibration_poses_camera'].append(blackboard['calibration_poses_robot'][-1])
         # blackboard['calibration_poses_camera'].append(self.get_random_tf())
         self.etasl_node.get_logger().info("TF stored in blackboard.")

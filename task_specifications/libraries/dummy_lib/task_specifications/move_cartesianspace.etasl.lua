@@ -10,7 +10,7 @@ task_description = "This task specification allows to move the position of the e
 -- ========================================= PARAMETERS ===================================
 
 param = reqs.parameters(task_description,{
-    reqs.params.scalar({name="maxvel_gni", description="Maximum velocity [m/s]", default = 0.1, required=true, maximum = 0.5}),
+    reqs.params.scalar({name="maxvel", description="Maximum velocity [m/s]", default = 0.1, required=true, maximum = 0.5}),
     reqs.params.scalar({name="maxacc", description="Maximum acceleration [m/s^2]", default = 0.1, required=true, maximum = 0.5}),
     reqs.params.scalar({name="eq_r", description="Equivalent radius", default = 0.08, required=false}),
     reqs.params.string({name="task_frame", description="Name of frame used to control the robot in cartesian space", default = "tcp_frame", required=false}),

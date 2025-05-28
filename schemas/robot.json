@@ -1,0 +1,26 @@
+{
+    "$schema":"http://json-schema.org/draft-06/schema",
+    "$id":"robot.json",
+    "title":"eTaSL robot configuration",
+    "type":"object",
+    "description":"Configuration to setup the robot kinematic model and robot driver",
+    "required": ["simulation","default_robot_specification","robotdriver"],
+    "properties": {
+        "simulation":{
+            "oneOf" : [
+                {"$ref":"https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/simple_kinematic_simulation.json"}
+            ]
+        },
+        "robotdriver": {
+            "title":"Robotdriver",
+            "description":"Robotdriver interfaces robot hardware with eTaSL and runs in a separate thread, communicating with shared memory for reduced latency",
+            "$ref": "generated/robotdriver.json"
+        },
+        "default_robot_specification": {
+            "title":"default_robot_specification",
+            "description":"Robot specification that describes the kinematics, jointnames, relevant frames and others",
+            "$ref": "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/default_robot_specification.json"
+        }
+    },
+    "additionalProperties":false
+}

@@ -1,0 +1,23 @@
+{
+    "$schema":"http://json-schema.org/draft-06/schema",
+    "$id":"etasl.json",
+    "title":"eTaSL Parameters",
+    "type":"object",
+    "description":"Parameters needed to run eTaSL",
+    "required": ["general", "initializer","solver"],
+    "properties": {
+        "general":{
+            "$ref":"https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/general.json"
+        },
+        "initializer":{
+            "description": "determines how the feature variables are initialized during initialization of an eTaSL execution",
+            "$ref":"https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/initializer.json"
+        },
+        "solver":{
+            "oneOf" : [
+                {"$ref":"https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/qpoasessolver.json"}
+            ]
+        }
+    },
+    "additionalProperties":false
+}

@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema",
+    "$id": "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/blackboard-schema.json",
+    "title": "Blackboard",
+    "type": "object",
+    "description": "Schema defining configuration properties for the etasl_node",
+    "properties": {
+        "blackboard": {
+            "type": "object",
+            "properties": {
+                "etasl": {
+                    "$ref": "etasl.json"
+                },
+                "robot": {
+                    "$ref": "robot.json"
+                },
+                "iohandlers": {
+                    "$ref": "iohandlers.json"
+                }
+            },
+            "required": [ "etasl", "robot"]
+        }
+    },
+    "required": [
+        "blackboard"
+    ],
+    "additionalProperties": true
+}

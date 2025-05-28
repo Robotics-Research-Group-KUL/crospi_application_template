@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema",
+    "$id": "generated/robotdriver.json",
+    "title": "Robotdriver",
+    "description": "Robotdriver interfaces robot hardware with eTaSL and runs in a separate thread, communicating via shared memory for reduced latency",
+    "oneOf": [
+        {"$ref":"https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/no_driver.json"},
+        {"$ref": "/home/santiregui/ros2_ws/install/kuka_iiwa_driver/share/kuka_iiwa_driver/robotdriver.schema.json"},
+        {"$ref": "/home/santiregui/ros2_ws/install/ur10_e_driver_etasl/share/ur10_e_driver_etasl/robotdriver.schema.json"}
+    ]
+}

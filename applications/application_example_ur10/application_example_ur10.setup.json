@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../etasl_ros2/scripts/schema/blackboard-schema.json",
+    "$schema": "../../schemas/blackboard-schema.json",
     "blackboard": {
         "etasl": {
             "general": {
