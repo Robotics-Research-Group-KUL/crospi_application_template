@@ -29,8 +29,8 @@ set(GENERATED_SETUP_SCHEMAS_DIR ${CMAKE_SOURCE_DIR}/schemas/generated) #Director
 # [Santiago]: add_custom_target works and generates the task-schema.json, but the execute process doesn't
 add_custom_target(
   TASKS_SCHEMA_JSON
-  ALL
-  COMMAND bash ${BASH_SCRIPT_TASK_SCHEMAS} ${TASK_LIBRARIES_DIR} ${LUA_ROBOT_SPEC_DIR}  ${LUA_ROBOT_SPEC_DIR_INTERPOLATE} 2>&1 | tee ${CMAKE_SOURCE_DIR}/task_specifications/tasks-schema.log
+  ALL # This target will be built by default (i.e. always)
+  COMMAND bash ${BASH_SCRIPT_TASK_SCHEMAS} ${TASK_LIBRARIES_DIR} ${LUA_ROBOT_SPEC_DIR}  ${LUA_ROBOT_SPEC_DIR_INTERPOLATE} 2>&1 | tee ${CMAKE_SOURCE_DIR}/tasks-schema.log
   WORKING_DIRECTORY ${WORK_DIR}
   COMMENT "constructing tasks-schema.json file"
   VERBATIM #This allows to pass $[ in strings such as defined in LUA_ROBOT_SPEC_DIR_INTERPOLATE
@@ -39,8 +39,8 @@ add_custom_target(
 #Generate the json schema files for the setup configuration (e.g. related to robotdrivers)
 add_custom_target(
   PLUGIN_SCHEMA_JSON
-  ALL
-  COMMAND bash ${BASH_SCRIPT_PLUGINS_SCHEMAS} ${GENERATED_SETUP_SCHEMAS_DIR} 2>&1 | tee ${CMAKE_SOURCE_DIR}/task_specifications/plugins-schema.log
+  ALL # This target will be built by default (i.e. always)
+  COMMAND bash ${BASH_SCRIPT_PLUGINS_SCHEMAS} ${GENERATED_SETUP_SCHEMAS_DIR} 2>&1 | tee ${CMAKE_SOURCE_DIR}/plugins-schema.log
   WORKING_DIRECTORY ${WORK_DIR}
   COMMENT "constructing json schema files for the setup configuration"
   VERBATIM #This allows to pass $[ in strings such as defined in LUA_ROBOT_SPEC_DIR_INTERPOLATE
