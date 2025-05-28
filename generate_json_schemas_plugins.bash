@@ -7,7 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 # Directory containing etasl Lua files (passed as a command-line argument)
-OUTPUT_SCHEMA_ROBOTDRIVER="$1"
+OUTPUT_SCHEMA_ROBOTDRIVER="$1/robotdriver.json"
 
 
 # Get the install directory of the workspace from the package prefix
@@ -69,7 +69,6 @@ echo '{
 
 
 for json_folder in "${plugin_folders_with_schema[@]}"; do
-  echo "Unique plugin json_folder: "
 #   cat "$json_folder"/robotdriver.schema.json
     echo "        {\"\$ref\": \"$json_folder/robotdriver.schema.json\"}," >> "$OUTPUT_SCHEMA_ROBOTDRIVER"
 
@@ -84,8 +83,7 @@ echo '
 }' >> "$OUTPUT_SCHEMA_ROBOTDRIVER"
 
 
-echo "$OUTPUT_SCHEMA_ROBOTDRIVER"
-echo "hehe"
+# echo "$OUTPUT_SCHEMA_ROBOTDRIVER"
 
 
 # robotdriver_spec_string="["
