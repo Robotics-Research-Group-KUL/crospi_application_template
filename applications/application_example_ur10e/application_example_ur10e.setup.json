@@ -1,5 +1,5 @@
 {
-    "$schema": "../../schemas/blackboard-schema.json",
+    "$schema": "../../schemas/generated/blackboard-schema-bundled.json",
     "blackboard": {
         "etasl": {
             "general": {
@@ -86,6 +86,29 @@
                         "topic-name": "/spacenav/twist",
                         "when_unpublished": "use_default",
                         "varname": "joystick_input"
+                    },
+                    {
+                        "is-tfinputhandler": true,
+                        "cache_time": 1,
+                        "number_of_tries": 10,
+                        "source_frame": "base_link",
+                        "target_frame": "tool0",
+                        "when_unpublished": "use_default",
+                        "varname": "tcp_pose",
+                        "default_pose": {
+                            "origin": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "orientation":{
+                                "is-quaternion": true,
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            }
+                        }
                     }
                 ]
             }

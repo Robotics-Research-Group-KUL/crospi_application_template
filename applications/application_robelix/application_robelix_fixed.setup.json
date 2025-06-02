@@ -1,5 +1,5 @@
 {
-    "$schema": "../../schemas/blackboard-schema.json",
+    "$schema": "../../schemas/generated/blackboard-schema-bundled.json",
     "blackboard": {
         "etasl": {
             "general": {

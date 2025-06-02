@@ -46,6 +46,21 @@ add_custom_target(
   VERBATIM #This allows to pass $[ in strings such as defined in LUA_ROBOT_SPEC_DIR_INTERPOLATE
 )
 
+set(JSON_SCHEMA_LOCATION_TO_BE_BUNDLED ${CMAKE_SOURCE_DIR}/schemas/blackboard-schema.json) #Directory containing all task specifications whose json schema is going to be generated automatically
+set(BUNDLED_SCHEMA_DIR ${CMAKE_SOURCE_DIR}/schemas/generated/blackboard-schema-bundled.json) #Directory containing all task specifications whose json schema is going to be generated automatically
+set(PYTHON_SCRIPT_BUNDLED_SCHEMA ${CMAKE_SOURCE_DIR}/json_schema_bundler.py)
+
+
+#Generate a bundled json schema file
+add_custom_target(
+  BUNDLE_SCHEMA_JSON
+  ALL # This target will be built by default (i.e. always)
+  COMMAND python3 ${PYTHON_SCRIPT_BUNDLED_SCHEMA}  ${JSON_SCHEMA_LOCATION_TO_BE_BUNDLED} ${BUNDLED_SCHEMA_DIR} 2>&1 | tee ${CMAKE_SOURCE_DIR}/blackboard-schema-bundled.log
+  WORKING_DIRECTORY ${WORK_DIR}
+  COMMENT "constructing json schema bundled file from ${JSON_SCHEMA_LOCATION_TO_BE_BUNDLED} to ${BUNDLED_SCHEMA_DIR}"
+  VERBATIM #This allows to pass $[ in strings such as defined in LUA_ROBOT_SPEC_DIR_INTERPOLATE
+)
+
 
 # execute_process (
 #   COMMAND bash ${BASH_SCRIPT_TASK_SCHEMAS} ${TASK_LIBRARIES_DIR} ${LUA_ROBOT_SPEC_DIR}
@@ -60,7 +75,7 @@ add_custom_target(
 # Ensure that the JSON schema is generated before building
 # add_dependencies(etasl_ros2_application_template generate_json_schema)
 
-install(DIRECTORY applications task_specifications skill_specifications robot_models
+install(DIRECTORY applications task_specifications skill_specifications robot_models schemas
   DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
