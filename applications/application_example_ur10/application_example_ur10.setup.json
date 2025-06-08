@@ -74,7 +74,7 @@
                 ],
                 "inputhandlers": [
                     {
-                        "is-twistinputhandler": true,
+                        "is-TwistInputHandler": true,
                         "default_twist": {"linear": {"x": 0, "y": 0, "z": 0},"angular": {"x": 0, "y": 0, "z": 0}},
                         "depth": 1,
                         "number_of_tries": 10,

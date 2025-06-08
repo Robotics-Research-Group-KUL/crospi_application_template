@@ -23,8 +23,6 @@ set(TASK_LIBRARIES_DIR ${CMAKE_SOURCE_DIR}/task_specifications/libraries) #Direc
 set(LUA_ROBOT_SPEC_DIR ${CMAKE_SOURCE_DIR}/robot_models/robot_specifications) #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
 set(LUA_ROBOT_SPEC_DIR_INTERPOLATE "\$[${CMAKE_PROJECT_NAME}]/robot_models/robot_specifications") #This is used to execute read the task specifications and avoid errors due to missing variables (e.g. task_frame or joint variables).
 
-set(BASH_SCRIPT_PLUGINS_SCHEMAS ${CMAKE_SOURCE_DIR}/generate_json_schemas_plugins.bash)
-set(GENERATED_SETUP_SCHEMAS_DIR ${CMAKE_SOURCE_DIR}/schemas/generated) #Directory containing all task specifications whose json schema is going to be generated automatically
 
 # [Santiago]: add_custom_target works and generates the task-schema.json, but the execute process doesn't
 add_custom_target(
@@ -34,14 +32,17 @@ add_custom_target(
   WORKING_DIRECTORY ${WORK_DIR}
   COMMENT "constructing tasks-schema.json file"
   VERBATIM #This allows to pass $[ in strings such as defined in LUA_ROBOT_SPEC_DIR_INTERPOLATE
-)
+  )
+  
+set(PYTHON_SCRIPT_PLUGINS_SCHEMAS ${CMAKE_SOURCE_DIR}/generate_json_schemas_plugins.py)
+set(WORK_DIR_PY ${CMAKE_SOURCE_DIR})
 
 #Generate the json schema files for the setup configuration (e.g. related to robotdrivers)
 add_custom_target(
   PLUGIN_SCHEMA_JSON
   ALL # This target will be built by default (i.e. always)
-  COMMAND bash ${BASH_SCRIPT_PLUGINS_SCHEMAS} ${GENERATED_SETUP_SCHEMAS_DIR} 2>&1 | tee ${CMAKE_SOURCE_DIR}/plugins-schema.log
-  WORKING_DIRECTORY ${WORK_DIR}
+  COMMAND python3 ${PYTHON_SCRIPT_PLUGINS_SCHEMAS} 2>&1 | tee ${CMAKE_SOURCE_DIR}/plugins-schema.log
+  WORKING_DIRECTORY ${WORK_DIR_PY}
   COMMENT "constructing json schema files for the setup configuration"
   VERBATIM #This allows to pass $[ in strings such as defined in LUA_ROBOT_SPEC_DIR_INTERPOLATE
 )
@@ -49,7 +50,6 @@ add_custom_target(
 set(JSON_SCHEMA_LOCATION_TO_BE_BUNDLED ${CMAKE_SOURCE_DIR}/schemas/blackboard-schema.json) #Directory containing all task specifications whose json schema is going to be generated automatically
 set(BUNDLED_SCHEMA_DIR ${CMAKE_SOURCE_DIR}/schemas/generated/blackboard-schema-bundled.json) #Directory containing all task specifications whose json schema is going to be generated automatically
 set(PYTHON_SCRIPT_BUNDLED_SCHEMA ${CMAKE_SOURCE_DIR}/json_schema_bundler.py)
-
 
 #Generate a bundled json schema file
 add_custom_target(

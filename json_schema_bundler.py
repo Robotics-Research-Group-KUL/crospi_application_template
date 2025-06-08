@@ -18,6 +18,42 @@ def _strip_jsonref(obj):
         return [_strip_jsonref(v) for v in obj]
     else:
         return obj
+    
+# def _strip_jsonref(obj, path='root'):
+#     """
+#     Recursively convert jsonref.JsonRef or JsonRef-like objects into plain dicts/lists.
+#     Log any suspicious 'null' values to help diagnose problems.
+#     """
+#     if isinstance(obj, jsonref.JsonRef):
+#         try:
+#             return _strip_jsonref(obj.__subject__, path)
+#         except Exception as e:
+#             print(f"[ERROR] Failed to dereference at {path}: {e}")
+#             return None
+
+#     elif isinstance(obj, dict):
+#         out = {}
+#         for k, v in obj.items():
+#             new_path = f"{path}/{k}"
+#             result = _strip_jsonref(v, new_path)
+#             if result is None and v is not None:
+#                 print(f"[WARNING] {new_path} became null during dereferencing")
+#             out[k] = result
+#         return out
+
+#     elif isinstance(obj, list):
+#         out = []
+#         for i, v in enumerate(obj):
+#             new_path = f"{path}[{i}]"
+#             result = _strip_jsonref(v, new_path)
+#             if result is None and v is not None:
+#                 print(f"[WARNING] {new_path} became null during dereferencing")
+#             out.append(result)
+#         return out
+
+#     else:
+#         return obj
+
 
 def load_and_dereference_schema(schema_path: str) -> dict:
     """
@@ -48,8 +84,6 @@ def _custom_loader(uri: str):
     """
     A custom loader for jsonref that supports both file:// and https://
     """
-
-
     parsed = urlparse(uri)
     
     if parsed.scheme in ('http', 'https'):
@@ -60,6 +94,12 @@ def _custom_loader(uri: str):
         path = os.path.abspath(os.path.join(parsed.netloc, parsed.path))
         with open(path, 'r') as f:
             return json.load(f)
+    # elif parsed.scheme == '':  # Plain path (e.g. /home/user/foo.json or ./foo.json)
+    #     path = os.path.abspath(uri)
+    #     if not os.path.exists(path):
+    #         raise FileNotFoundError(f"File not found: {path}")
+    #     with open(path, 'r') as f:
+    #         return json.load(f)
     else:
         raise ValueError(f"Unsupported URI scheme in $ref: {uri}")
 
@@ -70,16 +110,31 @@ def main():
 
     args = parser.parse_args()
 
-    compiled = load_and_dereference_schema(args.input_schema)
-    compiled["$id"] = Path(args.output_schema).name
+    output_path = Path(args.output_schema)
+    if output_path.exists():
+        output_path.unlink() #Delete the file if it exists
 
+    try:
+        compiled = load_and_dereference_schema(args.input_schema)
+        compiled["$id"] = Path(args.output_schema).name
 
-    os.makedirs(os.path.dirname(args.output_schema), exist_ok=True)
+        os.makedirs(os.path.dirname(args.output_schema), exist_ok=True)
 
-    with open(args.output_schema, 'w') as f:
-        json.dump(compiled, f, indent=2)
+        with open(args.output_schema, 'w') as f:
+            json.dump(compiled, f, indent=2)
 
-    print(f"Compiled schema saved to: {args.output_schema}")
+        print(f"Compiled schema saved to: {args.output_schema}")
+
+    except Exception as e:
+        # Catch circular reference or other schema-loading issues
+        fallback_msg = f"Could not generate json schema, e.g. due to circular reference detected in file {args.input_schema}"
+        os.makedirs(os.path.dirname(args.output_schema), exist_ok=True)
+
+        with open(args.output_schema, 'w') as f:
+            json.dump(fallback_msg, f)
+
+        print(f"[ERROR] {fallback_msg}")
+        print(f"[DETAILS] {type(e).__name__}: {e}")
 
 
 if __name__ == "__main__":

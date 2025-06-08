@@ -79,7 +79,7 @@
                 ],
                 "inputhandlers": [
                     {
-                        "is-twistinputhandler": true,
+                        "is-TwistInputHandler": true,
                         "default_twist": {"linear": {"x": 0, "y": 0, "z": 0},"angular": {"x": 0, "y": 0, "z": 0}},
                         "depth": 1,
                         "number_of_tries": 10,
@@ -88,25 +88,24 @@
                         "varname": "joystick_input"
                     },
                     {
-                        "is-tfinputhandler": true,
-                        "cache_time": 1,
+                        "is-TFInputHandler": true,
                         "number_of_tries": 10,
-                        "source_frame": "base_link",
-                        "target_frame": "tool0",
+                        "feedforward_input_topic": "/etasl/feedforward/twist_of_tf",
+                        "child_link": "base_link",
+                        "parent_link": "sine_frame",
                         "when_unpublished": "use_default",
-                        "varname": "tcp_pose",
+                        "varname": "tf_to_follow",
                         "default_pose": {
                             "origin": {
-                                "x": 0.0,
-                                "y": 0.0,
-                                "z": 0.0
+                                "x": 0,
+                                "y": 0.5,
+                                "z": 0.3
                             },
                             "orientation":{
-                                "is-quaternion": true,
-                                "x": 0.0,
-                                "y": 0.0,
-                                "z": 0.0,
-                                "w": 1.0
+                                "is-rpy": true,
+                                "roll": 0,
+                                "pitch": 3.1416,
+                                "yaw": 0
                             }
                         }
                     }

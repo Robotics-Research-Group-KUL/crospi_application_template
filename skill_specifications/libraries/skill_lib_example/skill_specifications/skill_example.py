@@ -87,27 +87,40 @@ class MyStateMachine(TickingStateMachine):
         # )
 
         # Uncomment for example sequence
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
+        #     transitions={SUCCEED: "MovingDown", 
+        #                 ABORT: ABORT}
+        # )
+
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingDown","MovingDown",node=None), 
+        #     transitions={SUCCEED: "MovingUp", 
+        #                 ABORT: ABORT}
+        # )
+
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingUp","MovingUp",node=None), 
+        #     transitions={SUCCEED: "MovingSpline", 
+        #                 ABORT: ABORT}
+        # )
+
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingSpline","MovingSpline",node=None), 
+        #     transitions={SUCCEED: "MovingHome", 
+        #                 ABORT: ABORT}
+        # )
+
+        # Uncomment for example sequence
         self.add_state(
             eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
-            transitions={SUCCEED: "MovingDown", 
+            transitions={SUCCEED: "follow_tf", 
                         ABORT: ABORT}
         )
 
         self.add_state(
-            eTaSL_StateMachine("MovingDown","MovingDown",node=None), 
-            transitions={SUCCEED: "MovingUp", 
-                        ABORT: ABORT}
-        )
-
-        self.add_state(
-            eTaSL_StateMachine("MovingUp","MovingUp",node=None), 
-            transitions={SUCCEED: "MovingSpline", 
-                        ABORT: ABORT}
-        )
-
-        self.add_state(
-            eTaSL_StateMachine("MovingSpline","MovingSpline",node=None), 
-            transitions={SUCCEED: "MovingHome", 
+            eTaSL_StateMachine("follow_tf","follow_tf",node=None), 
+            transitions={SUCCEED: SUCCEED, 
                         ABORT: ABORT}
         )
 

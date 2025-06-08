@@ -19,7 +19,7 @@
             "description":"Inputhandlers get information from the outside world and puts it into eTaSL",
             "type" : "array",
             "items" : {
-                "$ref": "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/inputhandler.json"
+                "$ref": "generated/inputhandler.json"
             }
         }
     },
