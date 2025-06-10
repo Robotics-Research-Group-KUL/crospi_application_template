@@ -49,15 +49,11 @@
         "iohandlers": {
                 "outputhandlers": [
                     {
-                        "is-jointstateoutputhandler": true,
-                        "topic-name": "/velcmd"
-                    },
-                    {
-                        "is-jointstateoutputhandler": true,
+                        "is-JointStateOutputHandler": true,
                         "topic-name": "/joint_states"
                     },
                     {
-                        "is-topicoutputhandler" : true,
+                        "is-TopicOutputHandler" : true,
                         "topic-name" : "/fsm_output_topic",
                         "variable-names" : []
                     }

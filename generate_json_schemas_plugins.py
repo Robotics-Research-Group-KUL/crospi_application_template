@@ -161,5 +161,9 @@ if __name__ == "__main__":
     plugins = get_plugins_by_base_class('etasl::InputHandler')
     description = "An inputhandler get information from the outside world and put it into eTaSL, e.g. via ROS2 topics or other types of communication"
     success = generate_json_schema(plugins, "inputhandler.json", description)
+    
+    plugins = get_plugins_by_base_class('etasl::OutputHandler')
+    description = "An outputhandler extract data from eTaSL and communicate this in some way to the outside world, e.g. writing to a ROS2 Topic or other types of communication"
+    success = generate_json_schema(plugins, "outputhandler.json", description)
 
     

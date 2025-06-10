@@ -11,7 +11,7 @@
             "description":"Outputhandlers extract data from eTaSL and communicate it in some way to the outside world, such as writing to a file or using a ROS Topic",
             "type" : "array",
             "items" : {
-                "$ref" : "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/outputhandler.json"
+                "$ref" : "generated/outputhandler.json"
             }
         },
         "inputhandlers": {
