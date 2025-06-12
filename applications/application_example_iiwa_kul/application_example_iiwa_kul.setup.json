@@ -21,7 +21,7 @@
             }
         },
         "robot": {
-            "simulation":{
+            "robotsimulator":{
                 "is-simple_kinematic_simulation": true,
                 "periodicity": 0.01,
                 "initial_joints": [0.5410, 1.2566, -0.4363, -1.344, -0.4363, 0.8726,  0.61]

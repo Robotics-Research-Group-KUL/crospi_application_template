@@ -166,4 +166,6 @@ if __name__ == "__main__":
     description = "An outputhandler extract data from eTaSL and communicate this in some way to the outside world, e.g. writing to a ROS2 Topic or other types of communication"
     success = generate_json_schema(plugins, "outputhandler.json", description)
 
-    
+    plugins = get_plugins_by_base_class('etasl::RobotSimulator')
+    description = "RobotSimulator interfaces simulated robot hardware with eTaSL and runs in a separate thread, communicating with shared memory for reduced latency."
+    success = generate_json_schema(plugins, "robotsimulator.json", description)

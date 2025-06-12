@@ -4,12 +4,12 @@
     "title":"eTaSL robot configuration",
     "type":"object",
     "description":"Configuration to setup the robot kinematic model and robot driver",
-    "required": ["simulation","default_robot_specification","robotdriver"],
+    "required": ["robotsimulator","default_robot_specification","robotdriver"],
     "properties": {
-        "simulation":{
-            "oneOf" : [
-                {"$ref":"https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/simple_kinematic_simulation.json"}
-            ]
+        "robotsimulator":{
+            "title":"RobotSimulator",
+            "description":"RobotSimulator interfaces simulated robot hardware with eTaSL and runs in a separate thread, communicating with shared memory for reduced latency.",
+            "$ref": "generated/robotsimulator.json"
         },
         "robotdriver": {
             "title":"Robotdriver",

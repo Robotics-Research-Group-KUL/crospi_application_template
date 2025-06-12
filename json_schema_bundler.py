@@ -127,14 +127,20 @@ def main():
 
     except Exception as e:
         # Catch circular reference or other schema-loading issues
-        fallback_msg = f"Could not generate json schema, e.g. due to circular reference detected in file {args.input_schema}"
+        fallback_dict = {
+            "Error": f"[ERROR] Could not generate json schema, e.g. due to circular reference detected in file {args.input_schema} or unexistant $ref.",
+            "Details": f"[Details] {type(e).__name__}: {e}",
+        }
+
+        # fallback_msg = f"[ERROR] Could not generate json schema, e.g. due to circular reference detected in file {args.input_schema} or unexistant $ref. \n [DETAILS] {type(e).__name__}: {e}"
         os.makedirs(os.path.dirname(args.output_schema), exist_ok=True)
 
         with open(args.output_schema, 'w') as f:
-            json.dump(fallback_msg, f)
+            json.dump(fallback_dict, f, indent=2)
 
-        print(f"[ERROR] {fallback_msg}")
-        print(f"[DETAILS] {type(e).__name__}: {e}")
+        print(fallback_dict["Error"])
+        print(fallback_dict["Details"])
+        # print(f"[DETAILS] {type(e).__name__}: {e}")
 
 
 if __name__ == "__main__":
