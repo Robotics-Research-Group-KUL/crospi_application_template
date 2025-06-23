@@ -4,7 +4,7 @@
         "etasl": {
             "general": {
                 "event_topic": "etasl/events",
-                "sample_time": 0.01
+                "sample_time": 0.005
             },
             "initializer": {
                 "full": true,
@@ -24,10 +24,13 @@
             "robotsimulator": {
                 "is-simple_kinematic_simulation": true,
                 "initial_joints": [0.3, 0.483, 0, 1.15, 0, 1.519, 0],
-                "periodicity": 0.01
+                "periodicity": 0.001
             },
             "robotdriver":{
-                "is-no_driver": true
+                "is-neura_manipulator_driver_etasl": true,
+                "periodicity": 0.001,
+                "robot_model": "Maira",
+                "serial_number": 227080
             },
             "default_robot_specification": {
                 "is-inline_robotspecification": true,

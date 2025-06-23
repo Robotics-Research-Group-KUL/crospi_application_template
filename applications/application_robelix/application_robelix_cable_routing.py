@@ -5,7 +5,7 @@
 from betfsm.betfsm_etasl import *
 # from betfsm.betfsm_action_server import *
 
-from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_initial_skills import GoToCableStart
+# from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_initial_skills import GoToCableStart
 
 import rclpy
 import json
@@ -14,6 +14,8 @@ import numpy as np
 
 from scipy.spatial.transform import Rotation as R
 import sys
+
+import matplotlib.pyplot as plt
 
 class BeTFSMRunner:
     def __init__(self,node:Node, statemachine:TickingState, blackboard: Blackboard, sampletime):
@@ -73,7 +75,7 @@ def generate_routing_sm(board_model, route_task_model, params):
         current_fixture = board_model["Fixtures"][current_fixture_id]
         next_fixture = board_model["Fixtures"][next_fixture_id]
 
-        direction_segment = cu.compute_direction(prev_fixture, current_fixture, next_fixture)
+        direction_segment = cu.compute_direction(prev_fixture, current_fixture, next_fixture, prev_segment_dir)
         route_task_model["Directions"].append(direction_segment)
 
         tangent = cu.compute_tangent(prev_fixture, current_fixture, d1 = prev_segment_dir, d2 = direction_segment, dilate_2 = True)
@@ -103,28 +105,33 @@ def generate_routing_sm(board_model, route_task_model, params):
 
         waypoint = tangent[1] + slack*unit_tangent_vector
         waypoints.append(waypoint)
+        
+        # if current_fixture["type"] == "PIVOT":
+        #     skill_params["turning_dir_sliding"] = direction_segment
+        #     skill_params["desired_pos"] = waypoint
+        #     skill_params["gripper_vel"] = params["gripper_vel"]
+        #     skill_params["gripper_force"] = params["gripper_force"]
+        #     skill_params["gripper_direction"] = params["gripper_direction"]
+        #     # skill_params["z_down"]
+        #     # skill_params["frame_next_fixture"]
+        #     # skill_params["turning_dir_pivoting"]
+        #     routing_sm.append(PivotFixtureSkill(node=None, id=current_fixture_id, skill_params=skill_params))
 
-        if current_fixture["type"] == "PIVOT":
-            skill_params["turning_dir_sliding"] = direction_segment
-            skill_params["desired_pos"] = waypoint
-            skill_params["gripper_vel"] = params["gripper_vel"]
-            skill_params["gripper_force"] = params["gripper_force"]
-            skill_params["gripper_direction"] = params["gripper_direction"]
-            # skill_params["z_down"]
-            # skill_params["frame_next_fixture"]
-            # skill_params["turning_dir_pivoting"]
-            routing_sm.append(PivotFixtureSkill(node=None, id=current_fixture_id, skill_params=skill_params))
+        # elif current_fixture["type"] == "CHANNEL":
+        #     skill_params["turning_dir_sliding"] = direction_segment
+        #     skill_params["desired_pos"] = waypoint
+        #     skill_params["gripper_vel"] = params["gripper_vel"]
+        #     skill_params["gripper_force"] = params["gripper_force"]
+        #     skill_params["gripper_direction"] = params["gripper_direction"]
+        #     # skill_params["channel_aligning_pose"]
+        #     # skill_params["channel_inserting_pose"]
+        #     # skill_params["cable_slide_pos"]
+        #     routing_sm.append(ChannelFixtureSkill(node=None, id=current_fixture_id, skill_params=skill_params))
 
-        elif current_fixture["type"] == "CHANNEL":
-            skill_params["turning_dir_sliding"] = direction_segment
-            skill_params["desired_pos"] = waypoint
-            skill_params["gripper_vel"] = params["gripper_vel"]
-            skill_params["gripper_force"] = params["gripper_force"]
-            skill_params["gripper_direction"] = params["gripper_direction"]
-            # skill_params["channel_aligning_pose"]
-            # skill_params["channel_inserting_pose"]
-            # skill_params["cable_slide_pos"]
-            routing_sm.append(ChannelFixtureSkill(node=None, id=current_fixture_id, skill_params=skill_params))
+    fig, ax = plt.subplots()
+    cu.plot_board(ax, board_model,tangent_lines,[],waypoints)
+    # save the figure
+    plt.savefig("waypoints.pdf")
 
     return routing_sm
 
@@ -144,12 +151,13 @@ def generate_application_fsm(route_task_model, board_model, params):
 
 
 def main(args=None):
-    rclpy.init(args=args)
-    my_node = BeTFSMNode.get_instance("pcb_insertion_skill")
 
-    set_logger("default",my_node.get_logger())
-    #set_logger("service",my_node.get_logger())
-    #set_logger("state",my_node.get_logger())
+    # rclpy.init(args=args)
+    # my_node = BeTFSMNode.get_instance("pcb_insertion_skill")
+
+    # set_logger("default",my_node.get_logger())
+    # #set_logger("service",my_node.get_logger())
+    # #set_logger("state",my_node.get_logger())
 
     route_name = "test_route"
     route_path = "/home/robpc/robelix_ws/src/neura-gui/saved_routes/{}.json".format(route_name)
@@ -164,14 +172,14 @@ def main(args=None):
     with open(params_path, 'r') as f:
         params = json.load(f)
 
-    blackboard = {}
-    # load the tasks to the blackboard
-    load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/channel_fixture_skill.json",blackboard)
-    load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/pivot_fixture_skill.json",  blackboard)
-    load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/initial_skills.json", blackboard)
+    # blackboard = {}
+    # # load the tasks to the blackboard
+    # load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/channel_fixture_skill.json",blackboard)
+    # load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/pivot_fixture_skill.json",  blackboard)
+    # load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/initial_skills.json", blackboard)
 
-    # load the application parameters to the blackboard
-    blackboard["application_params"] = params
+    # # load the application parameters to the blackboard
+    # blackboard["application_params"] = params
 
     # Split the route and the board model
     board_model = route
@@ -193,19 +201,21 @@ def main(args=None):
     T_base_board = np.eye(4)
     T_base_board[:3, :3] = R.from_euler('z', -np.pi/2).as_matrix()  # Rotation around z-axis
     T_base_board[0:3, 3] = [0.0, -0.13, -0.045]  # Translation vector
-
-    # prints a graphviz representation of sm:
-    vis = GraphViz_Visitor()
-    sm.accept(vis)
-    vis.print()
     
-    sm = GoToCableStart(node=my_node, id="go_to_cable_start")
+    _ = generate_routing_sm(board_model, route_task_model, params)
 
-    runner = BeTFSMRunner(my_node,sm,blackboard,0.01)
+    # # prints a graphviz representation of sm:
+    # vis = GraphViz_Visitor()
+    # sm.accept(vis)
+    # vis.print()
+    
+    # sm = GoToCableStart(node=my_node, id="go_to_cable_start")
 
-    rclpy.spin(my_node)
+    # runner = BeTFSMRunner(my_node,sm,blackboard,0.01)
+
+    # rclpy.spin(my_node)
         
-    print("shutdown")
+    # print("shutdown")
 
 
 if __name__ == "__main__":

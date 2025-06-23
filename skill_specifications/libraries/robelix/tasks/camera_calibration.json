@@ -10,7 +10,7 @@
                 "parameters": {
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "target_joints": [1.5, -1.01, 1.8, -0.87, -1.6, 3.86],
+                    "target_joints": [-0.7099, 1.24667, 0.1115, 1.420, 0.052, 2.033, 0.7854],
                     "units": "radians"
                 }
             }

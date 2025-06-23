@@ -8,24 +8,24 @@
                 "is-move_sine_waves_jointspace": true,
                 "file_path":"$[etasl_ros2_application_template]/task_specifications/libraries/debug_lib/task_specifications/move_sine_waves_jointspace.etasl.lua",
                 "parameters": {
-                    "execution_time": 20,
+                    "execution_time": 120,
                     "amplitudes": [
-                        1,
                         0,
                         0,
                         0,
                         0,
                         0,
-                        1
+                        0,
+                        0.4
                     ],
                     "frequencies": [
-                        0.5,
+                        0.1,
+                        0.1,
                         0,
                         0,
                         0,
-                        0,
-                        0,
-                        0.5
+                        0.1,
+                        0.1
                     ]
                 }
             }

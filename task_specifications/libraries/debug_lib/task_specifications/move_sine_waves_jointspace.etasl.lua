@@ -47,7 +47,7 @@ for i=1,#robot.robot_joints do
         name="joint_trajectory"..i,
         expr= current_jnt - tgt ,
         priority = 2,
-        K=4
+        K=2
     };
 
     
@@ -63,6 +63,14 @@ Monitor{
         actionname='exit',
         expr=time-constant(execution_time)
 }
+
+-- Monitor{
+--     context=ctx,
+--     name='finish_after_on_ended',
+--     upper=0.0,
+--     actionname='debug',
+--     expr=time-constant(1)
+-- }
 
 
 tcp_frame = robot.getFrame("tcp_frame")

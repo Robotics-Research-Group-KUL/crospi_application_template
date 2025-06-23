@@ -6,22 +6,26 @@ from scipy.interpolate import CubicSpline
 # from shapely.geometry import Polygon, Point
 from scipy.integrate import quad
 
-def compute_direction(f1, f2, f3):
+def compute_direction(f1, f2, f3, prev_direction):
     angle_1 = np.arctan2(f2["y"] - f1["y"], f2["x"] - f1["x"])
     angle_2 = np.arctan2(f3["y"] - f2["y"], f3["x"] - f2["x"])
     # print("angle_1: ", angle_1)
     # print("angle_2: ", angle_2)
     angle_diff = angle_2 - angle_1
     # print("angle_diff: ", angle_diff)
-    if np.abs(angle_diff) <= np.pi:
+    if angle_diff == 0.0:
+        dir = prev_direction
+    elif np.abs(angle_diff) <= np.pi:
         dir = np.sign(angle_diff)
     else:
         dir = -np.sign(angle_diff)
+
+    print("dir: ", dir)
     return dir
 
 def compute_tangent(fixture_1, fixture_2, d1, d2,
                     dilate_1: bool = False, dilate_2: bool = False):
-    if fixture_1["type"] != "CIRCLE":
+    if fixture_1["type"] != "PIVOT":
         r1 = 0.0
     else:
         if dilate_1:
@@ -29,7 +33,7 @@ def compute_tangent(fixture_1, fixture_2, d1, d2,
         else:
             r1 = fixture_1["radius"]
     
-    if fixture_2["type"] != "CIRCLE":
+    if fixture_2["type"] != "PIVOT":
         r2 = 0.0
     else:
         if dilate_2:
@@ -50,7 +54,7 @@ def compute_tangent(fixture_1, fixture_2, d1, d2,
     return (o_x, o_y), (p_x, p_y)
 
 def create_circular_fixture(x, y, r):
-    return {"type": "CIRCLE", "x": x, "y": y, "radius": r}
+    return {"type": "PIVOT", "x": x, "y": y, "radius": r}
 
 def cubic_bezier_curve(t, P0, P1, P2, P3):
     return (1 - t)**3 * P0 + 3 * (1 - t)**2 * t * P1 + 3 * (1 - t) * t**2 * P2 + t**3 * P3
@@ -75,12 +79,12 @@ def curve_speed(t, argdict):
     return np.linalg.norm(dB_dt)
 
 def compute_approaching_zone_points(n_points, fixture_1, fixture_2, d1, d2, tool_radius, slack, dilation):
-    if fixture_1["type"] != "CIRCLE":
+    if fixture_1["type"] != "PIVOT":
         r1 = 0.0
     else:
         r1 = fixture_1["radius"]
 
-    if fixture_2["type"] != "CIRCLE":
+    if fixture_2["type"] != "PIVOT":
         r2 = 0.0
     else:
         r2 = fixture_2["radius"]
@@ -113,12 +117,12 @@ def compute_approaching_zone_points(n_points, fixture_1, fixture_2, d1, d2, tool
 
 def compute_turning_zone_points(n_points, fixture_2, fixture_3, d2, tool_radius, 
                                 cable_length, theta_i, slack, align_tolerance):
-    if fixture_2["type"] != "CIRCLE":
+    if fixture_2["type"] != "PIVOT":
         r2 = 0.0
     else:
         r2 = fixture_2["radius"]
 
-    if fixture_3["type"] != "CIRCLE":
+    if fixture_3["type"] != "PIVOT":
         r3 = 0.0
     else:
         r3 = fixture_3["radius"]
@@ -186,11 +190,11 @@ def generate_arc_points(center, radius, point1, point2, d2, num_points=100):
 # def get_freespace_polygon(fixture_1: dict, fixture_2: dict, fixture_3: dict, d1: int, d2: int, 
 #                 tool_radius: float, slack: float, dilation: float, align_tolerance: float, n_points_zone=100) -> Polygon:
 
-#     if fixture_1["type"] != "CIRCLE":
+#     if fixture_1["type"] != "PIVOT":
 #         r1 = 0.0
 #     else:
 #         r1 = fixture_1["radius"]
-#     if fixture_2["type"] != "CIRCLE":
+#     if fixture_2["type"] != "PIVOT":
 #         r2 = 0.0
 #     else:
 #         r2 = fixture_2["radius"]
@@ -248,7 +252,7 @@ def generate_arc_points(center, radius, point1, point2, d2, num_points=100):
 #     rz = fixture_2["rz"]
 #     channel_p = (fixture_2["x"], fixture_2["y"])
     
-#     if fixture_1["type"] != "CIRCLE":
+#     if fixture_1["type"] != "PIVOT":
 #         r1 = 0.0
 #     else:
 #         r1 = fixture_1["radius"]
@@ -353,7 +357,7 @@ def generate_arc_points(center, radius, point1, point2, d2, num_points=100):
 
 def check_collisions(polygon, board_model):
     for fixture_id, fixture in board_model["Fixtures"].items():
-        if fixture["type"] == "CIRCLE" or fixture["type"] == "CHANNEL":
+        if fixture["type"] == "PIVOT" or fixture["type"] == "CHANNEL":
             if polygon.intersects(fixture["polygon"]):
                 print("Fixture {} intersects with polygon".format(fixture_id))
             else:
@@ -411,7 +415,7 @@ def generate_tangents_fixture_point(fixture, point):
 def plot_board(ax, route_data, tangent_lines, start_points, end_points):
     plt.grid(True)
     for fixture_id, fixture in route_data["Fixtures"].items():
-        if fixture["type"] == "CIRCLE":
+        if fixture["type"] == "PIVOT":
             circle_array = create_circle(fixture["x"],fixture["y"],fixture["radius"])
             ax.plot(circle_array[0], circle_array[1], 'k')
             ax.text(fixture["x"], fixture["y"], str(fixture_id), fontsize=12, color="g")

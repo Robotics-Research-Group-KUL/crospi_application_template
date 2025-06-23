@@ -126,6 +126,8 @@ def generate_json_schema(plugin_dict: dict, gen_schema_name: str, description: s
 
 
     output_file = f"schemas/generated/{gen_schema_name}"
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
     try:
         with open(output_file, "w") as f:
             json.dump(json_schema, f, indent=4)
