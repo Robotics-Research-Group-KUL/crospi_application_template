@@ -1,6 +1,7 @@
 require("context")
 require("geometric")
 -- worldmodel=require("worldmodel")
+
 require("math")
 reqs = require("task_requirements")
 
@@ -15,6 +16,11 @@ param = reqs.parameters(task_description,{
     reqs.params.string({name="task_frame", description="Name of frame used to control the robot in cartesian space", default = "tcp_frame", required=false}),
     reqs.params.array({name="delta_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="3D array of distances [m] that the robot will move w.r.t. the starting position in the X,Y,Z coordinates w.r.t. robot base", required=true,minimum = -1.5, maximum=1.5,minItems = 3, maxItems = 3}),
     reqs.params.array({name="delta_euler", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="3D array of euler angles [rad] that the robot will move w.r.t. the starting orientation following RPY convention w.r.t the robot base", required=true,minimum = -6.28, maximum=6.28,minItems = 3, maxItems = 3}),
+    reqs.params.enum({name="wrt_frame", type=reqs.enum_types.string, default="world_frame", description="Defines in which frame the dela_pos and delta_euler are defined.", required=true, accepted_vals = {"tcp_frame","world_frame"}}),
+
+    -- reqs.params.string({name="controlled_link", description="Name of the URDF link (i.e. a frame) used to control the robot in cartesian space", default = "tool0", required=true}),
+    -- reqs.params.string({name="base_link", description="Name of the URDF link (i.e. a frame) that defines which joints will be used to generate the motion. Only joints from this link towards the controlled link will be used in the motion.", default = "world", required=true}),
+    -- reqs.params.string({name="wrt_link", description="Name of the URDF link (i.e. a frame) to define w.r.t. in which frame the delta_pos and delta_euler are defined", default = "world", required=true}),
 })
 
 -- ======================================== Robot model requirements ========================================
@@ -26,6 +32,31 @@ robot = reqs.robot_model({--This function loads the robot model and checks that 
 })
 robot_joints = robot.robot_joints
 task_frame = robot.getFrame(param.get("task_frame"))
+
+
+-- robot = reqs.robot_model({--This function loads the robot model and checks that all required frames are available
+--     -- param.get("task_frame"), --The frame is selected as a parameter, to make the skill even more reusable
+--     -- "forearm"
+--     "tcp_frame"
+--     --Add all frames that are required by the task specification
+-- })
+-- robot_joints = robot.robot_joints
+-- local robot_world_model = robot.urdfreader.readUrdf(robot.xmlstr,{})
+
+-- local VLT = {}
+-- local local_frames = robot_world_model:getExpressions(VLT,ctx,{tf_transform ={param.get("controlled_link"),param.get("base_link")},
+--                                                         wrt_transform ={param.get("wrt_link"),param.get("base_link")}})
+
+-- if local_frames["tf_transform"]== nil then
+--     error("The transformation from `" .. param.get("controlled_link") .. "` to `" .. param.get("base_link") .. "` does not exist. Is likely that these link names where not defined in the robot model (e.g. URDF).`")
+-- end
+
+-- if local_frames["wrt_transform"]== nil then
+--     error("The transformation from `" .. param.get("wrt_link") .. "` to `" .. param.get("base_link") .. "` does not exist. Is likely that these link names where not defined in the robot model (e.g. URDF).`")
+-- end
+
+-- task_frame = local_frames["tf_transform"]
+-- wrt_frame = local_frames["wrt_transform"]
 
 -- ========================================= PARAMETERS ===================================
 maxvel    = constant(param.get("maxvel"))
@@ -50,8 +81,15 @@ startpos  = origin(startpose)
 startrot  = rotation(startpose)
 
 -- =============================== END POSE ==============================
-endpos    = origin(startpose) + vector(delta_x,delta_y,delta_z)
-endrot    = rot_x(delta_roll)*rot_y(delta_pitch)*rot_z(delta_yaw)*rotation(startpose)
+
+if(param.get("wrt_frame") == "tcp_frame") then
+    end_frame = startpose*frame(rot_x(delta_roll)*rot_y(delta_pitch)*rot_z(delta_yaw),vector(delta_x,delta_y,delta_z))
+    endpos = origin(end_frame)
+    endrot = rotation(end_frame)
+else
+    endpos    = origin(startpose) + vector(delta_x,delta_y,delta_z)
+    endrot    = rot_x(delta_roll)*rot_y(delta_pitch)*rot_z(delta_yaw)*rotation(startpose)
+ end
 
 -- =========================== VELOCITY PROFILE ============================================
 eps=constant(1E-14)
@@ -104,7 +142,7 @@ Monitor{
         name='finish_after_motion',
         upper=0.0,
         actionname='exit',
-        expr=time-get_duration(mp) - constant(0.1)
+        expr=time-get_duration(mp) - constant(1)
 }
 
 -- Monitor{

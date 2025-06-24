@@ -111,7 +111,7 @@ Monitor{
         name='finish_after_motion',
         upper=0.0,
         actionname='exit',
-        expr=time-get_duration(mp) - constant(0.1)
+        expr=time-get_duration(mp) - constant(1)
 }
 
 -- Monitor{

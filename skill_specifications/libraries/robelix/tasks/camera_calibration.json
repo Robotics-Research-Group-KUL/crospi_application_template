@@ -10,7 +10,7 @@
                 "parameters": {
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "target_joints": [-0.7099, 1.24667, 0.1115, 1.420, 0.052, 2.033, 0.7854],
+                    "target_joints": [-0.7435, 1.302, 0.0953, 1.08, 0, 2.313, 0],
                     "units": "radians"
                 }
             }
@@ -35,7 +35,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -59,7 +60,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -72,8 +74,8 @@
                 "parameters": {
                     "delta_pos": [
                         0,
-                        0,
-                        0.2
+                        0.2,
+                        0
                     ],
                     "delta_euler": [
                         0,
@@ -83,7 +85,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -96,8 +99,8 @@
                 "parameters": {
                     "delta_pos": [
                         0,
-                        0,
-                        -0.2
+                        -0.2,
+                        0
                     ],
                     "delta_euler": [
                         0,
@@ -107,7 +110,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -131,7 +135,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -155,7 +160,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -179,7 +185,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -192,7 +199,7 @@
                 "parameters": {
                     "delta_pos": [
                         0,
-                        -0.2,
+                        0.1,
                         0
                     ],
                     "delta_euler": [
@@ -203,7 +210,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -227,7 +235,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -251,7 +260,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -275,7 +285,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         },
@@ -299,7 +310,8 @@
                     "eq_r": 0.08,
                     "maxacc": 0.2,
                     "maxvel": 0.2,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
                 }
             }
         }
