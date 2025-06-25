@@ -78,6 +78,11 @@ add_custom_target(
 install(DIRECTORY applications task_specifications skill_specifications robot_models schemas
   DESTINATION share/${PROJECT_NAME})
 
+
+# Install using setup.py
+ament_python_install_package(skill_specifications)
+
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

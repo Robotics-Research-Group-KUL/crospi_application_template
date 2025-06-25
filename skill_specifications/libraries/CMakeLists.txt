@@ -1,0 +1,11 @@
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+find_package(ament_cmake_python REQUIRED)
+# Find all subdirectories inside skill_specifications/libraries/ that contain a __init__.py file
+file(GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
+foreach(child ${children})
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/__init__.py")
+    # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/${child} ${CMAKE_BINARY_DIR}/${child})
+    ament_python_install_package(${child})
+    message("Compiling package at ${CMAKE_CURRENT_SOURCE_DIR}/${child}")
+  endif()
+endforeach()
