@@ -123,13 +123,13 @@ end
 
 -- =================================== MONITOR TO FINISH THE MOTION ========================
 
--- Monitor{
---         context=ctx,
---         name='finish_after_motion_ended',
---         upper=0.0,
---         actionname='exit',
---         expr=time-duration -constant(2)
--- }
+Monitor{
+        context=ctx,
+        name='finish_after_motion_ended',
+        upper=0.0,
+        actionname='exit',
+        expr=time-duration -constant(2)
+}
 
 -- Monitor {
 --     context = ctx,
