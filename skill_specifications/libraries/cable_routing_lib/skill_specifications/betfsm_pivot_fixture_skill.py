@@ -2,7 +2,7 @@ from betfsm.betfsm import *
 from betfsm.betfsm_ros import *
 from betfsm.betfsm_etasl import *
 from betfsm.betfsm_action_server import *
-from gripper_actions import MoveGripperToPosition, GripPart
+from .gripper_actions import MoveGripperToPosition, GripPart
 
 from rclpy.node import Node
 
@@ -59,26 +59,26 @@ class PivotFixtureSkill(Sequence):
         self.skill_params = skill_params
 
         self.add_state(eTaSL_StateMachine("cableSliding","CableSliding",
-                                                        lambda bb: {
+                                                        cb = lambda bb: {
                                                             "turning_dir": skill_params["turning_dir_sliding"],
                                                             "desired_pos": skill_params["desired_pos"]
                                                         },
                                                         node=node))
-        self.add_state(GripPart(gripping_velocity=skill_params["gripper_vel"], gripping_force=skill_params["gripper_force"], 
-                                gripping_direction=skill_params["gripper_direction"], node=node))
-        self.add_state(eTaSL_StateMachine("pivotAligning","PivotAligning",
-                                                        lambda bb: {
-                                                            "pos_next_fixture": skill_params["pos_next_fixture"],
-                                                            "z_down": skill_params["z_down"]
-                                                        },
-                                                        node=node))
-        self.add_state(eTaSL_StateMachine("cablePivoting","CablePivoting",
-                                                        lambda bb: {
-                                                            "frame_next_fixture": skill_params["frame_next_fixture"],
-                                                            "turning_dir_pivoting": skill_params["turning_dir_pivoting"],
-                                                        },
-                                                        node=node))
-        self.add_state(MoveGripperToPosition(finger_position = skill_params["cable_slide_pos"], gripping_velocity = skill_params["gripper_vel"], node=node))
+        # self.add_state(GripPart(gripping_velocity=skill_params["gripper_vel"], gripping_force=skill_params["gripper_force"], 
+        #                         gripping_direction=skill_params["gripper_direction"], node=node))
+        # self.add_state(eTaSL_StateMachine("pivotAligning","PivotAligning",
+        #                                                 cb = lambda bb: {
+        #                                                     "pos_previous_fixture": skill_params["pos_previous_fixture"],
+        #                                                     "z_down": skill_params["z_down"]
+        #                                                 },
+        #                                                 node=node))
+        # self.add_state(eTaSL_StateMachine("cablePivoting","CablePivoting",
+        #                                                 cb = lambda bb: {
+        #                                                     "frame_next_fixture": skill_params["frame_next_fixture"],
+        #                                                     "turning_dir_pivoting": skill_params["turning_dir_pivoting"],
+        #                                                 },
+        #                                                 node=node))
+        # self.add_state(MoveGripperToPosition(finger_position = skill_params["cable_slide_pos"], gripping_velocity = skill_params["gripper_vel"], node=node))
 
 
 def test_gripper(node=None):

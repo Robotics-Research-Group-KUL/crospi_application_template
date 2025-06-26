@@ -6,8 +6,10 @@
     "slack": 0.05,
     "pivot_radius": 0.01,
     "pivot_dilated_radius": 0.02,
+    "pivot_z_down": 0.01,
     "channel_width": 0.05,
     "channel_height": 0.05,
+    "channel_insertion_diff": 0.02,
     "maxvel": 0.5,
     "maxacc": 0.5,
     "cable_tension": 0.5,
@@ -17,5 +19,10 @@
     "k_x":2700,
     "k_o": 1,
     "tan_acc": 0.5,
-    "tan_vel": 0.5
+    "tan_vel": 0.5,
+    "slide_height": 0.05,
+    "gripper_vel": 0.5,
+    "gripper_force": 0.5,
+    "gripper_direction": 1,
+    "cable_slide_pos": 20
 }

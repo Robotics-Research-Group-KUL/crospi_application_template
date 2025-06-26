@@ -28,7 +28,7 @@ param = reqs.parameters(task_description,{
     reqs.params.scalar({name="k_x", description="Stiffness in the cable pulling direction", default=2700,  required=true, minimum = 1500, maximum = 4000}),
     reqs.params.scalar({name="k_o", description="Orientation adaptation gain", default=0.8,  required=true, minimum = 0.5, maximum = 2.0}),
     reqs.params.scalar({name="turning_dir", description="Turning direction of the cable sliding", default=1.0,  required=true, minimum = -1.0, maximum = 1.0}),
-    reqs.params.array({name="frame_next_fixture", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, description="Array with the frame of the next fixture", required=true, minimum = -1.5, maximum = 1.5, minItems = 7, maxItems = 7})
+    reqs.params.array({name="frame_next_fixture", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}, description="Array with the frame of the next fixture", required=true, minimum = -1.5, maximum = 1.5, minItems = 7, maxItems = 7})
 })
 
 -- ======================================== Robot model requirements ========================================

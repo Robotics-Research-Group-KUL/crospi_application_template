@@ -28,7 +28,7 @@ param = reqs.parameters(task_description,{
     reqs.params.string({name="task_frame", description="Name of frame used to control the robot in cartesian space", default = "tcp_frame", required=true}),
     reqs.params.string({name="FT_sensor_frame", description="Name of frame where the forces and torques a measured", default = "FT_sensor_frame", required=true}),
     reqs.params.scalar({name="z_down", description="Heigh gain", default=0.0,  required=true}),
-    reqs.params.array({name="pos_next_fixture", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="Array with the position of the next fixture", required=true, minimum = -1.5, maximum = 1.5, minItems = 3, maxItems = 3})
+    reqs.params.array({name="pos_previous_fixture", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="Array with the position of the next fixture", required=true, minimum = -1.5, maximum = 1.5, minItems = 3, maxItems = 3})
 })
 
 -- ======================================== Robot model requirements ========================================
@@ -55,10 +55,10 @@ k_x = constant(param.get("k_x"))
 k_o = constant(param.get("k_o"))
 z_down = constant(param.get("z_down"))
 
-pos_next_fixture = param.get("pos_next_fixture")
-pos_next_fixture_x = constant(pos_next_fixture[1])
-pos_next_fixture_y = constant(pos_next_fixture[2])
-pos_next_fixture_z = constant(pos_next_fixture[3])
+pos_previous_fixture = param.get("pos_previous_fixture")
+pos_previous_fixture_x = constant(pos_previous_fixture[1])
+pos_previous_fixture_y = constant(pos_previous_fixture[2])
+pos_previous_fixture_z = constant(pos_previous_fixture[3])
 
 tool_COG = constant(param.get("tool_COG"))
 tool_COG_x = constant(tool_COG[1])
@@ -114,7 +114,7 @@ task_frame_inst = inv(make_constant(task_frame))*task_frame
 rot_vec = getRotVec(rotation(task_frame_inst))
 
 -- ======================================== FRAMES ========================================
-angle = atan2(-pos_next_fixture_y, -pos_next_fixture_x+small_number)
+angle = atan2(-pos_previous_fixture_y, -pos_previous_fixture_x+small_number)
 z_vec = vector(0,0,1)
 fix_rotation = rotVec(z_vec, angle)
 

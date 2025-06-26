@@ -46,7 +46,7 @@
                     "k_x": "$blackboard/application_params/k_x",
                     "FT_sensor_frame": "FT_sensor_frame",
                     "task_frame": "tcp_frame",
-                    "pos_next_fixture": "$application_defined_parameter",
+                    "pos_previous_fixture": "$application_defined_parameter",
                     "z_down": "$application_defined_parameter",
                     "tool_COG": [
                         0,

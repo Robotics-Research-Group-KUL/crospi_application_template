@@ -40,7 +40,7 @@ def compute_tangent(fixture_1, fixture_2, d1, d2,
             r2 = fixture_2["dilated_radius"]
         else:
             r2 = fixture_2["radius"]
-    
+
     gamma = np.arctan2(fixture_2["y"] - fixture_1["y"], fixture_2["x"] - fixture_1["x"])
     beta = np.arcsin((d1*r1 - d2*r2) / np.linalg.norm([fixture_2["x"] - fixture_1["x"], fixture_2["y"] - fixture_1["y"]]))
     alpha =(gamma + beta)

@@ -2,7 +2,10 @@ from betfsm.betfsm import *
 from betfsm.betfsm_ros import *
 from betfsm.betfsm_etasl import *
 from betfsm.betfsm_action_server import *
-from gripper_actions import MoveGripperToPosition, GripPart
+
+# TODO: Gripper actions should me moved to a separate module
+from .gripper_actions import MoveGripperToPosition, GripPart
+
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 

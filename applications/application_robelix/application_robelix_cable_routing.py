@@ -3,9 +3,9 @@
 # from betfsm.betfsm import *
 # from betfsm.betfsm_ros import *
 from betfsm.betfsm_etasl import *
-# from betfsm.betfsm_action_server import *
 
-# from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_initial_skills import GoToCableStart
+
+from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_initial_skills import GoToCableStart
 
 import rclpy
 import json
@@ -134,6 +134,25 @@ def generate_routing_sm(board_model, route_task_model, params):
     plt.savefig("waypoints.pdf")
 
     return routing_sm
+
+# TODO: Change this to allow to add multiple tasks. This is defined in etasl_params.py in etasl_ros2_py
+# def load_task_list( json_file_name: str, blackboard: dict) -> None:
+#     """
+#     Loads a task list from a file. References to packages and environment variables in the name
+#     are expanded (using the expand_... functions)
+
+#     Parameters:
+#         json_file_name: 
+#             json file containing the task list.
+#         blackboard:
+#             blackboard into which to load the task list.
+    
+#     Returns:
+#         None
+#     """
+#     with open(expand_ref(json_file_name), 'r') as json_file:
+#         parameters = json.load(json_file)
+#         blackboard["tasks"] = parameters["tasks"]
 
 # TODO: Generate the application fsm
 def generate_application_fsm(route_task_model, board_model, params):

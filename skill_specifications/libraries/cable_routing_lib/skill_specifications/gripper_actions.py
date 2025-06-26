@@ -48,7 +48,6 @@ class GripPart(ActionClientBTFSM):
             timeout=timeout,
             node=node
         )
-        print("GripPart")
         self.gripping_velocity = gripping_velocity
         self.gripping_force = gripping_force
         self.gripping_direction = gripping_direction
