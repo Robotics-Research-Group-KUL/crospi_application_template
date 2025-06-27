@@ -316,8 +316,8 @@
   </joint>
   <link name="FT_sensor_frame"/>
   <joint name="FT_sensor_frame_joint" type="fixed">
-    <parent link="FT_sensor_frame"/>
-    <child link="maira7M_flange"/>
+    <parent link="maira7M_flange"/>
+    <child link="FT_sensor_frame"/>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </joint>
 </robot>
