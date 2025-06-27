@@ -14,7 +14,7 @@
 
 	<xacro:mav_plus axes_config="fixed" gripper="" arm_name="maira7M"  
             backpack="" lin_axis_base_x="0.52" lin_axis_base_z="0.8125" lin_axis_height="0.345"  
-            robot_base_yaw="0.0" camera_setup="link6" complex_mav_urdf="true" fixed_wheels="true"
+            robot_base_yaw="-1.57079" camera_setup="link6" complex_mav_urdf="true" fixed_wheels="true"
             klt_box="false" small_klt_box="false"/>
 
 
