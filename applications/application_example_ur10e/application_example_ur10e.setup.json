@@ -84,24 +84,24 @@
                         "varname": "joystick_input"
                     },
                     {
-                        "is-TFInputHandler": true,
+                        "is-PoseInputHandler": true,
                         "number_of_tries": 10,
                         "feedforward_input_topic": "/etasl/feedforward/twist_of_tf",
-                        "child_link": "base_link",
-                        "parent_link": "sine_frame",
+                        "depth": 1,
+                        "topic-name": "/tf_to_follow",
                         "when_unpublished": "use_default",
-                        "varname": "tf_to_follow",
+                        "varname": "board_pose",
                         "default_pose": {
-                            "origin": {
-                                "x": 0,
-                                "y": 0.5,
-                                "z": 0.3
-                            },
                             "orientation":{
                                 "is-rpy": true,
+                                "pitch": 0,
                                 "roll": 0,
-                                "pitch": 3.1416,
                                 "yaw": 0
+                            },
+                            "origin": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 0
                             }
                         }
                     }
