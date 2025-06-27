@@ -304,7 +304,7 @@
   </link>
   <link name="maira7M_flange"/>
   <joint name="maira7M_link7_to_flange" type="fixed">
-    <origin rpy="-1.5707963267948966 -1.5707963267948966 0" xyz="0 0.115 0"/>
+    <origin rpy="-1.5707963267948966 -1.5707963267948966 0" xyz="0 0.135 0"/>
     <parent link="maira7M_link7"/>
     <child link="maira7M_flange"/>
   </joint>
@@ -318,6 +318,6 @@
   <joint name="FT_sensor_frame_joint" type="fixed">
     <parent link="maira7M_flange"/>
     <child link="FT_sensor_frame"/>
-    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.066"/>
   </joint>
 </robot>

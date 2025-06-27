@@ -27,7 +27,7 @@
 	<joint name="FT_sensor_frame_joint" type="fixed">
 		<parent link="$(arg prefix)flange" />
 		<child link = "FT_sensor_frame" />
-		<origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+		<origin xyz="0.0 0.0 0.066" rpy="0.0 0.0 0.0" />
 	</joint>
 
 </robot>
