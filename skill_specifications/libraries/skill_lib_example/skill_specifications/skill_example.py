@@ -114,15 +114,26 @@ class MyStateMachine(TickingStateMachine):
         # Uncomment for example sequence
         self.add_state(
             eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
-            transitions={SUCCEED: "follow_tf", 
+            transitions={SUCCEED: "keep_frame", 
                         ABORT: ABORT}
         )
 
         self.add_state(
-            eTaSL_StateMachine("follow_tf","follow_tf",node=None), 
+            eTaSL_StateMachine("keep_frame","keep_frame",node=None), 
             transitions={SUCCEED: SUCCEED, 
                         ABORT: ABORT}
         )
+
+        # self.add_state(
+        #     eTaSL_StateMachine("follow_position_vector","follow_position_vector",node=None), 
+        #     transitions={SUCCEED: SUCCEED, 
+        #                 ABORT: ABORT}
+        # )
+        # self.add_state(
+        #     eTaSL_StateMachine("follow_tf","follow_tf",node=None), 
+        #     transitions={SUCCEED: SUCCEED, 
+        #                 ABORT: ABORT}
+        # )
 
     #         sm_out.add_state("MovingHome", etasl_utils.nested_etasl_state(name="MovingHome",  display_in_viewer=True),
     #                 transitions={SUCCEED: "MovingDown", 

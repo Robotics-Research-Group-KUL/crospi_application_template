@@ -3,7 +3,7 @@
 import rclpy
 from rclpy.node import Node
 import math
-from geometry_msgs.msg import TransformStamped, Twist
+from geometry_msgs.msg import TransformStamped, Twist, Pose, Vector3, Point
 from tf2_ros import TransformBroadcaster
 from rclpy.time import Time
 from tf_transformations import quaternion_from_euler
@@ -25,6 +25,10 @@ class SineTFBroadcaster(Node):
 
         # Publisher for the twist
         self.twist_pub = self.create_publisher(Twist, '/etasl/feedforward/twist_of_tf', 1)
+        self.velocity_pub = self.create_publisher(Vector3, '/etasl/feedforward/velocity_of_vector', 1)
+        self.pose_pub = self.create_publisher(Pose, '/tf_to_follow', 1)
+        self.vector_pub = self.create_publisher(Vector3, '/vector_to_follow', 1)
+        self.point_pub = self.create_publisher(Point, '/point_to_follow', 1)
 
     def timer_callback(self):
         now = self.get_clock().now()
@@ -71,6 +75,44 @@ class SineTFBroadcaster(Node):
         twist_msg.angular.z = 0.0
 
         self.twist_pub.publish(twist_msg)
+
+        # Create and publish Velocity
+        velocity_msg = Vector3()
+        velocity_msg.x = dx_dt
+        velocity_msg.y = 0.0
+        velocity_msg.z = 0.0
+
+        self.velocity_pub.publish(velocity_msg)
+
+        # Publish in a Pose message as well
+        pose_msg = Pose()
+        pose_msg.position.x = t.transform.translation.x
+        pose_msg.position.y = t.transform.translation.y
+        pose_msg.position.z = t.transform.translation.z
+        pose_msg.orientation.x = t.transform.rotation.x
+        pose_msg.orientation.y = t.transform.rotation.y
+        pose_msg.orientation.z = t.transform.rotation.z
+        pose_msg.orientation.w = t.transform.rotation.w
+
+        self.pose_pub.publish(pose_msg)
+
+        # Publish in a Vector3 message as well
+        vector_msg = Vector3()
+        vector_msg.x = t.transform.translation.x
+        vector_msg.y = t.transform.translation.y
+        vector_msg.z = t.transform.translation.z
+
+        self.vector_pub.publish(vector_msg)
+        
+        # Publish in a Point message as well
+        point_msg = Point()
+        point_msg.x = t.transform.translation.x
+        point_msg.y = t.transform.translation.y
+        point_msg.z = t.transform.translation.z
+
+        self.point_pub.publish(point_msg)
+
+
 
 
 def main():

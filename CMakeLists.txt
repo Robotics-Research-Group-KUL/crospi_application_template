@@ -78,6 +78,10 @@ add_custom_target(
 install(DIRECTORY applications task_specifications skill_specifications robot_models schemas
   DESTINATION share/${PROJECT_NAME})
 
+# Install Python node scripts
+install(PROGRAMS nodes/pose_msg_to_tf.py nodes/sine_wave_tf.py
+  DESTINATION lib/${PROJECT_NAME})
+
 
 # Install using setup.py
 ament_python_install_package(skill_specifications)

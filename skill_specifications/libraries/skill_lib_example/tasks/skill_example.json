@@ -104,6 +104,31 @@
                     "tf_name_var": "tf_to_follow" 
                 }
             }
+        },
+        {
+            "name": "follow_position_vector",
+            "task_specification":{
+                "from-dummy_lib-version-0.1.0": true,
+                "is-follow_external_vector": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/dummy_lib/task_specifications/follow_external_vector.etasl.lua",
+                "parameters": {
+                    "task_frame": "tcp_frame",
+                    "vector_name_var": "vector_to_follow"
+                }
+            }
+        },
+        {
+            "name": "keep_frame",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-keep_relative_initial_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/keep_relative_initial_pose.etasl.lua",
+                "parameters": {
+                    "base_frame": "board_pose",
+                    "execution_time": 0,
+                    "task_frame": "tcp_frame"
+                }
+            }
         }
     ]
 }
