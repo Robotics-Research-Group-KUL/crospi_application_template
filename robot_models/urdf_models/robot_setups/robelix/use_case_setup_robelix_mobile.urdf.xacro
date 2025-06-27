@@ -58,7 +58,17 @@
                 <limit lower="-30" upper="30" effort="100000" velocity="0.3" />
 	    </joint>
 
+
+
 	</xacro:unless>
+
+    <link name="FT_sensor_frame" />
+	<joint name="FT_sensor_frame_joint" type="fixed">
+		<parent link="$(arg prefix)flange" />
+		<child link = "FT_sensor_frame" />
+		<origin xyz="0.0 0.0 0.066" rpy="0.0 0.0 0.0" />
+	</joint>
+
 
 
 
