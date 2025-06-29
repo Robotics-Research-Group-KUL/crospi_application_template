@@ -1074,6 +1074,6 @@
   <joint name="tool0_cables_joint" type="fixed">
     <parent link="tool0_cables_intermediate"/>
     <child link="tool0_cables"/>
-    <origin rpy="0.0 0.0 0.785398" xyz="0.0 0.0 0.0"/>
+    <origin rpy="0.0 0.0 -0.785398" xyz="0.0 0.0 0.0"/>
   </joint>
 </robot>
