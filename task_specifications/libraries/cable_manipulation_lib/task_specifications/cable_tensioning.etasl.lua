@@ -13,6 +13,7 @@ function dead_zone(signal,dead_val)
     return signal_dead_zone
 end
 
+-- print("============11111=================")
 -- ========================================= PARAMETERS ===================================
 param = reqs.parameters(task_description,{
     reqs.params.scalar({name="cable_tens", description="Desired Cable Tension [N]", default = 5.0, required=true, maximum = 15}),
@@ -50,7 +51,7 @@ k_x                 = param.get("k_x")
 tool_COG_x = constant(tool_COG[1])
 tool_COG_y = constant(tool_COG[2])
 tool_COG_z = constant(tool_COG[3])
-
+-- print("============222222=================")
 -- ========================================= Variables coming from topic input handlers ===================================
 sensed_wrench   = ctx:createInputChannelWrench("wrench_input")
 
@@ -68,23 +69,34 @@ Fz_dead_zone = dead_zone(Fz_sensed, force_threshold)
 Tx_dead_zone = dead_zone(Tx_sensed, torque_threshold)
 Ty_dead_zone = dead_zone(Ty_sensed, torque_threshold)
 Tz_dead_zone = dead_zone(Tz_sensed, torque_threshold)
-
+-- print("============3333=================")
 -- =============================== GRAVITY COMPENSATION ==============================
-d_g = vector(0,0,-1) -- wrt to the base frame
+-- d_g = vector(0,0,-1) -- wrt to the base frame
+-- FT_sensor_frame_to_cog = frame(vector(tool_COG_x, tool_COG_y, tool_COG_z))
+
+-- -- This is the wrench removed by the taring and that needs to be compensated (Assuming it was tared aligned with the gravity vector)
+-- virtual_wrench_wrt_base_frame = wrench(d_g*tool_weight, cross(origin(FT_sensor_frame_to_cog),d_g*tool_weight))
+-- virtual_wrench_wrt_FT_frame = transform(rotation(FT_sensor_frame), virtual_wrench_wrt_base_frame)
+
+-- -- This is the wrench caused by the tool weight that needs to be compensated in the FT_sensor_frame
+-- -- Rotate the wrench to the FT_sensor_frame orientation
+-- wrench_cog_ftframe = transform(rotation(inv(FT_sensor_frame)), wrench(d_g*tool_weight, vector(0,0,0)))
+
+-- -- Translate the wrench to the FT_sensor_frame
+-- wrench_FT_frame = ref_point(wrench_cog_ftframe, origin(inv(FT_sensor_frame_to_cog)))
+-- wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame + virtual_wrench_wrt_FT_frame
+
+-- WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! This version works in the in Maira or IIWA but not in UR10e
+d_g = vector(0,0,-1)
 FT_sensor_frame_to_cog = frame(vector(tool_COG_x, tool_COG_y, tool_COG_z))
 
--- This is the wrench removed by the taring and that needs to be compensated (Assuming it was tared aligned with the gravity vector)
 virtual_wrench_wrt_base_frame = wrench(d_g*tool_weight, cross(origin(FT_sensor_frame_to_cog),d_g*tool_weight))
-virtual_wrench_wrt_FT_frame = transform(rotation(FT_sensor_frame), virtual_wrench_wrt_base_frame)
 
--- This is the wrench caused by the tool weight that needs to be compensated in the FT_sensor_frame
--- Rotate the wrench to the FT_sensor_frame orientation
 wrench_cog_ftframe = transform(rotation(inv(FT_sensor_frame)), wrench(d_g*tool_weight, vector(0,0,0)))
+wrench_FT_frame = ref_point(wrench_cog_ftframe, -origin(FT_sensor_frame_to_cog))
 
--- Translate the wrench to the FT_sensor_frame
-wrench_FT_frame = ref_point(wrench_cog_ftframe, origin(inv(FT_sensor_frame_to_cog)))
-wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame + virtual_wrench_wrt_FT_frame
-
+wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame - virtual_wrench_wrt_base_frame
+-- print("============44444=================")
 -- =============================== TRANSLATE FT TO TASK_FRAME ==============================
 wrench_task_frame   = ref_point(transform(rotation(inv(task_frame)*FT_sensor_frame), wrench_dead_zone) , -origin(inv(task_frame)*FT_sensor_frame))
 
@@ -101,19 +113,19 @@ task_frame_inst = inv(make_constant(task_frame))*task_frame
 -- =============================== INITIAL VALUES ==============================
 startpose = initial_value(time, task_frame)
 start_pose_diff  = inv(startpose)*task_frame
-
+-- print("============5555=================")
 -- =============================== CONSTRAINT SPECIFICATION ==============================
 Constraint{
 	context=ctx,
 	name="follow_force_x",
 	model = -k_x*coord_x(origin(task_frame_inst)),
 	meas = Fx,
-	target = -cable_tens,
+	target = cable_tens,
 	K = 4,
 	priority = 2,
 	weight = 1
 };
-
+-- print("============66666=================")
 Constraint{
     context = ctx,
     name    = "constant_y",
@@ -131,7 +143,7 @@ Constraint{
     weight  = 1,
     priority= 2
 };
-
+-- print("============77777=================")
 Constraint{
     context = ctx,
     name    = "constant_orientation",
@@ -141,24 +153,26 @@ Constraint{
     priority= 2
 };
 
--- Max tensioning velocity
-Constraint{
-    context = ctx,
-    name    = "x_velocity",
-    expr    = coord_x(origin(task_frame_inst)),
-	target_upper = maxvel*time,
-	target_lower = -maxvel*time,
-    K       = 0,
-    weight  = 10,
-    priority= 1
-};
+-- -- Max tensioning velocity
+-- Constraint{
+--     context = ctx,
+--     name    = "x_velocity",
+--     expr    = coord_x(origin(task_frame_inst)),
+-- 	target_upper = maxvel*time,
+-- 	target_lower = -maxvel*time,
+--     K       = 0,
+--     weight  = 10,
+--     priority= 1
+-- };
+
+time_start = conditional(time-3, 1, 0)
 
 Monitor{
     context=ctx,
     name='finish_force',
     upper=0.8,
     actionname='exit',
-    expr=abs(Fx)/cable_tens
+    expr=time_start*abs(Fx)/cable_tens
 };
 
 roll_tf, pitch_tf, yaw_tf = getRPY(rotation(task_frame))

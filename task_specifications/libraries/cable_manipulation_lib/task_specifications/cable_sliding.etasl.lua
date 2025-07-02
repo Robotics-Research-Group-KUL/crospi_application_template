@@ -12,7 +12,7 @@ function dead_zone(signal,dead_val)
     signal_dead_zone = conditional(abs(signal)-dead_val, signal + conditional(signal, -dead_val, dead_val), constant(0))
     return signal_dead_zone
 end
-
+-- print("Que se iceee============================ 0000000")
 -- ========================================= PARAMETERS ===================================
 param = reqs.parameters(task_description,{
     reqs.params.scalar({name="maxvel", description="Maximum velocity [m/s]", default = 0.1, required=true, maximum = 0.5}),
@@ -28,7 +28,8 @@ param = reqs.parameters(task_description,{
     reqs.params.scalar({name="a", description="Cable interaction parameter a", default=2.5,  required=true, minimum = 1.0, maximum = 5.0}),
     reqs.params.scalar({name="C", description="Cable interaction parameter C", default=0.5,  required=true, minimum = 0.0, maximum = 1.0}),
     reqs.params.scalar({name="turning_dir", description="Turning direction of the cable sliding", default=1.0,  required=true, minimum = -1.0, maximum = 1.0}),
-    reqs.params.array({name="desired_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="Array with the desired pose of the task frame in [x,y,z]", required=true, minimum = -1.5, maximum = 1.5, minItems = 3, maxItems = 3})
+    reqs.params.array({name="desired_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="Array with the desired pose of the task frame in [x,y,z]", required=true, minimum = -1.5, maximum = 1.5, minItems = 3, maxItems = 3}),
+    reqs.params.array({name="T_root_board", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}, description="Array with the transformation from the root to the board frame in [x,y,z,qx,qy,qz,qw]", required=true, minimum = -2, maximum = 2, minItems = 7, maxItems = 7})
 })
 
 -- ======================================== Robot model requirements ========================================
@@ -37,11 +38,14 @@ robot = reqs.robot_model({--This function loads the robot model and checks that 
     param.get("FT_sensor_frame"), --The frame is selected as a parameter, to make the skill even more reusable
     -- "forearm"
     -- "tcp_frame"
+    "tool0_cables_debug_root"
     --Add all frames that are required by the task specification
 })
-robot_joints = robot.robot_joints
+
 task_frame = robot.getFrame(param.get("task_frame"))
 FT_sensor_frame = robot.getFrame(param.get("FT_sensor_frame"))
+
+debug_frame = robot.getFrame("tool0_cables_debug_root")
 
 -- ========================================= PARAMETERS ===================================
 maxvel    = constant(param.get("maxvel"))
@@ -55,21 +59,43 @@ a = constant(param.get("a"))
 C = constant(param.get("C"))
 turn_dir = constant(param.get("turning_dir"))
 
-tool_COG = constant(param.get("tool_COG"))
+-- print("Que se iceee============================ 11111111")
+tool_COG = param.get("tool_COG")
+-- print("Que se iceee============================ 22222222")
 tool_COG_x = constant(tool_COG[1])
 tool_COG_y = constant(tool_COG[2])
 tool_COG_z = constant(tool_COG[3])
 
+-- print("Que se iceee============================ 33333333")
 desired_pos = param.get("desired_pos")
-x_coordinate   = constant(desired_pos[1])
-y_coordinate   = constant(desired_pos[2])
-z_coordinate   = constant(desired_pos[3])
+-- print("Que se iceee============================ 44444444")
+x_coordinate_board   = constant(desired_pos[1])
+y_coordinate_board   = constant(desired_pos[2])
+z_coordinate_board   = constant(desired_pos[3])
 
+T_root_board_p = param.get("T_root_board")
+T_root_board_x = constant(T_root_board_p[1])
+T_root_board_y = constant(T_root_board_p[2])
+T_root_board_z = constant(T_root_board_p[3])
+T_root_board_q_i = constant(T_root_board_p[4])
+T_root_board_q_j = constant(T_root_board_p[5])
+T_root_board_q_k = constant(T_root_board_p[6])
+T_root_board_q_real = constant(T_root_board_p[7])
+
+T_root_board_quat = quaternion(T_root_board_q_real, vector(T_root_board_q_i, T_root_board_q_j, T_root_board_q_k))
+T_root_board_R = toRot(T_root_board_quat)
+T_root_board_P = vector(T_root_board_x, T_root_board_y, T_root_board_z)
+T_root_board = frame(T_root_board_R, T_root_board_P)
+
+-- print("Que se iceee============================22222")
 -- compute orientation from quaternion
-quat = quaternion(q_real,vector(q_i,q_j,q_k))
-target_R = toRot(quat)
-target_pos = vector(x_coordinate,y_coordinate,z_coordinate)
+target_position_board = vector(x_coordinate_board, y_coordinate_board, z_coordinate_board)
+T_board_target = frame(target_position_board)
 
+T_root_target = T_root_board * T_board_target
+target_position = origin(T_root_target)
+
+-- print("Que se iceee============================3333333")
 -- ========================================= Variables coming from topic input handlers ===================================
 sensed_wrench   = ctx:createInputChannelWrench("wrench_input")
 
@@ -89,20 +115,31 @@ Ty_dead_zone = dead_zone(Ty_sensed, torque_threshold)
 Tz_dead_zone = dead_zone(Tz_sensed, torque_threshold)
 
 -- =============================== GRAVITY COMPENSATION ==============================
-d_g = vector(0,0,-1) -- wrt to the base frame
+-- d_g = vector(0,0,-1) -- wrt to the base frame
+-- FT_sensor_frame_to_cog = frame(vector(tool_COG_x, tool_COG_y, tool_COG_z))
+
+-- -- This is the wrench removed by the taring and that needs to be compensated (Assuming it was tared aligned with the gravity vector)
+-- virtual_wrench_wrt_base_frame = wrench(d_g*tool_weight, cross(origin(FT_sensor_frame_to_cog),d_g*tool_weight))
+-- virtual_wrench_wrt_FT_frame = transform(rotation(FT_sensor_frame), virtual_wrench_wrt_base_frame)
+
+-- -- This is the wrench caused by the tool weight that needs to be compensated in the FT_sensor_frame
+-- -- Rotate the wrench to the FT_sensor_frame orientation
+-- wrench_cog_ftframe = transform(rotation(inv(FT_sensor_frame)), wrench(d_g*tool_weight, vector(0,0,0)))
+
+-- -- Translate the wrench to the FT_sensor_frame
+-- wrench_FT_frame = ref_point(wrench_cog_ftframe, origin(inv(FT_sensor_frame_to_cog)))
+-- wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame + virtual_wrench_wrt_FT_frame
+
+-- WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! This version works in the in Maira or IIWA but not in UR10e
+d_g = vector(0,0,-1)
 FT_sensor_frame_to_cog = frame(vector(tool_COG_x, tool_COG_y, tool_COG_z))
 
--- This is the wrench removed by the taring and that needs to be compensated (Assuming it was tared aligned with the gravity vector)
 virtual_wrench_wrt_base_frame = wrench(d_g*tool_weight, cross(origin(FT_sensor_frame_to_cog),d_g*tool_weight))
-virtual_wrench_wrt_FT_frame = transform(rotation(FT_sensor_frame), virtual_wrench_wrt_base_frame)
 
--- This is the wrench caused by the tool weight that needs to be compensated in the FT_sensor_frame
--- Rotate the wrench to the FT_sensor_frame orientation
 wrench_cog_ftframe = transform(rotation(inv(FT_sensor_frame)), wrench(d_g*tool_weight, vector(0,0,0)))
+wrench_FT_frame = ref_point(wrench_cog_ftframe, -origin(FT_sensor_frame_to_cog))
 
--- Translate the wrench to the FT_sensor_frame
-wrench_FT_frame = ref_point(wrench_cog_ftframe, origin(inv(FT_sensor_frame_to_cog)))
-wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame + virtual_wrench_wrt_FT_frame
+wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame - virtual_wrench_wrt_base_frame
 
 -- =============================== TRANSLATE FT TO TASK_FRAME ==============================
 
@@ -116,19 +153,23 @@ Ty = coord_y(torque(wrench_task_frame))
 Tz = coord_z(torque(wrench_task_frame))
 
 -- =============================== INSTANTANEOUS FRAME ==============================
-
 task_frame_inst = inv(make_constant(task_frame))*task_frame
 rot_vec = getRotVec(rotation(task_frame_inst))
 
 -- =============================== TARGET POSE ====================================
 start_pose = initial_value(time, task_frame)
-start_pose_diff  = inv(startpose)*task_frame
+start_pose_diff  = inv(start_pose)*task_frame
 start_position  = origin(start_pose)
 -- =============================== END POSE ==============================
-end_position    = target_pos
+end_position    = target_position
+
+-- ========================================== Imports utils_ts ============================
+-- The following is done because utils_ts is a file of the library and not of the application ROS2 package.
+local script_dir = debug.getinfo(1, "S").source:match("@(.*)/")
+package.path = script_dir .. "/utilities/?.lua;" .. package.path  -- Add it to package.path
+local utils_ts = require("utils_ts")
 
 -- =========================== VELOCITY PROFILE ============================================
-
 -- compute distances for displacements and rotations:
 diff                    = cached(end_position-start_position)
 diff, distance          = utils_ts.normalize( diff )
@@ -138,16 +179,15 @@ motion_profile = create_motionprofile_trapezoidal()
 motion_profile:setProgress(time)
 motion_profile:addOutput(constant(0), distance, maxvel, maxacc)
 d = get_output_profile(motion_profile, 0)            -- progression in distance
-target_position = start_position + diff*d
+target_position_t = start_position + diff*d
 
 -- =============================== CONSTRAINT SPECIFICATION ==============================
-
 Constraint{
 	context=ctx,
 	name="follow_path_x",
 	expr = coord_x(origin(task_frame)),
-	target = coord_x(target_position),
-	K = 4,
+	target = coord_x(target_position_t),
+	K = 1,
 	priority = 2,
 	weight = 1
 };
@@ -156,8 +196,8 @@ Constraint{
 	context=ctx,
 	name="follow_path_y",
 	expr = coord_y(origin(task_frame)),
-	target = coord_y(target_position),
-	K = 4,
+	target = coord_y(target_position_t),
+	K = 1,
 	priority = 2,
 	weight = 1
 };
@@ -166,23 +206,39 @@ Constraint{
 	context=ctx,
 	name="follow_path_z",
 	expr = coord_z(origin(task_frame)),
-	target = coord_z(target_position),
-	K = 4,
+	target = coord_z(target_position_t),
+	K = 1,
 	priority = 2,
 	weight = 1
 };
 
-moment_sign = conditional(abs(Tz)-0.0001,Tz/abs(Tz),-turn_dir)
+-- moment_sign = conditional(abs(Tz)-0.0001,Tz/abs(Tz),-turn_dir)
 -- turning_dir = conditional(time-2, moment_sign, -turn_dir)
-turning_dir = -turn_dir
+-- turning_dir = -turn_dir
 
 end_time_ramp = 1
-K_max = 1
+K_max = 0.5 -- Real Robot 0.5
 K_ramp = conditional(time-end_time_ramp, K_max, K_max*time/end_time_ramp)
+-- Constraint{
+-- 	context=ctx,
+-- 	name="follow_cable_tens",
+-- 	model = turn_dir*(log(C)+a*coord_z(rot_vec)),
+-- 	meas = log(sqrt(Fx*Fx + Fy*Fy)+0.1),
+-- 	target = log(cable_tens+0.1),
+-- 	K = K_ramp,
+-- 	priority = 2,
+-- 	weight = 1,
+-- };
+
+-- last_joint   = ctx:getScalarExpr(robot.robot_joints[7])
+-- TODO:Change names and inputs
+debug_frame_inst = inv(make_constant(debug_frame))*debug_frame
+rot_vec_debug = getRotVec(rotation(debug_frame_inst))
+
 Constraint{
 	context=ctx,
 	name="follow_cable_tens",
-	model = -turning_dir*(log(C)+a*coord_z(rot_vec)),
+	model = turn_dir*(log(C)+a*coord_z(rot_vec_debug)),
 	meas = log(sqrt(Fx*Fx + Fy*Fy)+0.1),
 	target = log(cable_tens+0.1),
 	K = K_ramp,
@@ -190,24 +246,35 @@ Constraint{
 	weight = 1,
 };
 
--- Constant remaining orientation
+
+-- Orientation velocities
 Constraint{
     context = ctx,
-    name    = "constant_orientation_x",
-    expr    = coord_x(rotation(start_pose_diff)),
-    K       = 4,
+    name    = "x_angular",
+    expr    = coord_x(rot_vec) - 0*time,
+    K       = 0,
     weight  = 1,
     priority= 2
 };
 
 Constraint{
     context = ctx,
-    name    = "constant_orientation_y",
-    expr    = coord_y(rotation(start_pose_diff)),
-    K       = 4,
+    name    = "y_angular",
+    expr    = coord_y(rot_vec) - 0*time,
+    K       = 0,
     weight  = 1,
     priority= 2
 };
+
+-- Constraint{
+--     context = ctx,
+--     name    = "z_angular",
+--     expr    = coord_z(rot_vec) - 0*time,
+--     K       = 0,
+--     weight  = 1,
+--     priority= 2
+-- };
+
 
 local error_pos = norm(end_position-origin(task_frame))
 local error_th = 2 --mm
@@ -219,6 +286,14 @@ Monitor{
     expr=error_pos
 }
 
+-- Monitor{
+--     context=ctx,
+--     name='debug',
+--     upper = 0.5,
+--     actionname = "debug",
+--     expr=time
+-- }
+
 -- monitor_F = Monitor{context=ctx, 
 -- 					name='finish_force',
 -- 					upper=0.95,
@@ -228,12 +303,10 @@ Monitor{
 
 roll_tf, pitch_tf, yaw_tf = getRPY(rotation(task_frame))
 
-ctx:setOutputExpression("x_tf"		,coord_x(origin(task_frame)))
-ctx:setOutputExpression("y_tf"		,coord_y(origin(task_frame)))
-ctx:setOutputExpression("z_tf"		,coord_z(origin(task_frame)))
-ctx:setOutputExpression("roll_tf"	,roll_tf)
-ctx:setOutputExpression("pitch_tf"  ,pitch_tf)
-ctx:setOutputExpression("yaw_tf"	,yaw_tf)
+ctx:setOutputExpression("time",time)
+ctx:setOutputExpression("x_tf",coord_x(origin(task_frame)))
+ctx:setOutputExpression("y_tf",coord_y(origin(task_frame)))
+ctx:setOutputExpression("z_tf",coord_z(origin(task_frame)))
 
 ctx:setOutputExpression("Fx"      ,Fx)
 ctx:setOutputExpression("Fy"      ,Fy)
@@ -241,6 +314,3 @@ ctx:setOutputExpression("Fz"      ,Fz)
 ctx:setOutputExpression("Tx"      ,Tx)
 ctx:setOutputExpression("Ty"      ,Ty)
 ctx:setOutputExpression("Tz"      ,Tz)
-
-ctx:setOutputExpression("tcp_frame"   , tcp_frame)
-ctx:setOutputExpression("task_frame"  ,task_frame)

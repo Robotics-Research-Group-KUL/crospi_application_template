@@ -8,11 +8,11 @@
                 "is-move_cartesianspace_absolute_pose": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
                 "parameters": {
-                    "desired_pose": "$blackboard/output_param/tfListener/base_link_to_board",
+                    "desired_pose": "$blackboard/application_params/fixture_1_pose",
                     "maxacc": "$blackboard/application_params/maxacc",
                     "maxvel": "$blackboard/application_params/maxvel",
                     "eq_r": "$blackboard/application_params/eq_r",
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tool0_cables_root"
                 }
             }
         },
@@ -25,8 +25,24 @@
                 "parameters": {
                     "maxacc": 0.1,
                     "maxvel": 0.1,
-                    "target_joints": [0, 0, 0, 1.5707, 0, 0, 0],
+                    "target_joints": [0, 0, 0, 1.5707, 0, 1.5707, 0],
                     "units": "radians"
+                }
+            }
+        },
+        {
+            "name": "GoingOnTopFixture",
+            "task_specification":{
+                "from-cable_manipulation_lib-version-0.1.0": true,
+                "is-move_cartesianspace_board_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/move_cartesianspace_board_pose.etasl.lua",
+                "parameters": {
+                    "desired_pose": "$application_defined_parameter",
+                    "maxacc": "$blackboard/application_params/maxacc",
+                    "maxvel": "$blackboard/application_params/maxvel",
+                    "eq_r": "$blackboard/application_params/eq_r",
+                    "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose",
+                    "task_frame": "tool0_cables_root"
                 }
             }
         }

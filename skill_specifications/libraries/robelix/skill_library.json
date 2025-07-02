@@ -16,6 +16,11 @@
             "name": "Santiago Iregui",
             "affiliation": "KU Leuven",
             "email": "santiago.iregui@kuleuven.be"
+        },
+        {
+            "name": "Federico Ulloa",
+            "affiliation": "KU Leuven",
+            "email": "federico.ulloarios@kuleuven.be"
         }
     ],
     "maintainers": [
@@ -23,6 +28,11 @@
             "name": "Santiago Iregui",
             "affiliation": "KU Leuven",
             "email": "santiago.iregui@kuleuven.be"
+        },
+        {
+            "name": "Federico Ulloa",
+            "affiliation": "KU Leuven",
+            "email": "federico.ulloarios@kuleuven.be"
         }
     ],
     "acknowledgements": "The authors acknowledge the financial support of EU project AI-Prism (TODO)"

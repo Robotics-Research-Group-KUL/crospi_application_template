@@ -13,6 +13,9 @@ param = reqs.parameters(task_description,{
     reqs.params.string({name="task_frame", description="Name of frame that will be kept still with respect to a base frame which will continuously adapt", default = "tcp_frame", required=false}),
     reqs.params.string({name="base_frame", description="The specified task frame will be kept still relative to this base frame that will continuously adapt. This frame should come from a PoseInputHandler or a TFInputHandler", default = "base_frame", required=false}),
     reqs.params.scalar({name="execution_time", description="(optional) time (seconds) that the task should run before stopping. The task will only automatically stop if execution_time>0", default = 0, required=false, minimum = -1}),
+    reqs.params.bool({name="activate_linear", description="If true, the linear velocities of the joystick will control the linear velocities of the defined frame", default = true, required=true}),
+    reqs.params.bool({name="activate_angular", description="If true, the angular velocities of the joystick will control the angular velocities of the defined frame", default = false, required=true}),
+
 })
 
 -- TODO: Change order of quaterinions in the skill.
@@ -34,14 +37,53 @@ T_tcp_bf_target = initial_value(time, T_tcp_bf) --Initial transformation from TC
 
 
 -- ========================== CONSTRAINT SPECIFICATION =================================
-Constraint{
-    context = ctx,
-    name    = "maintain_relative_pose",
-    expr    = inv(T_tcp_bf_target)*T_tcp_bf,
-    K       = 4,
-    weight  = 1,
-    priority= 2
-}
+
+if param.get("activate_angular") then
+
+    Constraint{
+        context = ctx,
+        name    = "maintain_relative_posisition",
+        expr    = origin(T_tcp_bf) - origin(T_tcp_bf_target),
+        K       = 1,
+        weight  = 1,
+        priority= 2
+    }
+else
+    Constraint{
+        context = ctx,
+        name    = "keep_translation_constant",
+        expr    = origin(task_frame),
+        target  = initial_value(time, origin(task_frame)),
+        K       = 4,
+        weight  = 1,
+        priority= 2
+    };
+end
+
+
+
+if param.get("activate_angular") then
+    
+    Constraint{
+        context = ctx,
+        name    = "maintain_relative_rotation",
+        expr    = inv(rotation(T_tcp_bf_target))*rotation(T_tcp_bf),
+        K       = 1,
+        weight  = 1,
+        priority= 2
+    }
+else
+    Constraint{
+        context = ctx,
+        name    = "keep_rotation_constant",
+        expr    = rotation(task_frame)*initial_value(time, rotation(task_frame)),
+        K       = 4,
+        weight  = 1,
+        priority= 2
+    };
+
+end
+
 
 -- =========================== MONITOR ============================================
 -- Monitor{

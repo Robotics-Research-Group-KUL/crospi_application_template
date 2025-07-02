@@ -3,35 +3,30 @@
     "tasks": [
         {
             "name": "CableSliding",
-            "robot_specification_file":"$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
             "task_specification":{
                 "from-cable_manipulation_lib-version-0.1.0": true,
                 "is-cable_sliding": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/cable_sliding.etasl.lua",
                 "parameters": {
-                    "a": 2.5,
-                    "C": 0.5,
+                    "a": "$blackboard/application_params/cable_a",
+                    "C": "$blackboard/application_params/cable_C",
                     "cable_tens": "$blackboard/application_params/cable_tension",
                     "force_threshold": "$blackboard/application_params/force_threshold",
                     "torque_threshold": "$blackboard/application_params/torque_threshold",
                     "turning_dir": "$application_defined_parameter",
                     "desired_pos": "$application_defined_parameter",
                     "FT_sensor_frame": "FT_sensor_frame",
-                    "task_frame": "tcp_frame",
+                    "task_frame": "tool0_cables_root",
                     "maxacc": "$blackboard/application_params/maxacc",
                     "maxvel": "$blackboard/application_params/maxvel",
-                    "tool_COG": [
-                        0,
-                        0,
-                        0
-                    ],
-                    "tool_weight": 0
+                    "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
+                    "tool_weight": "$blackboard/application_params/tool_weight",
+                    "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose"
                 }
             }
         },
         {
             "name": "PivotAligning",
-            "robot_specification_file":"$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
             "task_specification":{
                 "from-cable_manipulation_lib-version-0.1.0": true,
                 "is-pivot_aligning": true,
@@ -45,21 +40,17 @@
                     "eq_r": "$blackboard/application_params/eq_r",
                     "k_x": "$blackboard/application_params/k_x",
                     "FT_sensor_frame": "FT_sensor_frame",
-                    "task_frame": "tcp_frame",
-                    "pos_previous_fixture": "$application_defined_parameter",
+                    "task_frame": "tool0_cables_root",
+                    "previous_to_current_fixture": "$application_defined_parameter",
                     "z_down": "$application_defined_parameter",
-                    "tool_COG": [
-                        0,
-                        0,
-                        0
-                    ],
-                    "tool_weight": 0
+                    "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
+                    "tool_weight": "$blackboard/application_params/tool_weight",
+                    "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose"
                 }
             }
         },
         {
             "name": "CablePivoting",
-            "robot_specification_file":"$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
             "task_specification":{
                 "from-cable_manipulation_lib-version-0.1.0": true,
                 "is-cable_pivoting": true,
@@ -73,15 +64,12 @@
                     "k_x": "$blackboard/application_params/k_x",
                     "k_o": "$blackboard/application_params/k_o",
                     "FT_sensor_frame": "FT_sensor_frame",
-                    "task_frame": "tcp_frame",
-                    "frame_next_fixture": "$application_defined_parameter",
-                    "turning_dir": "$application_defined_parameter",
-                    "tool_COG": [
-                        0,
-                        0,
-                        0
-                    ],
-                    "tool_weight": 0
+                    "task_frame": "tool0_cables_root",
+                    "frame_next_fixture_wrt_board": "$application_defined_parameter",
+                    "turning_dir_pivoting": "$application_defined_parameter",
+                    "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
+                    "tool_weight": "$blackboard/application_params/tool_weight",
+                    "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose"
                 }
             }
         }

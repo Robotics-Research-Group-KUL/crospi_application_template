@@ -29,7 +29,7 @@ import json
 import pickle
 
 from scipy.spatial.transform import Rotation as R
-from board_localization import calibrate
+from board_localization.calibration.head_eye_calibration import calibrate
 
 
 
@@ -93,8 +93,8 @@ class StorePose(Generator):
         try:
             # Lookup transform (latest available)
             transform: TransformStamped = self.tf_buffer.lookup_transform(
-                child_frame, 
                 parent_frame,
+                child_frame, 
                 rclpy.time.Time(),
                 timeout=rclpy.duration.Duration(seconds=1.0)
             )
@@ -178,29 +178,42 @@ class RunOptimization(Generator):
 
     def co_execute(self,blackboard):
 
-        #TODO: put a good estimate here, specially the orientation part
+
+        # intitial guess of the camera w.r.t the base
+        T_base_camera_guess = np.eye(4)
+        T_base_camera_guess[:3, :3] = R.from_euler('z', -45, degrees=True).as_matrix()
+        T_base_camera_guess[:3, 3] = np.array([0.37, -0.1, 0])
+
+        # intitial guess of the marker w.r.t the end effector
+        T_ee_marker_guess = np.eye(4)
+        T_ee_marker_guess[:3, 3] = np.array([-0.2, 0.0, 0.0])
+
+        # Print the initial guesses
+        print("T_base_camera_guess:")
+        print(T_base_camera_guess)
+        print("T_ee_marker_guess:")
+        print(T_ee_marker_guess)
 
 
+        # T_b_c_rotation = np.eye(4) #Estimate of pose robot base wrt camera
+        # T_b_c_translation = np.eye(4) #Estimate of pose robot base wrt camera
+        # r = R.from_euler('z', -45, degrees=True)
+        # # rot_x, rot_y, rot_z, rot_w = r.as_quat()
+        # T_b_c_rotation[:3, :3] = r.as_matrix()
+        # T_b_c_translation[:3, 3] = np.array([0.33,0.2, 0])
+        # T_b_c_estimate = T_b_c_rotation @ T_b_c_translation
+        # T_c_b_estimate = np.linalg.inv(T_b_c_estimate) #Estimate of pose camera wrt robot base
+        # # T_c_b_estimate[:3, 3] = np.array([0.2,-0.2, 0])
 
-        T_b_c_rotation = np.eye(4) #Estimate of pose robot base wrt camera
-        T_b_c_translation = np.eye(4) #Estimate of pose robot base wrt camera
-        r = R.from_euler('z', -45, degrees=True)
-        # rot_x, rot_y, rot_z, rot_w = r.as_quat()
-        T_b_c_rotation[:3, :3] = r.as_matrix()
-        T_b_c_translation[:3, 3] = np.array([0.33,0.2, 0])
-        T_b_c_estimate = T_b_c_rotation @ T_b_c_translation
-        T_c_b_estimate = np.linalg.inv(T_b_c_estimate) #Estimate of pose camera wrt robot base
-        # T_c_b_estimate[:3, 3] = np.array([0.2,-0.2, 0])
-
-        T_ee_o_estimate = np.eye(4) #Estimate of pose tracked object wrt end effectory
-        # yaw rotation of 135 deg
-        # T_ee_o_estimate[:3, :3] = np.array([[-0.707, -0.707, 0], 
-        #                                     [0.707, -0.707, 0], 
-        #                                     [0, 0, 1]])
+        # T_ee_o_estimate = np.eye(4) #Estimate of pose tracked object wrt end effectory
+        # # yaw rotation of 135 deg
+        # # T_ee_o_estimate[:3, :3] = np.array([[-0.707, -0.707, 0], 
+        # #                                     [0.707, -0.707, 0], 
+        # #                                     [0, 0, 1]])
         
         # T_b_c_estimate = np.linalg.inv(T_c_b_estimate) #Estimate of pose camera wrt robot base
-        estimate_pos = translation_from_matrix(T_ee_o_estimate)
-        estimate_quat = quaternion_from_matrix(T_ee_o_estimate)
+        estimate_pos = translation_from_matrix(T_ee_marker_guess)
+        estimate_quat = quaternion_from_matrix(T_ee_marker_guess)
 
 
 
@@ -262,8 +275,8 @@ class RunOptimization(Generator):
         data = {
             "T_b_ee": T_b_ee,
             "T_c_o": T_c_o,
-            "T_c_b_estimate": T_c_b_estimate,
-            "T_ee_o_estimate": T_ee_o_estimate
+            # "T_c_b_estimate": T_c_b_estimate,
+            # "T_ee_o_estimate": T_ee_o_estimate
         }
 
         # save data to a file using pickle
@@ -273,42 +286,13 @@ class RunOptimization(Generator):
 
 
         # T_c_b, T_ee_o = self.optimize(T_b_ee,T_c_o,T_ee_o_estimate,T_c_b_estimate)
-        T_c_b, T_ee_o = calibrate.optimize(T_b_ee,T_c_o,T_ee_o_estimate,T_c_b_estimate)
+        T_base_camera_calib, T_ee_marker_calib = calibrate.optimize(T_b_ee,T_c_o,T_ee_marker_guess,T_base_camera_guess)
 
-        print("The solution for the estimated pose of base robot wrt camera is:")
-        print(T_c_b)
+        calibrate.print_transformation_pub("maira7M_root_link", "camera_link", T_base_camera_calib)
+        calibrate.print_transformation_pub("ee", "marker", T_ee_marker_calib)
 
-        print("The solution for the estimated pose of the tracked object wrt end effector:")
-        print(T_ee_o)
-
-        T_c_b_calib_4x4 = np.vstack((T_c_b, np.array([[0, 0, 0, 1]])))
-
-        calibrated_pos = translation_from_matrix(T_c_b_calib_4x4)
-        calibrated_quat = quaternion_from_matrix(T_c_b_calib_4x4)
-
-
-
-        # Print in format for launch file
-        print("CALIBRATION RESULT. Please copy-paste the following node into your ROS2 Launch file to utilize the calibration results in your application:")
-        print(" ")
-        print("Node(")
-        print("    package='tf2_ros',")
-        print("    executable='static_transform_publisher',")
-        print("    name='static_tf_pub_quat',")
-        print("    arguments=[")
-        print(f"        '{calibrated_pos[0]:.6f}', '{calibrated_pos[1]:.6f}', '{calibrated_pos[2]:.6f}',       # translation x y z")
-        print(f"        '{calibrated_quat[0]:.6f}', '{calibrated_quat[1]:.6f}', '{calibrated_quat[2]:.6f}', '{calibrated_quat[3]:.6f}',# rotation quaternion x y z w")
-        print("        'base_link',               # parent frame")
-        print("        'camera_link'             # child frame")
-        print("    ],")
-        print("),")
-
-        # pdb.set_trace()
-
-
-
-        
         yield SUCCEED
+
     def optimize(self, T_b_ee, T_c_o, T_ee_o_estimate = np.eye(4), T_c_b_estimate = np.eye(4)):
         """
         Specification and solution of multi-pose calibration problem in Casadi.

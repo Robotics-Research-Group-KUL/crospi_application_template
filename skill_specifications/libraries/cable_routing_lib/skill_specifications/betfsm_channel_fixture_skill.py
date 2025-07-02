@@ -27,6 +27,8 @@ class ChannelFixtureSkill(Sequence):
         super().__init__("Channel_fixture_skill")
         self.node = node
         self.skill_params = skill_params
+        # print(skill_params)
+        self.add_state(MoveGripperToPosition(finger_position = skill_params["cable_slide_pos"], gripping_velocity = skill_params["gripper_vel"], node=node))
 
         self.add_state(eTaSL_StateMachine("cableSliding","CableSliding",
                                                         cb = lambda bb: {
@@ -34,18 +36,18 @@ class ChannelFixtureSkill(Sequence):
                                                             "desired_pos": skill_params["desired_pos"]
                                                         },
                                                         node=node))
-        # self.add_state(GripPart(gripping_velocity=skill_params["gripper_vel"], gripping_force=skill_params["gripper_force"],
-        #                         gripping_direction=skill_params["gripper_direction"], node=node))
-        # self.add_state(eTaSL_StateMachine("cableChannelAligning","CableChannelAligning",
-        #                                                 cb = lambda bb: {
-        #                                                     "channel_aligning_pose": skill_params["channel_aligning_pose"]
-        #                                                 },
-        #                                                 node=node))
-        # self.add_state(eTaSL_StateMachine("cableChannelInserting","CableChannelInserting",
-        #                                                 cb = lambda bb: {
-        #                                                     "channel_inserting_pose": skill_params["channel_inserting_pose"],
-        #                                                 },
-        #                                                 node=node))
-        # self.add_state(eTaSL_StateMachine("cableTensioning","CableTensioning",
-        #                                                 node=node))
-        # self.add_state(MoveGripperToPosition(finger_position = skill_params["cable_slide_pos"], gripping_velocity = skill_params["gripper_vel"], node=node))
+        self.add_state(GripPart(gripping_velocity=skill_params["gripper_vel"], gripping_force=skill_params["gripper_force"],
+                                gripping_direction=skill_params["gripper_direction"], node=node))
+        self.add_state(eTaSL_StateMachine("cableChannelAligning","CableChannelAligning",
+                                                        cb = lambda bb: {
+                                                            "desired_pose": skill_params["channel_aligning_pose"]
+                                                        },
+                                                        node=node))
+        self.add_state(eTaSL_StateMachine("cableChannelInserting","CableChannelInserting",
+                                                        cb = lambda bb: {
+                                                            "desired_pose": skill_params["channel_inserting_pose"],
+                                                        },
+                                                        node=node))
+        self.add_state(eTaSL_StateMachine("cableTensioning","CableTensioning",
+                                                        node=node))
+        self.add_state(MoveGripperToPosition(finger_position = skill_params["cable_slide_pos"], gripping_velocity = skill_params["gripper_vel"], node=node))

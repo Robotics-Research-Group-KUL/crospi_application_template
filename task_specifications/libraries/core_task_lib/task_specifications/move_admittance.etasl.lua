@@ -75,21 +75,36 @@ Ty_dead_zone = dead_zone(Ty,torque_threshold)
 Tz_dead_zone = dead_zone(Tz,torque_threshold)
 
 -- =============================== GRAVITY COMPENSATION==============================
--- =============================== GRAVITY COMPENSATION==============================
-d_g = vector(0,0,-1) -- wrt to the base frame
+
+-- WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! This version works in the UR10e robot, but not in Maira or IIWA
+-- d_g = vector(0,0,-1) -- wrt to the base frame
+-- FT_sensor_frame_to_cog = frame(vector(tool_COG_x, tool_COG_y, tool_COG_z))
+
+-- -- This is the wrench removed by the taring and that needs to be compensated (Assuming it was tared aligned with the gravity vector)
+-- virtual_wrench_wrt_base_frame = wrench(d_g*tool_weight, cross(origin(FT_sensor_frame_to_cog),d_g*tool_weight))
+-- virtual_wrench_wrt_FT_frame = transform(rotation(FT_sensor_frame), virtual_wrench_wrt_base_frame)
+
+-- -- This is the wrench caused by the tool weight that needs to be compensated in the FT_sensor_frame
+-- -- Rotate the wrench to the FT_sensor_frame orientation
+-- wrench_cog_ftframe = transform(rotation(inv(FT_sensor_frame)), wrench(d_g*tool_weight, vector(0,0,0)))
+
+-- -- Translate the wrench to the FT_sensor_frame
+-- wrench_FT_frame = ref_point(wrench_cog_ftframe, origin(inv(FT_sensor_frame_to_cog)))
+-- wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame + virtual_wrench_wrt_FT_frame
+
+
+-- WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! This version works in the in Maira or IIWA but not in UR10e
+d_g = vector(0,0,-1)
 FT_sensor_frame_to_cog = frame(vector(tool_COG_x, tool_COG_y, tool_COG_z))
 
--- This is the wrench removed by the taring and that needs to be compensated (Assuming it was tared aligned with the gravity vector)
 virtual_wrench_wrt_base_frame = wrench(d_g*tool_weight, cross(origin(FT_sensor_frame_to_cog),d_g*tool_weight))
-virtual_wrench_wrt_FT_frame = transform(rotation(FT_sensor_frame), virtual_wrench_wrt_base_frame)
 
--- This is the wrench caused by the tool weight that needs to be compensated in the FT_sensor_frame
--- Rotate the wrench to the FT_sensor_frame orientation
 wrench_cog_ftframe = transform(rotation(inv(FT_sensor_frame)), wrench(d_g*tool_weight, vector(0,0,0)))
+wrench_FT_frame = ref_point(wrench_cog_ftframe, -origin(FT_sensor_frame_to_cog))
 
--- Translate the wrench to the FT_sensor_frame
-wrench_FT_frame = ref_point(wrench_cog_ftframe, origin(inv(FT_sensor_frame_to_cog)))
-wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame + virtual_wrench_wrt_FT_frame
+wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame - virtual_wrench_wrt_base_frame
+
+
 -- =============================== TRANSLATE FT TO TASK_FRAME==============================
 
 wrench_task_frame   = ref_point(transform(rotation(inv(task_frame)*FT_sensor_frame),wrench_dead_zone) , -origin(inv(task_frame)*FT_sensor_frame))

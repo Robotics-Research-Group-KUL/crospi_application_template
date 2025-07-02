@@ -17,12 +17,83 @@ import numpy as np
 
 from scipy.spatial.transform import Rotation as R
 
+from geometry_msgs.msg import Pose
+
+from std_srvs.srv import Empty
 from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_channel_fixture_skill import ChannelFixtureSkill
-from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_pivot_fixture_skill import PivotFixtureSkill, BeTFSMRunner
+from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_pivot_fixture_skill import PivotFixtureSkill, MoveGripperToPosition
+
+class GetFrame(Generator):
+    def __init__(self):
+        super().__init__("GetFrame",[SUCCEED])
+    def co_execute(self,bb):
+        T_root_board = bb["initial_board_pose"]
+
+        # sm_to_execute = eTaSL_StateMachine("MovingHome", "MovingHome", node=self)
+        T_board_fixture_1 = np.eye(4)
+        T_board_fixture_1[:3, 3] = np.array([0.06, 0.4575, 0.07])
+
+        T_root_fixture_1 = T_root_board @ T_board_fixture_1
+
+        T_board_gripper = np.eye(4)
+        T_board_gripper[:3, 3] = np.array([0.0, 0.0, 0.0])
+        T_board_gripper[:3, :3] = R.from_euler('ZYX', [np.pi, 0.0, 0.0], degrees=False).as_matrix()
+
+        T_root_gripper = T_root_fixture_1 @ T_board_gripper
+        pos_root_gripper = T_root_gripper[:3, 3]
+        rot_root_gripper = R.from_matrix(T_root_gripper[:3, :3]).as_quat()
+
+        bb["application_params"]["fixture_1_pose"] = [pos_root_gripper[0], pos_root_gripper[1], pos_root_gripper[2],
+                                                      rot_root_gripper[0], rot_root_gripper[1], rot_root_gripper[2], rot_root_gripper[3]]
+        
+        yield SUCCEED
+
+class ReadLogFromTopic(Generator):
+    def __init__(self, topic_name:str, bb_key:str, number_data:int, node: Node = None):
+        super().__init__("ReadFromTopic",[SUCCEED])
+        self.node = node
+        self.average_msg = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        self.topic = topic_name
+        self.bb_key = bb_key
+        self.number_data = number_data
+        self.actual_data = 0
+
+    def cb_msg(self,msg):
+        euler = R.from_quat([msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w]).as_euler('xyz', degrees=False)
+
+        self.average_msg += np.array([msg.position.x, msg.position.y, msg.position.z, euler[0], euler[1], euler[2]])
+
+        self.actual_data += 1
+
+    def co_execute(self,blackboard):
+        # subscribe to the topic
+        self.node.create_subscription(Pose, self.topic, self.cb_msg, 1)
+        # store the message in the blackboard
+        # TODO: Add a timeout
+        while self.actual_data < self.number_data:
+            yield TICKING
+        
+        self.average_message = self.average_msg / self.actual_data
+        T_matrix = np.eye(4)
+        T_matrix[:3, 3] = self.average_message[:3]
+        T_matrix[:3, :3] = R.from_euler('xyz', self.average_message[3:6], degrees=False).as_matrix()
+        blackboard[self.bb_key] = T_matrix
+
+        quat = R.from_euler('xyz', self.average_message[3:6], degrees=False).as_quat()
+        T_root_board = [self.average_message[0], self.average_message[1], self.average_message[2],
+                        quat[0], quat[1], quat[2], quat[3]]
+        blackboard["output_param"]["vision_detection"] = {}
+        blackboard["output_param"]["vision_detection"][self.bb_key] = T_root_board
+        get_logger().info(f"Read {self.actual_data} messages from topic {self.topic}, averaged to: ------------- \n {blackboard[self.bb_key]}")
+
+        # Destroy the subscription
+        self.node.destroy_subscription(self.topic)
+        yield SUCCEED
 
 
 # TODO: Implement goal callback to reject if there is already a routing task running
 # TODO: Implement feedback, it could be easily handle by adding a feedbackState from BetFSM at the end of each skill
+# TODO: Separate maxvel and maxacc from free space motions and motions in contact
 class RoutingActionServer(Node):
 
     def __init__(self):
@@ -56,6 +127,9 @@ class RoutingActionServer(Node):
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/pivot_fixture_skill.json")
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/initial_skills.json")
 
+        self.blackboard["application_params"] = self.params
+
+
     def execute_callback(self, goal_handle):
         self.get_logger().info('Executing cable routing task ...')
         self.get_logger().info(f"Received task: {goal_handle.request.task}")
@@ -66,22 +140,54 @@ class RoutingActionServer(Node):
         parameters_str = goal_handle.request.parameters
         board_model, route_task_model = self.get_board_and_route(parameters_str)
 
-        intial_sm = eTaSL_StateMachine("MovingHome", "MovingHome", node=self)
-        routing_sm = self.generate_routing_sm(board_model, route_task_model)
+        if goal_handle.request.task == "Routing_Task":
+            routing_sm = self.generate_routing_sm(board_model, route_task_model)
+
+            sm_to_execute = Sequence("Intial", children = [eTaSL_StateMachine("MovingHome", "MovingHome", node=self),
+                                                            MoveGripperToPosition(finger_position=0.0, gripping_velocity=self.params["gripper_vel"], node=self),
+                                                            ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self),
+                                                            TimedWait("timed_wait",Duration(seconds=1.0),node=self ),
+                                                            ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self),
+                                                            GetFrame(),
+                                                            eTaSL_StateMachine("goingToStarting", "GoingToStarting", node=self),
+                                                            routing_sm])
+            
+        elif goal_handle.request.task == "Go_to_fixtures":
+            all_fixtures_sm = []
+            fixture_poses = []
+            for i, fixture_id in enumerate(board_model["Fixtures"].keys()):
+                fixture = board_model["Fixtures"][fixture_id]
+                fixture_poses.append([fixture["x"], fixture["y"], self.params["slide_height"],
+                                0, 0, 0, 1])
+                
+                # TODO: Change from movecart to the one that also takes the board frame into account
+                all_fixtures_sm.append(eTaSL_StateMachine(f"goingOnTopFixture_{fixture_id}", "GoingOnTopFixture", 
+                                                            cb = lambda bb, i=i: {
+                                                                "desired_pose": fixture_poses[i]
+                                                            }, 
+                                                            node=self))
+                
+                all_fixtures_sm.append(TimedWait(f"TimedWait_{fixture_id}", Duration(seconds=10.0), node=self))
+            
+            states_to_execute = [eTaSL_StateMachine("MovingHome", "MovingHome", node=self), 
+                                 ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self)] + all_fixtures_sm
+                                                           
+            sm_to_execute = Sequence("Intial", children = states_to_execute)
 
         rate = self.create_rate(100)
         rate.sleep()
 
-        intial_sm.reset()
-        outcome=intial_sm(self.blackboard)
+        sm_to_execute.reset()
+        outcome=sm_to_execute(self.blackboard)
         while outcome==TICKING:
             rate.sleep()
-            outcome=intial_sm(self.blackboard)
+            outcome=sm_to_execute(self.blackboard)
         self.get_logger().info(f'Finished state machine {goal_handle.request.task} with outcome {outcome}')
 
         goal_handle.succeed()  # Mark the goal as succeeded
         return result
     
+
     def load_task_list(self, json_file_name: str) -> None:
         """
         Loads a task list from a file. References to packages and environment variables in the name
@@ -137,7 +243,7 @@ class RoutingActionServer(Node):
         tangent_lines = []
         waypoints = []
         # TODO: Find a good way to initialze the prev_segment_dir
-        prev_segment_dir = 1
+        prev_segment_dir = -1
         route_task_model["Directions"] = []
 
         channel_dist_min = self.params["channel_dist_min"]
@@ -195,7 +301,7 @@ class RoutingActionServer(Node):
             current_fixture_frame = np.eye(4)
             current_fixture_frame[:3, 3] = np.array([current_fixture["x"], current_fixture["y"], self.params["slide_height"]])
 
-            start_fixture_frame_wrt_current_fixture_frame = start_fixture_frame @ np.linalg.inv(current_fixture_frame)
+            current_fixture_wrt_start_fixture = current_fixture_frame @ np.linalg.inv(start_fixture_frame)
 
             skill_params["turning_dir_sliding"] = direction_segment
             skill_params["desired_pos"] = [waypoint_x, waypoint_y, waypoint_z]
@@ -205,12 +311,14 @@ class RoutingActionServer(Node):
             skill_params["cable_slide_pos"] = self.params["cable_slide_pos"]
             
             if current_fixture["type"] == "PIVOT":
-                skill_params["pos_previous_fixture"] = [start_fixture_frame_wrt_current_fixture_frame[0,3], start_fixture_frame_wrt_current_fixture_frame[1,3], 
-                                                                start_fixture_frame_wrt_current_fixture_frame[2,3]]
+                # pivoting_dir
+                skill_params["turning_dir_pivoting"] = -direction_segment
+                skill_params["previous_to_current_fixture"] = [current_fixture_wrt_start_fixture[0,3], current_fixture_wrt_start_fixture[1,3], 
+                                                                current_fixture_wrt_start_fixture[2,3]]
                 
                 skill_params["z_down"] = self.params["pivot_z_down"]
 
-                skill_params["frame_next_fixture"] = [next_fixture["x"], next_fixture["y"], self.params["slide_height"],
+                skill_params["frame_next_fixture_wrt_board"] = [next_fixture["x"], next_fixture["y"], self.params["slide_height"],
                                                    0, 0, 0, 1]
 
                 # print(f"Fixture {current_fixture_id} parameters: {skill_params}")
@@ -218,10 +326,23 @@ class RoutingActionServer(Node):
                 routing_sm.append(PivotFixtureSkill(node=self, id=current_fixture_id, skill_params=skill_params))
 
             if current_fixture["type"] == "CHANNEL":
-                quaternion = R.from_euler('z', channel_rz).as_quat()
-                skill_params["channel_aligning_pose"] = [current_fixture["x"], current_fixture["y"], self.params["slide_height"],
+                T_insertion_frame = np.eye(4)
+                T_insertion_frame[:3, 3] = np.array([current_fixture["x"], current_fixture["y"], self.params["slide_height"]])
+                
+                T_offset = np.eye(4)
+                T_offset[:3, 3] = np.array([self.params["channel_width"] + self.params["gripper_width"], 0.0, 0.0])
+                
+                T_rotation = np.eye(4)
+                T_rotation[:3, :3] = R.from_euler('z', channel_rz).as_matrix()
+
+                T_channel_frame = T_insertion_frame @ T_rotation @ T_offset
+                channel_frame_x, channel_frame_y, channel_frame_z = T_channel_frame[:3, 3]
+                
+                Rot_channel = R.from_euler('z', channel_rz).as_matrix() @ R.from_euler('ZXY', [np.pi, 0, 0]).as_matrix()
+                quaternion = R.from_matrix(Rot_channel).as_quat()
+                skill_params["channel_aligning_pose"] = [channel_frame_x, channel_frame_y, self.params["channel_height"],
                                                             quaternion[0], quaternion[1], quaternion[2], quaternion[3]]
-                skill_params["channel_inserting_pose"] = [current_fixture["x"], current_fixture["y"], self.params["channel_height"] - self.params["channel_insertion_diff"],
+                skill_params["channel_inserting_pose"] = [channel_frame_x, channel_frame_y, self.params["channel_height"] - self.params["channel_insertion_diff"],
                                                             quaternion[0], quaternion[1], quaternion[2], quaternion[3]]
 
                 # print(f"Fixture {current_fixture_id} parameters: {skill_params}")

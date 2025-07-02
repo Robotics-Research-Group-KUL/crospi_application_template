@@ -86,10 +86,9 @@
                     {
                         "is-PoseInputHandler": true,
                         "number_of_tries": 10,
-                        "feedforward_input_topic": "/etasl/feedforward/twist_of_tf",
                         "depth": 1,
-                        "topic-name": "/tf_to_follow",
-                        "when_unpublished": "use_default",
+                        "topic-name": "/charuco_detector/pose",
+                        "when_unpublished": "throw_error",
                         "varname": "board_pose",
                         "default_pose": {
                             "orientation":{

@@ -3,84 +3,75 @@
     "tasks": [
         {
             "name": "CableSliding",
-            "robot_specification_file":"$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
             "task_specification":{
                 "from-cable_manipulation_lib-version-0.1.0": true,
                 "is-cable_sliding": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/cable_sliding.etasl.lua",
                 "parameters": {
-                    "a": 2.5,
-                    "C": 0.5,
+                    "a": "$blackboard/application_params/cable_a",
+                    "C": "$blackboard/application_params/cable_C",
                     "cable_tens": "$blackboard/application_params/cable_tension",
                     "force_threshold": "$blackboard/application_params/force_threshold",
                     "torque_threshold": "$blackboard/application_params/torque_threshold",
                     "turning_dir": "$application_defined_parameter",
                     "desired_pos": "$application_defined_parameter",
                     "FT_sensor_frame": "FT_sensor_frame",
-                    "task_frame": "tcp_frame",
+                    "task_frame": "tool0_cables_root",
                     "maxacc": "$blackboard/application_params/maxacc",
                     "maxvel": "$blackboard/application_params/maxvel",
-                    "tool_COG": [
-                        0,
-                        0,
-                        0
-                    ],
-                    "tool_weight": 0
+                    "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
+                    "tool_weight": "$blackboard/application_params/tool_weight",
+                    "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose"
                 }
             }
         },
         {
             "name": "CableChannelAligning",
-            "robot_specification_file":"$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
             "task_specification":{
-                "from-core_task_lib-version-0.1.0": true,
-                "is-move_cartesianspace_absolute_pose": true,
-                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "from-cable_manipulation_lib-version-0.1.0": true,
+                "is-move_cartesianspace_board_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/move_cartesianspace_board_pose.etasl.lua",
                 "parameters": {
                     "desired_pose": "$application_defined_parameter",
                     "maxacc": "$blackboard/application_params/maxacc",
                     "maxvel": "$blackboard/application_params/maxvel",
                     "eq_r": "$blackboard/application_params/eq_r",
-                    "task_frame": "tcp_frame"
+                    "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose",
+                    "task_frame": "tool0_cables_root"
                 }
             }
         },
         {
             "name": "CableChannelInserting",
-            "robot_specification_file": "$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
             "task_specification":{
-                "from-core_task_lib-version-0.1.0": true,
-                "is-move_cartesianspace_absolute_pose": true,
-                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "from-cable_manipulation_lib-version-0.1.0": true,
+                "is-move_cartesianspace_board_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/move_cartesianspace_board_pose.etasl.lua",
                 "parameters": {
                     "desired_pose": "$application_defined_parameter",
-                    "maxacc": "$blackboard/application_params/maxacc",
-                    "maxvel": "$blackboard/application_params/maxvel",
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
                     "eq_r": "$blackboard/application_params/eq_r",
-                    "task_frame": "tcp_frame"
+                    "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose",
+                    "task_frame": "tool0_cables_root"
                 }
             }
         },
         {
             "name": "CableTensioning",
-            "robot_specification_file":"$[etasl_ros2_application_template]/robot_models/robot_specifications/left_kuka_iiwa.etasl.lua",
             "task_specification":{
                 "from-cable_manipulation_lib-version-0.1.0": true,
                 "is-cable_tensioning": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/cable_tensioning.etasl.lua",
                 "parameters": {
-                    "cable_tens": "$blackboard/application_params/cable_tens",
+                    "cable_tens": "$blackboard/application_params/cable_tension",
                     "force_threshold": "$blackboard/application_params/force_threshold",
                     "torque_threshold": "$blackboard/application_params/torque_threshold",
                     "k_x": "$blackboard/application_params/k_x",
                     "FT_sensor_frame": "FT_sensor_frame",
-                    "task_frame": "tcp_frame",
-                    "tool_COG": [
-                        0,
-                        0,
-                        0
-                    ],
-                    "tool_weight": 0
+                    "task_frame": "tool0_cables_root",
+                    "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
+                    "tool_weight": "$blackboard/application_params/tool_weight"
                 }
             }
         }
