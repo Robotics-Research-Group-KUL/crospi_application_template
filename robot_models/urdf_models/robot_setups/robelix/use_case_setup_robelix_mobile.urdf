@@ -762,7 +762,7 @@
   <joint name="maira7M_joint1" type="revolute">
     <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit effort="432" lower="-3.14159" upper="3.14159" velocity="2.0944"/>
+    <limit effort="432" lower="-3.14159" upper="3.14159" velocity="1.0472"/>
     <parent link="maira7M_link0"/>
     <child link="maira7M_link1"/>
   </joint>
@@ -802,7 +802,7 @@
   <joint name="maira7M_joint2" type="revolute">
     <origin rpy="0 0 4.8965276278067904e-12" xyz="0 0.438 0"/>
     <axis xyz="1 0 0"/>
-    <limit effort="432" lower="-2.0944" upper="2.0944" velocity="2.0944"/>
+    <limit effort="432" lower="-2.0944" upper="2.0944" velocity="1.0472"/>
     <parent link="maira7M_link1"/>
     <child link="maira7M_link2"/>
   </joint>
@@ -842,7 +842,7 @@
   <joint name="maira7M_joint3" type="revolute">
     <origin rpy="0 0 -4.8965276278067904e-12" xyz="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit effort="217" lower="-3.14159" upper="3.14159" velocity="2.618"/>
+    <limit effort="217" lower="-3.14159" upper="3.14159" velocity="1.0472"/>
     <parent link="maira7M_link2"/>
     <child link="maira7M_link3"/>
   </joint>
@@ -870,7 +870,7 @@
   <joint name="maira7M_joint4" type="revolute">
     <origin rpy="0 0 4.8965276278067904e-12" xyz="0 0.7 0"/>
     <axis xyz="1 0 0"/>
-    <limit effort="217" lower="-2.618" upper="2.618" velocity="2.618"/>
+    <limit effort="217" lower="-2.618" upper="2.618" velocity="1.0472"/>
     <parent link="maira7M_link3"/>
     <child link="maira7M_link4"/>
   </joint>
@@ -912,7 +912,7 @@
   <joint name="maira7M_joint5" type="revolute">
     <origin rpy="0 0 -4.8965276278067904e-12" xyz="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit effort="57" lower="-3.14159" upper="3.14159" velocity="3.8397"/>
+    <limit effort="57" lower="-3.14159" upper="3.14159" velocity="1.0472"/>
     <parent link="maira7M_link4"/>
     <child link="maira7M_link5"/>
   </joint>
@@ -940,7 +940,7 @@
   <joint name="maira7M_joint6" type="revolute">
     <origin rpy="0 0 4.8965276278067904e-12" xyz="0 0.7 0"/>
     <axis xyz="1 0 0"/>
-    <limit effort="57" lower="-3.14159" upper="3.14159" velocity="3.8397"/>
+    <limit effort="57" lower="-3.14159" upper="3.14159" velocity="1.0472"/>
     <parent link="maira7M_link5"/>
     <child link="maira7M_link6"/>
   </joint>
