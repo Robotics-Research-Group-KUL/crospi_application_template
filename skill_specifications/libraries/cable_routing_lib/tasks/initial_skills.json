@@ -9,8 +9,8 @@
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
                 "parameters": {
                     "desired_pose": "$blackboard/application_params/fixture_1_pose",
-                    "maxacc": "$blackboard/application_params/maxacc",
-                    "maxvel": "$blackboard/application_params/maxvel",
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
                     "eq_r": "$blackboard/application_params/eq_r",
                     "task_frame": "tool0_cables_root"
                 }
@@ -23,9 +23,9 @@
                 "is-move_jointspace_trap": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
                 "parameters": {
-                    "maxacc": 0.1,
-                    "maxvel": 0.1,
-                    "target_joints": [0, 0, 0, 1.5707, 0, 1.5707, 0],
+                    "maxacc": "$blackboard/application_params/maxacc_jointspace",
+                    "maxvel": "$blackboard/application_params/maxvel_jointspace",
+                    "target_joints": "$blackboard/application_params/maira_home",
                     "units": "radians"
                 }
             }
@@ -38,8 +38,8 @@
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/move_cartesianspace_board_pose.etasl.lua",
                 "parameters": {
                     "desired_pose": "$application_defined_parameter",
-                    "maxacc": "$blackboard/application_params/maxacc",
-                    "maxvel": "$blackboard/application_params/maxvel",
+                    "maxacc": "$blackboard/application_params/maxacc_contact",
+                    "maxvel": "$blackboard/application_params/maxvel_contact",
                     "eq_r": "$blackboard/application_params/eq_r",
                     "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose",
                     "task_frame": "tool0_cables_root"

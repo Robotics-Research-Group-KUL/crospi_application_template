@@ -38,13 +38,13 @@ T_tcp_bf_target = initial_value(time, T_tcp_bf) --Initial transformation from TC
 
 -- ========================== CONSTRAINT SPECIFICATION =================================
 
-if param.get("activate_angular") then
+if param.get("activate_linear") then
 
     Constraint{
         context = ctx,
         name    = "maintain_relative_posisition",
         expr    = origin(T_tcp_bf) - origin(T_tcp_bf_target),
-        K       = 1,
+        K       = 2,
         weight  = 1,
         priority= 2
     }

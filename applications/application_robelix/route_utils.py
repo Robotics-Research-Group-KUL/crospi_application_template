@@ -444,12 +444,12 @@ def get_channel_points(channel: dict):
     y = channel["y"]
     rz = channel["rz"]
     width = channel["width"]
-    height = channel["height"]
+    length = channel["length"]
 
-    p1 = np.array([-width/2,-height/2])
-    p2 = np.array([-width/2, height/2])
-    p3 = np.array([width/2 , height/2])
-    p4 = np.array([width/2 ,-height/2])
+    p1 = np.array([-width/2,-length/2])
+    p2 = np.array([-width/2, length/2])
+    p3 = np.array([width/2 , length/2])
+    p4 = np.array([width/2 ,-length/2])
 
     # Rotate the points by rz
     rot_matrix = np.array([[np.cos(rz), -np.sin(rz)], [np.sin(rz), np.cos(rz)]])

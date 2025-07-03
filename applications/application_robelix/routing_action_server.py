@@ -24,22 +24,47 @@ from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfs
 from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_pivot_fixture_skill import PivotFixtureSkill, MoveGripperToPosition
 
 class GetFrame(Generator):
-    def __init__(self):
+    def __init__(self, params, route_task_model, board_model):
         super().__init__("GetFrame",[SUCCEED])
+        self.route_task_model = route_task_model
+        self.board_model = board_model
+        self.params = params
+
     def co_execute(self,bb):
+        # T_root_board = bb["initial_board_pose"]
+
+        # # sm_to_execute = eTaSL_StateMachine("MovingHome", "MovingHome", node=self)
+        # T_board_fixture_1 = np.eye(4)
+        # T_board_fixture_1[:3, 3] = np.array([0.06, 0.4575, 0.07])
+
+        # T_root_fixture_1 = T_root_board @ T_board_fixture_1
+
+        # T_board_gripper = np.eye(4)
+        # T_board_gripper[:3, 3] = np.array([0.0, 0.0, 0.0])
+        # T_board_gripper[:3, :3] = R.from_euler('ZYX', [np.pi, 0.0, 0.0], degrees=False).as_matrix()
+
+        # T_root_gripper = T_root_fixture_1 @ T_board_gripper
+        # pos_root_gripper = T_root_gripper[:3, 3]
+        # rot_root_gripper = R.from_matrix(T_root_gripper[:3, :3]).as_quat()
+
+        # bb["application_params"]["fixture_1_pose"] = [pos_root_gripper[0], pos_root_gripper[1], pos_root_gripper[2],
+        #                                               rot_root_gripper[0], rot_root_gripper[1], rot_root_gripper[2], rot_root_gripper[3]]
+
         T_root_board = bb["initial_board_pose"]
 
-        # sm_to_execute = eTaSL_StateMachine("MovingHome", "MovingHome", node=self)
-        T_board_fixture_1 = np.eye(4)
-        T_board_fixture_1[:3, 3] = np.array([0.06, 0.4575, 0.07])
+        initial_fixture_id = self.route_task_model["Route"][0]
+        initial_fixture = self.board_model["Fixtures"][initial_fixture_id]
+        T_board_2_initial_fixture = np.eye(4)
+        T_board_2_initial_fixture[:3, 3] = np.array([initial_fixture["x"]+ self.params["initial_fixture_offset"], initial_fixture["y"], self.params["initial_fixture_height"]])
 
-        T_root_fixture_1 = T_root_board @ T_board_fixture_1
+        T_root_2_initial_fixture = T_root_board @ T_board_2_initial_fixture
 
+        # Roation of the frame so the gripper arrives with the positive x-axis in the direction of the initial fixture
         T_board_gripper = np.eye(4)
         T_board_gripper[:3, 3] = np.array([0.0, 0.0, 0.0])
         T_board_gripper[:3, :3] = R.from_euler('ZYX', [np.pi, 0.0, 0.0], degrees=False).as_matrix()
 
-        T_root_gripper = T_root_fixture_1 @ T_board_gripper
+        T_root_gripper = T_root_2_initial_fixture @ T_board_gripper
         pos_root_gripper = T_root_gripper[:3, 3]
         rot_root_gripper = R.from_matrix(T_root_gripper[:3, :3]).as_quat()
 
@@ -93,7 +118,7 @@ class ReadLogFromTopic(Generator):
 
 # TODO: Implement goal callback to reject if there is already a routing task running
 # TODO: Implement feedback, it could be easily handle by adding a feedbackState from BetFSM at the end of each skill
-# TODO: Separate maxvel and maxacc from free space motions and motions in contact
+
 class RoutingActionServer(Node):
 
     def __init__(self):
@@ -143,12 +168,13 @@ class RoutingActionServer(Node):
         if goal_handle.request.task == "Routing_Task":
             routing_sm = self.generate_routing_sm(board_model, route_task_model)
 
+            # WARNING: Do not change the home position of the robot or add a cartesian space motion before the taring to ensure z-axis is aligned with gravity
             sm_to_execute = Sequence("Intial", children = [eTaSL_StateMachine("MovingHome", "MovingHome", node=self),
                                                             MoveGripperToPosition(finger_position=0.0, gripping_velocity=self.params["gripper_vel"], node=self),
                                                             ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self),
                                                             TimedWait("timed_wait",Duration(seconds=1.0),node=self ),
                                                             ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self),
-                                                            GetFrame(),
+                                                            GetFrame(params=self.params, board_model=board_model, route_task_model=route_task_model),
                                                             eTaSL_StateMachine("goingToStarting", "GoingToStarting", node=self),
                                                             routing_sm])
             
@@ -208,6 +234,7 @@ class RoutingActionServer(Node):
             self.blackboard["tasks"] += parameters["tasks"]
             # import pdb; pdb.set_trace()
     
+    
     def get_board_and_route(self, parameters_str):
         """
         Extract the board model and route task model from the parameters string.
@@ -224,6 +251,7 @@ class RoutingActionServer(Node):
             if fixture["type"] == "CHANNEL":
                 fixture["width"] = self.params["channel_width"]
                 fixture["height"] = self.params["channel_height"]
+                fixture["length"] = self.params["channel_length"]
             elif fixture["type"] == "PIVOT":
                 fixture["radius"] = self.params["pivot_radius"]
                 fixture["dilated_radius"] = self.params["pivot_dilated_radius"]
@@ -349,8 +377,12 @@ class RoutingActionServer(Node):
                 
                 routing_sm.append(ChannelFixtureSkill(node=self, id=current_fixture_id, skill_params=skill_params))
 
+        # Make the plot have a 1:1 aspect ratio
+        
         fig, ax = plt.subplots()
         ru.plot_board(ax, board_model,tangent_lines,[],waypoints)
+        ax.set_ylim(0.0, 0.91)
+        plt.axis('equal')
         # save the figure
         plt.savefig("waypoints.pdf")
 

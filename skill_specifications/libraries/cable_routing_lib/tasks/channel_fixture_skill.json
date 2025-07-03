@@ -17,8 +17,8 @@
                     "desired_pos": "$application_defined_parameter",
                     "FT_sensor_frame": "FT_sensor_frame",
                     "task_frame": "tool0_cables_root",
-                    "maxacc": "$blackboard/application_params/maxacc",
-                    "maxvel": "$blackboard/application_params/maxvel",
+                    "maxacc": "$blackboard/application_params/maxacc_contact",
+                    "maxvel": "$blackboard/application_params/maxvel_contact",
                     "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
                     "tool_weight": "$blackboard/application_params/tool_weight",
                     "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose"
@@ -33,8 +33,8 @@
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/move_cartesianspace_board_pose.etasl.lua",
                 "parameters": {
                     "desired_pose": "$application_defined_parameter",
-                    "maxacc": "$blackboard/application_params/maxacc",
-                    "maxvel": "$blackboard/application_params/maxvel",
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
                     "eq_r": "$blackboard/application_params/eq_r",
                     "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose",
                     "task_frame": "tool0_cables_root"
@@ -49,8 +49,8 @@
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/move_cartesianspace_board_pose.etasl.lua",
                 "parameters": {
                     "desired_pose": "$application_defined_parameter",
-                    "maxacc": 0.1,
-                    "maxvel": 0.1,
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
                     "eq_r": "$blackboard/application_params/eq_r",
                     "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose",
                     "task_frame": "tool0_cables_root"

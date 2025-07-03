@@ -187,7 +187,7 @@ Constraint{
 	name="follow_path_x",
 	expr = coord_x(origin(task_frame)),
 	target = coord_x(target_position_t),
-	K = 1,
+	K = 2,
 	priority = 2,
 	weight = 1
 };
@@ -197,7 +197,7 @@ Constraint{
 	name="follow_path_y",
 	expr = coord_y(origin(task_frame)),
 	target = coord_y(target_position_t),
-	K = 1,
+	K = 2,
 	priority = 2,
 	weight = 1
 };
@@ -207,7 +207,7 @@ Constraint{
 	name="follow_path_z",
 	expr = coord_z(origin(task_frame)),
 	target = coord_z(target_position_t),
-	K = 1,
+	K = 2,
 	priority = 2,
 	weight = 1
 };
@@ -245,7 +245,6 @@ Constraint{
 	priority = 2,
 	weight = 1,
 };
-
 
 -- Orientation velocities
 Constraint{
