@@ -87,6 +87,30 @@ def main(args=None):
                                                 eTaSL_StateMachine("nullspace_maira","nullspace_maira",node=None),
     ])
 
+    # Uncomment to test repetitive test of jointspace motions: 
+    # sm = TickingStateMachine("Test_repetitive", [SUCCEED, ABORT])
+    # sm.add_state(
+    #     eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
+    #     transitions={SUCCEED: "Wait", 
+    #                 ABORT: ABORT}
+    # )
+    # sm.add_state(
+    #     TimedWait("Wait", Duration(seconds=2.0), node=None),
+    #     transitions={SUCCEED: "MovingJoints2", 
+    #                 ABORT: ABORT}
+    # )
+    # sm.add_state(
+    #     eTaSL_StateMachine("MovingJoints2","MovingJoints2",node=None), 
+    #     transitions={SUCCEED: "Wait2", 
+    #                 ABORT: ABORT}
+    # )
+
+    # sm.add_state(
+    #     TimedWait("Wait2", Duration(seconds=2.0), node=None),
+    #     transitions={SUCCEED: "MovingHome", 
+    #                 ABORT: ABORT}
+    # )
+
 
     # prints a graphviz representation of sm:
     vis = GraphViz_Visitor()

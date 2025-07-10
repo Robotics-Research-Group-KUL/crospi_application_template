@@ -24,11 +24,11 @@
             "robotsimulator": {
                 "is-simple_kinematic_simulation": true,
                 "initial_joints": [0.3, 0.483, 0, 1.15, 0, 1.519, 0],
-                "periodicity": 0.001
+                "periodicity": 0.005
             },
             "robotdriver":{
                 "is-neura_manipulator_driver_etasl": true,
-                "periodicity": 0.001,
+                "periodicity": 0.005,
                 "robot_model": "Maira",
                 "serial_number": 227080
             },
@@ -92,6 +92,11 @@
                         "is-TopicOutputHandler" : true,
                         "topic-name" : "/angle_output",
                         "variable-names" : ["angle"]
+                    },
+                    {
+                        "is-TopicOutputHandler" : true,
+                        "topic-name" : "/etasl/tracking_error",
+                        "variable-names" : ["tracking_error_j1","tracking_error_j2","tracking_error_j3", "tracking_error_j4", "tracking_error_j5", "tracking_error_j6", "tracking_error_j7"]
                     }
                 ],
                 "inputhandlers": [

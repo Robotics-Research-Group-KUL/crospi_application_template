@@ -75,6 +75,7 @@ duration = get_duration(mp)
 -- ========================= CONSTRAINT SPECIFICATION ========================
 
 tgt         = {} -- target value
+tracking_error = {}
 for i=1,#robot.robot_joints do
     tgt[i]        = get_output_profile(mp,i-1)
     Constraint{
@@ -84,6 +85,7 @@ for i=1,#robot.robot_joints do
         priority = 2,
         K=4
     };
+    tracking_error[i] = current_jnt[i] - tgt[i]
 
     -- Constraint{
     --     context=ctx,
@@ -147,4 +149,5 @@ ctx:setOutputExpression("time",time)
 
 for i=1,#robot.robot_joints do
     ctx:setOutputExpression("jpos"..i,current_jnt[i])
+    ctx:setOutputExpression("tracking_error_j"..i,tracking_error[i])
 end
