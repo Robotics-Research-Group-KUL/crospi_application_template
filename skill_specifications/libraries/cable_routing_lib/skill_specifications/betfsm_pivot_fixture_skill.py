@@ -72,7 +72,8 @@ class PivotFixtureSkill(Sequence):
                                                             "previous_to_current_fixture": skill_params["previous_to_current_fixture"],
                                                             "z_down": skill_params["z_down"]
                                                         },
-                                                        node=node))
+                                                        node=node)),
+        self.add_state(TimedWait("TransitionWait", Duration(seconds=0.5), node=node))
         self.add_state(eTaSL_StateMachine("cablePivoting","CablePivoting",
                                                         cb = lambda bb: {
                                                             "frame_next_fixture_wrt_board": skill_params["frame_next_fixture_wrt_board"],

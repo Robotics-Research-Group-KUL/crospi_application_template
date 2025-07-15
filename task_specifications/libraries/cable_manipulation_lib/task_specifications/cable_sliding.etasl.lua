@@ -276,7 +276,7 @@ Constraint{
 
 
 local error_pos = norm(end_position-origin(task_frame))
-local error_th = 2 --mm
+local error_th = 1 --mm
 Monitor{
     context=ctx,
     name='finish_after_motion',

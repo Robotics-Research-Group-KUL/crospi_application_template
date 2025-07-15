@@ -267,7 +267,7 @@ y = coord_y(origin(frame_tf_2_next_fixture))
 -- TODO: C
 small_number_position = 0.0001
 beta = atan2(y*x,(x*x)+small_number_position)
-error_band = 10*math.pi/180
+error_band = 15*math.pi/180
 
 Monitor{
     context=ctx,

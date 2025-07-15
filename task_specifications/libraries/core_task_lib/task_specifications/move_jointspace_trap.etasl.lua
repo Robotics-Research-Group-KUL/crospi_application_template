@@ -83,7 +83,7 @@ for i=1,#robot.robot_joints do
         name="joint_trajectory"..i,
         expr= current_jnt[i] - tgt[i] ,
         priority = 2,
-        K=4
+        K=0
     };
     tracking_error[i] = current_jnt[i] - tgt[i]
 
