@@ -47,6 +47,7 @@ FT_sensor_frame = robot.getFrame(param.get("FT_sensor_frame"))
 
 debug_frame = robot.getFrame("tool0_cables_debug_root")
 
+-- print("-------------HOLA-----------------")
 -- ========================================= PARAMETERS ===================================
 small_number = 1
 tan_vel    = constant(param.get("tan_vel"))
@@ -59,7 +60,7 @@ k_x = constant(param.get("k_x"))
 k_o = constant(param.get("k_o"))
 
 turning_dir_pivoting = constant(param.get("turning_dir_pivoting"))
-
+-- print("-------------HOLA-----------------")
 tool_COG = param.get("tool_COG")
 tool_COG_x = constant(tool_COG[1])
 tool_COG_y = constant(tool_COG[2])
@@ -78,7 +79,7 @@ quat = quaternion(q_real,vector(q_i,q_j,q_k))
 target_R = toRot(quat)
 target_P = vector(x_coordinate,y_coordinate,z_coordinate)
 frame_next_fixture_wrt_board = frame(target_R, target_P)
-
+-- print("-------------HOLA-----------------")
 T_root_board_p = param.get("T_root_board")
 T_root_board_x = constant(T_root_board_p[1])
 T_root_board_y = constant(T_root_board_p[2])
@@ -111,7 +112,7 @@ Fz_dead_zone = dead_zone(Fz_sensed, force_threshold)
 Tx_dead_zone = dead_zone(Tx_sensed, torque_threshold)
 Ty_dead_zone = dead_zone(Ty_sensed, torque_threshold)
 Tz_dead_zone = dead_zone(Tz_sensed, torque_threshold)
-
+-- print("-------------HOLA-----------------")
 -- =============================== GRAVITY COMPENSATION ==============================
 -- d_g = vector(0,0,-1) -- wrt to the base frame
 -- FT_sensor_frame_to_cog = frame(vector(tool_COG_x, tool_COG_y, tool_COG_z))
@@ -128,7 +129,7 @@ Tz_dead_zone = dead_zone(Tz_sensed, torque_threshold)
 -- wrench_FT_frame = ref_point(wrench_cog_ftframe, origin(inv(FT_sensor_frame_to_cog)))
 -- wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(Tx_dead_zone,Ty_dead_zone,Tz_dead_zone)) - wrench_FT_frame + virtual_wrench_wrt_FT_frame
 
-
+-- print("-------------HOLA-----------------")
 -- WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! This version works in the in Maira or IIWA but not in UR10e
 d_g = vector(0,0,-1)
 FT_sensor_frame_to_cog = frame(vector(tool_COG_x, tool_COG_y, tool_COG_z))
@@ -143,7 +144,7 @@ wrench_dead_zone = wrench(vector(Fx_dead_zone,Fy_dead_zone,Fz_dead_zone),vector(
 -- =============================== TRANSLATE FT TO TASK_FRAME ==============================
 -- print("====== HOLA 1 ======")
 wrench_task_frame   = ref_point(transform(rotation(inv(task_frame)*FT_sensor_frame), wrench_dead_zone) , -origin(inv(task_frame)*FT_sensor_frame))
-
+-- print("-------------HOLA-----------------")
 Fx = coord_x(force(wrench_task_frame))
 Fy = coord_y(force(wrench_task_frame))
 Fz = coord_z(force(wrench_task_frame))
@@ -155,7 +156,7 @@ Tz = coord_z(torque(wrench_task_frame))
 -- print("====== HOLA 2 ======")
 task_frame_inst = inv(make_constant(task_frame))*task_frame
 rot_vec = getRotVec(rotation(task_frame_inst))
-
+-- print("-------------HOLA-----------------")
 -- =============================== CONSTRAINT SPECIFICATION ==============================
 -- print("====== HOLA 3 ======")
 Kx = 3500
@@ -169,7 +170,7 @@ Constraint{
 	priority = 2,
 	weight = 1
 };
-
+-- print("-------------HOLA-----------------")
 -- print("====== HOLA 4 ======")
 tangential_vel = tan_vel
 tangential_acc = tan_acc
@@ -194,7 +195,7 @@ Constraint{
     weight  = 1,
     priority= 2
 };
-
+-- print("-------------HOLA-----------------")
 -- print("====== HOLA 5 ======")
 -- TODO:Change names and inputs
 
@@ -217,7 +218,7 @@ k_o_ramp = conditional(time-end_time_ramp, k_o, k_o*time/end_time_ramp)
 -- 	priority = 2,
 -- 	weight = 1,
 -- };
-
+-- print("-------------HOLA-----------------")
 last_joint   = ctx:getScalarExpr(robot.robot_joints[#robot.robot_joints])
 Constraint{
 	context=ctx,
@@ -257,25 +258,42 @@ Constraint{
     weight  = 1,
     priority= 2
 };
-
+-- print("-------------HOLA-----------------")
 -- print("====== HOLA 7 ======")
+-- print("-------------HOLA-----------------")
 task_frame_wrt_board = inv(T_root_board)*task_frame
+-- print("-------------HOLA-----------------")
 frame_tf_2_next_fixture = inv(task_frame_wrt_board)*frame_next_fixture_wrt_board
-x = coord_x(origin(frame_tf_2_next_fixture))
-y = coord_y(origin(frame_tf_2_next_fixture))
+-- print("-------------HOLA-----------------")
+x = -coord_x(origin(frame_tf_2_next_fixture))
+y = -coord_y(origin(frame_tf_2_next_fixture))
+-- print("-------------HOLA-----------------")
 
--- TODO: C
 small_number_position = 0.0001
-beta = atan2(y*x,(x*x)+small_number_position)
-error_band = 15*math.pi/180
+beta = atan2(y, x+small_number_position) 
+-- convert atan2 to 0 to 2*pi
+-- beta_cond = conditional(beta, beta, beta + 2*math.pi)
 
+
+error_band = 30*math.pi/180
+
+time_start = conditional(time-1,0,200)
 Monitor{
     context=ctx,
     name='finish_direction_vector',
     lower = error_band,
     actionname = "exit",
-    expr=abs(beta)
+    expr=abs(beta) + time_start
 }
+
+-- Monitor{
+--     context=ctx,
+--     name='debug',
+--     upper = 0.1,
+--     actionname = "debug",
+--     expr=time
+-- }
+-- print("-------------HOLA-----------------")
 
 roll_tf, pitch_tf, yaw_tf = getRPY(rotation(task_frame))
 
@@ -293,6 +311,7 @@ ctx:setOutputExpression("Tx"      ,Tx)
 ctx:setOutputExpression("Ty"      ,Ty)
 ctx:setOutputExpression("Tz"      ,Tz)
 
-ctx:setOutputExpression("angle"  ,angle)
+ctx:setOutputExpression("angle"  ,beta)
 
 ctx:setOutputExpression("task_frame"  , task_frame)
+-- print("-------------HOLA-----------------")
