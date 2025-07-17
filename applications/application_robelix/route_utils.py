@@ -20,7 +20,7 @@ def compute_direction(f1, f2, f3, prev_direction):
     else:
         dir = -np.sign(angle_diff)
 
-    print("dir: ", dir)
+    # print("dir: ", dir)
     return dir
 
 def compute_tangent(fixture_1, fixture_2, d1, d2,

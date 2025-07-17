@@ -57,7 +57,11 @@ class GetFrame(Generator):
         T_board_2_initial_fixture = np.eye(4)
         T_board_2_initial_fixture[:3, 3] = np.array([initial_fixture["x"]+ self.params["initial_fixture_offset"], initial_fixture["y"], self.params["initial_fixture_height"]])
 
+        T_board_2_initial_fixture_offset = np.eye(4)
+        T_board_2_initial_fixture_offset[:3, 3] = np.array([initial_fixture["x"]+ self.params["initial_fixture_offset"], initial_fixture["y"], self.params["initial_fixture_height"]+0.1])
+
         T_root_2_initial_fixture = T_root_board @ T_board_2_initial_fixture
+        T_root_2_initial_fixture_offset = T_root_board @ T_board_2_initial_fixture_offset
 
         # Roation of the frame so the gripper arrives with the positive x-axis in the direction of the initial fixture
         T_board_gripper = np.eye(4)
@@ -65,10 +69,17 @@ class GetFrame(Generator):
         T_board_gripper[:3, :3] = R.from_euler('ZYX', [np.pi, 0.0, 0.0], degrees=False).as_matrix()
 
         T_root_gripper = T_root_2_initial_fixture @ T_board_gripper
+        T_root_gripper_offset = T_root_2_initial_fixture_offset @ T_board_gripper
+
         pos_root_gripper = T_root_gripper[:3, 3]
         rot_root_gripper = R.from_matrix(T_root_gripper[:3, :3]).as_quat()
 
+        pos_root_gripper_offset = T_root_gripper_offset[:3, 3]
+
         bb["application_params"]["fixture_1_pose"] = [pos_root_gripper[0], pos_root_gripper[1], pos_root_gripper[2],
+                                                      rot_root_gripper[0], rot_root_gripper[1], rot_root_gripper[2], rot_root_gripper[3]]
+        
+        bb["application_params"]["fixture_1_pose_offset"] = [pos_root_gripper_offset[0], pos_root_gripper_offset[1], pos_root_gripper_offset[2],
                                                       rot_root_gripper[0], rot_root_gripper[1], rot_root_gripper[2], rot_root_gripper[3]]
         
         yield SUCCEED
@@ -175,6 +186,7 @@ class RoutingActionServer(Node):
                                                             TimedWait("timed_wait",Duration(seconds=1.0),node=self ),
                                                             ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self),
                                                             GetFrame(params=self.params, board_model=board_model, route_task_model=route_task_model),
+                                                            eTaSL_StateMachine("goingToPreStarting", "GoingToPreStarting", node=self),
                                                             eTaSL_StateMachine("goingToStarting", "GoingToStarting", node=self),
                                                             routing_sm])
             
@@ -376,15 +388,93 @@ class RoutingActionServer(Node):
                 # print(f"Fixture {current_fixture_id} parameters: {skill_params}")
                 
                 routing_sm.append(ChannelFixtureSkill(node=self, id=current_fixture_id, skill_params=skill_params))
-
-        # Make the plot have a 1:1 aspect ratio
         
+        # ---------------------------- Last fixture --------------------------------------------------------
+        last_fixture_id = route_task_model["Route"][-1]
+        prev_fixture_id = route_task_model["Route"][-2]
+
+        last_fixture = board_model["Fixtures"][last_fixture_id]
+        prev_fixture = board_model["Fixtures"][prev_fixture_id]
+
+
+        if last_fixture["type"] == "CHANNEL":
+            skill_params = {}
+            direction_segment = prev_segment_dir
+            route_task_model["Directions"].append(direction_segment)
+
+            tangent = ru.compute_tangent(prev_fixture, last_fixture, d1 = prev_segment_dir, d2 = direction_segment, dilate_2 = True)
+            
+            tangent_lines.append(tangent)
+            # pdb.set_trace()
+            unit_tangent_vector = np.array(np.array(tangent[1]) - np.array(tangent[0]))/np.linalg.norm(np.array(tangent[1]) - np.array(tangent[0]))
+
+            # Modify the slack for channels based on the orientation difference between the tangent vector and the channel fixture orientation
+            
+            orientation_1 = last_fixture["rz"]
+            orientation_2 = last_fixture["rz"] + np.pi
+
+            dot_product_orientation_1 = np.dot(unit_tangent_vector,np.array([np.cos(orientation_1), np.sin(orientation_1)]))
+            dot_product_orientation_2 = np.dot(unit_tangent_vector,np.array([np.cos(orientation_2), np.sin(orientation_2)]))
+
+            if dot_product_orientation_1 >= dot_product_orientation_2:
+                orientation = orientation_1
+                cos_or = dot_product_orientation_1
+            else:
+                orientation = orientation_2
+                cos_or = dot_product_orientation_2
+            
+            channel_rz = orientation
+            slack = channel_dist_min + channel_dist_delta*(1-cos_or)
+
+            waypoint = tangent[1] + slack*unit_tangent_vector
+            waypoints.append(waypoint)
+
+            waypoint_x, waypoint_y = waypoint
+            waypoint_z = self.params["slide_height"]
+
+            skill_params["turning_dir_sliding"] = direction_segment
+            skill_params["desired_pos"] = [waypoint_x, waypoint_y, waypoint_z]
+            skill_params["gripper_vel"] = self.params["gripper_vel"]
+            skill_params["gripper_force"] = self.params["gripper_force"]
+            skill_params["gripper_direction"] = self.params["gripper_direction"]
+            skill_params["cable_slide_pos"] = self.params["cable_slide_pos"]
+
+            T_insertion_frame = np.eye(4)
+            T_insertion_frame[:3, 3] = np.array([last_fixture["x"], last_fixture["y"], self.params["slide_height"]])
+            
+            T_offset = np.eye(4)
+            T_offset[:3, 3] = np.array([self.params["channel_width"] + self.params["gripper_width"], 0.0, 0.0])
+            
+            T_rotation = np.eye(4)
+            T_rotation[:3, :3] = R.from_euler('z', channel_rz).as_matrix()
+
+            T_channel_frame = T_insertion_frame @ T_rotation @ T_offset
+            channel_frame_x, channel_frame_y, channel_frame_z = T_channel_frame[:3, 3]
+            
+            Rot_channel = R.from_euler('z', channel_rz).as_matrix() @ R.from_euler('ZXY', [np.pi, 0, 0]).as_matrix()
+            quaternion = R.from_matrix(Rot_channel).as_quat()
+            skill_params["channel_aligning_pose"] = [channel_frame_x, channel_frame_y, self.params["channel_height"],
+                                                        quaternion[0], quaternion[1], quaternion[2], quaternion[3]]
+            skill_params["channel_inserting_pose"] = [channel_frame_x, channel_frame_y, self.params["channel_height"] - self.params["channel_insertion_diff"],
+                                                        quaternion[0], quaternion[1], quaternion[2], quaternion[3]]
+
+            # print(f"Fixture {last_fixture_id} parameters: {skill_params}")
+            
+            routing_sm.append(ChannelFixtureSkill(node=self, id=last_fixture_id, skill_params=skill_params))
+
+        # -----------------------------------------------------------------------------------------------------
+            
+        print("Directions: ", route_task_model["Directions"])
+        print("SM: ", routing_sm)
         fig, ax = plt.subplots()
         ru.plot_board(ax, board_model,tangent_lines,[],waypoints)
         ax.set_ylim(0.0, 0.91)
         plt.axis('equal')
         # save the figure
         plt.savefig("waypoints.pdf")
+        
+        # import pdb
+        # pdb.set_trace()
 
         return Sequence("CableRouting", children = routing_sm)
 
