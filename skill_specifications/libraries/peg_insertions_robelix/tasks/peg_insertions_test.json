@@ -1,0 +1,125 @@
+{
+    "$schema": "../../../../task_specifications/tasks-schema.json",
+    "tasks": [
+        {
+            "name": "MovingHome",
+            "task_specification": {
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_jointspace_trap": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "target_joints": [
+                        0,
+                        0,
+                        0,
+                        1.5707963267948966,
+                        0,
+                        1.57079,
+                        0
+                    ],
+                    "units": "radians"
+                }
+            }
+        },
+        {
+            "name": "MoveForward",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0.1,
+                        0.0,
+                        0.0
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "world_frame"
+                }
+            }
+        },
+        {
+            "name": "MoveBack",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        -0.1,
+                        0.0,
+                        0.0
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "world_frame"
+                }
+            }
+        },
+        {
+            "name": "MoveToBoardStart",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_absolute_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "parameters": {
+                    "desired_pose": [
+                        0.0,
+                        0.5,
+                        1.5,
+                        0.267281,
+                        -0.632671,
+                        0.67186,
+                        -0.277296
+                    ],
+                    "maxvel": 0.1,
+                    "maxacc": 0.1,
+                    "eq_r": 0.08,
+                    "task_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "TestAdmittance",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_admittance": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_admittance.etasl.lua",
+                "parameters": {
+                    "activate_angular": false,
+                    "activate_linear": true,
+                    "force_threshold": 0.5,
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "K_r": 200,
+                    "K_t": 2000,
+                    "task_frame": "tool0_cables_root",
+                    "tool_COG": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "tool_weight": 0,
+                    "torque_threshold": 0.05
+                }
+            }
+        }
+
+    ]
+}

@@ -1,0 +1,39 @@
+{
+    "$schema": "../skill_library.schema.json",
+    "name": "peg_insertions_robelix",
+    "description": "Skill library for peg_insertions_robelix",
+    "license": "GNU GPLv3",
+    "version": "0.1.0",
+    "required_task_libs": [
+        {
+            "lib_name": "core_task_lib",
+            "repo_url": "git@gitlab.kuleuven.be:todo.git",
+            "version": "0.0.0"
+        }
+    ],
+    "authors": [
+        {
+            "name": "Santiago Iregui",
+            "affiliation": "KU Leuven",
+            "email": "santiago.iregui@kuleuven.be"
+        },
+        {
+            "name": "Federico Ulloa",
+            "affiliation": "KU Leuven",
+            "email": "federico.ulloarios@kuleuven.be"
+        }
+    ],
+    "maintainers": [
+        {
+            "name": "Santiago Iregui",
+            "affiliation": "KU Leuven",
+            "email": "santiago.iregui@kuleuven.be"
+        },
+        {
+            "name": "Federico Ulloa",
+            "affiliation": "KU Leuven",
+            "email": "federico.ulloarios@kuleuven.be"
+        }
+    ],
+    "acknowledgements": "The authors acknowledge the financial support of EU project AI-Prism (TODO)"
+}
