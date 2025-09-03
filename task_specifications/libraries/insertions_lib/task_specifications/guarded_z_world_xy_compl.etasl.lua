@@ -129,21 +129,25 @@ start_pose_diff  = inv(startpose)*task_frame_c
 
 -- =============================== CONSTRAINT SPECIFICATION ==============================
 Constraint{
-    context = ctx,
-    name    = "constant_x",
-    expr    = coord_x(origin(start_pose_diff)),
-    K       = 4,
-    weight  = 1,
-    priority= 2
+	context=ctx,
+	name="follow_force_x",
+	model = -K_F_x*coord_x(origin(task_frame_inst)),
+	meas = Fx,
+	target = 0.0,
+	K = constant(4),
+	priority = 2,
+	weight = constant(1),
 };
 
 Constraint{
-    context = ctx,
-    name    = "constant_y",
-    expr    = coord_y(origin(start_pose_diff)),
-    K       = 4,
-    weight  = 1,
-    priority= 2
+	context=ctx,
+	name="follow_force_y",
+	model = -K_F_y*coord_y(origin(task_frame_inst)),
+	meas = Fy,
+	target = 0.0,
+	K = constant(4),
+	priority = 2,
+	weight = constant(1),
 };
 
 Constraint{

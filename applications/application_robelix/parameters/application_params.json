@@ -13,7 +13,7 @@
     "channel_insertion_diff": 0.04,
     "initial_fixture_height": 0.053,
     "initial_fixture_offset": 0.05,
-    "maxvel_freespace": 0.2,
+    "maxvel_freespace": 0.1,
     "maxacc_freespace": 0.05,
     "maxvel_contact": 0.14,
     "maxacc_contact": 0.07,
@@ -42,5 +42,6 @@
     "cable_C": 0.4,
     "k_o": 0.45,
     "K_robot_cable_sliding": 0.5,
-    "maira_home": [0, 0, 0, 1.5707, 0, 1.5707, 0]
+    "maira_home": [0, 0, 0, 1.5707, 0, 1.5707, 0],
+    "peg_insertion_contact_force": 13.0
 }

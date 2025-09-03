@@ -49,6 +49,7 @@ end
   
 
 radius_fixture = 1.2 --meters
+-- radius_fixture = 1.2 --meters
 vector_fixture = vector(coord_x(origin(frames["tcp_frame_wrt_link2"])), coord_y(origin(frames["tcp_frame_wrt_link2"])) , coord_z(origin(frames["tcp_frame_wrt_link2"])))
 --   linear_weight(constant(1),constant(0),make_constant(norm(origin(tf) - virtual_fixture_path)),constant(1)*tube_radius_var+0.05, constant(1.5)*tube_radius_var+0.05)
 weight_fixture = linear_weight(constant(1) , constant(0), norm(vector_fixture),radius_fixture-0.02, radius_fixture-0.015)
@@ -88,6 +89,9 @@ Constraint{
     weight  = 10000000,
     priority= 2
 };
+
+ctx:setOutputExpression("omega_mav", yaw_mobile)
+ctx:setOutputExpression("velocity_mav", coord_x(origin(task_frame_inst_mobile_base)))
 
 
 M.frames= frames

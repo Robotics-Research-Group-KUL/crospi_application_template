@@ -129,21 +129,25 @@ start_pose_diff  = inv(startpose)*task_frame_c
 
 -- =============================== CONSTRAINT SPECIFICATION ==============================
 Constraint{
-    context = ctx,
-    name    = "constant_x",
-    expr    = coord_x(origin(start_pose_diff)),
-    K       = 4,
-    weight  = 1,
-    priority= 2
+	context=ctx,
+	name="follow_force_x",
+	model = -K_F_x*coord_x(origin(task_frame_inst)),
+	meas = Fx,
+	target = contact_force/3,
+	K = constant(4),
+	priority = 2,
+	weight = constant(1),
 };
 
 Constraint{
-    context = ctx,
-    name    = "constant_y",
-    expr    = coord_y(origin(start_pose_diff)),
-    K       = 4,
-    weight  = 1,
-    priority= 2
+	context=ctx,
+	name="follow_force_y",
+	model = -K_F_y*coord_y(origin(task_frame_inst)),
+	meas = Fy,
+	target = contact_force/3,
+	K = constant(4),
+	priority = 2,
+	weight = constant(1),
 };
 
 Constraint{
@@ -151,7 +155,7 @@ Constraint{
 	name="follow_force_z",
 	model = -K_F_z*coord_z(origin(task_frame_inst)),
 	meas = Fz,
-	target = contact_force,
+	target = contact_force/2,
 	K = constant(4),
 	priority = 2,
 	weight = constant(1),
@@ -205,13 +209,16 @@ Constraint{
 -- 						argument = "e_max_z_dist_reached"
 -- 					};
 
+
 time_start = conditional(time-3, 1, 0)
+
+plane_force = sqrt(Fx*Fx + Fy*Fy)
 
 Monitor{context=ctx,
         name='finish_force',
-        upper=0.7,
+        upper=0.3,
         actionname='exit',
-        expr=time_start*abs(Fz)/contact_force
+        expr=time_start*abs(plane_force)/contact_force
     };
 
 roll_tf, pitch_tf, yaw_tf = getRPY(rotation(task_frame_c))

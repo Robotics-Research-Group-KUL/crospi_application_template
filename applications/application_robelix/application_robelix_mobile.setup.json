@@ -27,8 +27,7 @@
                 "periodicity": 0.01
             },
             "robotdriver":{
-                "is-no_driver": true,
-                "name_expr_cartesian_wrench": "task_frame_wrench"
+                "is-no_driver": true
             },
             "default_robot_specification": {
                 "is-lua_robotspecification": true,
@@ -57,6 +56,16 @@
                         "is-TopicOutputHandler" : true,
                         "topic-name" : "/my_topic",
                         "variable-names" : []
+                    },
+                    {
+                        "is-TopicOutputDerivativesHandler": true,
+                        "topic-name": "mav1500/cmd_vel",
+                        "variable-names": ["velocity_mav", "omega_mav"]
+                    },
+                    {
+                        "is-TopicOutputHandler": true,
+                        "topic-name": "mav1500/pos",
+                        "variable-names": ["velocity_mav", "omega_mav"]
                     }
                 ],
                 "inputhandlers": [

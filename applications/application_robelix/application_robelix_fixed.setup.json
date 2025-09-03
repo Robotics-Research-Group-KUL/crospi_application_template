@@ -4,7 +4,7 @@
         "etasl": {
             "general": {
                 "event_topic": "etasl/events",
-                "sample_time": 0.005
+                "sample_time": 0.01
             },
             "initializer": {
                 "full": true,
@@ -24,7 +24,7 @@
             "robotsimulator": {
                 "is-simple_kinematic_simulation": true,
                 "initial_joints": [0.3, 0.483, 0, 1.15, 0, 1.519, 0],
-                "periodicity": 0.005
+                "periodicity": 0.001
             },
             "robotdriver":{
                 "is-neura_manipulator_driver_etasl": true,
@@ -48,6 +48,11 @@
                     {
                         "name": "tool0_grip_root",
                         "child_link": "tool0_grip",
+                        "parent_link": "maira7M_root_link"
+                    },
+                    {
+                        "name": "tool0_insertions_root",
+                        "child_link": "tool0_insertions",
                         "parent_link": "maira7M_root_link"
                     },
                     {

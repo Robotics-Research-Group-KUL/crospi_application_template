@@ -22,6 +22,7 @@ from geometry_msgs.msg import Pose
 from std_srvs.srv import Empty
 from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_channel_fixture_skill import ChannelFixtureSkill
 from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_pivot_fixture_skill import PivotFixtureSkill, MoveGripperToPosition
+from skill_specifications.libraries.peg_insertions_robelix.skill_specifications.peg_insertion_skill import PegInsertionSkill
 
 class GetFrame(Generator):
     def __init__(self, params, route_task_model, board_model):
@@ -162,6 +163,7 @@ class RoutingActionServer(Node):
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/channel_fixture_skill.json")
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/pivot_fixture_skill.json")
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/initial_skills.json")
+        self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/peg_insertions_robelix/tasks/peg_insertion_skill.json")
 
         self.blackboard["application_params"] = self.params
 
@@ -195,19 +197,22 @@ class RoutingActionServer(Node):
             fixture_poses = []
             for i, fixture_id in enumerate(board_model["Fixtures"].keys()):
                 fixture = board_model["Fixtures"][fixture_id]
-                fixture_poses.append([fixture["x"], fixture["y"], self.params["slide_height"],
+                fixture_poses.append([fixture["x"], fixture["y"], 0.05,
                                 0, 0, 0, 1])
                 
-                # TODO: Change from movecart to the one that also takes the board frame into account
                 all_fixtures_sm.append(eTaSL_StateMachine(f"goingOnTopFixture_{fixture_id}", "GoingOnTopFixture", 
                                                             cb = lambda bb, i=i: {
                                                                 "desired_pose": fixture_poses[i]
                                                             }, 
                                                             node=self))
                 
-                all_fixtures_sm.append(TimedWait(f"TimedWait_{fixture_id}", Duration(seconds=10.0), node=self))
+                # Append insertion skill
+                all_fixtures_sm.append(PegInsertionSkill(node=self, id=fixture_id, skill_params={}))
+
+                # all_fixtures_sm.append(TimedWait(f"TimedWait_{fixture_id}", Duration(seconds=10.0), node=self))
             
-            states_to_execute = [eTaSL_StateMachine("MovingHome", "MovingHome", node=self), 
+            states_to_execute = [eTaSL_StateMachine("MovingHome", "MovingHome", node=self),
+                                 ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self),
                                  ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self)] + all_fixtures_sm
                                                            
             sm_to_execute = Sequence("Intial", children = states_to_execute)

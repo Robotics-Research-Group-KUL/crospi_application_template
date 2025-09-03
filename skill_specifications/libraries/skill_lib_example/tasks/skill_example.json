@@ -45,7 +45,8 @@
                         0,
                         0
                     ],
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "world_frame"
                 }
             }
         },
@@ -65,7 +66,8 @@
                         0,
                         0
                     ],
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "world_frame"
                 }
             }
         },
@@ -126,7 +128,9 @@
                 "parameters": {
                     "base_frame": "board_pose",
                     "execution_time": 0,
-                    "task_frame": "tcp_frame"
+                    "task_frame": "tcp_frame",
+                    "activate_angular": false,
+                    "activate_linear": true
                 }
             }
         }

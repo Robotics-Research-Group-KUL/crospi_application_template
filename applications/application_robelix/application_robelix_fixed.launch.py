@@ -34,13 +34,13 @@ def generate_launch_description():
         #     name='joint_state_publisher_gui',
         #     output='screen'
         # ),
-        Node(
-            package='rviz2',
-            executable='rviz2',
-            name='rviz2',
-            output='screen',
-            arguments=['-d', rviz_file]  
-        ),
+        # Node(
+        #     package='rviz2',
+        #     executable='rviz2',
+        #     name='rviz2',
+        #     output='screen',
+        #     arguments=['-d', rviz_file]  
+        # ),
         Node(
             package='etasl_ros2_application_template',
             executable='pose_msg_to_tf.py',

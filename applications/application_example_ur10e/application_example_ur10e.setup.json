@@ -71,6 +71,16 @@
                         "is-TopicOutputHandler" : true,
                         "topic-name" : "/forces_etasl",
                         "variable-names" : ["x_force", "y_force", "z_force"]
+                    },
+                    {
+                        "is-TopicOutputDerivativesHandler": true,
+                        "topic-name": "platform_velocities",
+                        "variable-names": ["x_tf", "y_tf", "z_tf"]
+                    },
+                    {
+                        "is-TopicOutputHandler": true,
+                        "topic-name": "platform_positions",
+                        "variable-names": ["x_tf", "y_tf", "z_tf"]
                     }
                 ],
                 "inputhandlers": [

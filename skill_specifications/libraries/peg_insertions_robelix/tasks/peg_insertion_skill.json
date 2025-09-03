@@ -1,0 +1,170 @@
+{
+    "$schema": "../../../../task_specifications/tasks-schema.json",
+    "tasks": [
+        {
+            "name": "MakeBoardContact",
+            "task_specification": {
+                "from-insertions_lib-version-0.1.0": true,
+                "is-guarded_z_world": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/insertions_lib/task_specifications/guarded_z_world.etasl.lua",
+                "parameters": {
+                    "contact_force": "$blackboard/application_params/peg_insertion_contact_force",
+                    "force_threshold": "$blackboard/application_params/force_threshold",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "maxvel": "$blackboard/application_params/maxvel_contact",
+                    "K_F": [
+                        2700,
+                        2700,
+                        2700
+                    ],
+                    "K_T": [
+                        200,
+                        200,
+                        200
+                    ],
+                    "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
+                    "tool_weight": "$blackboard/application_params/tool_weight",
+                    "task_frame": "tool0_insertions_root",
+                    "tf_2_insframe": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1
+                    ],
+                    "torque_threshold":"$blackboard/application_params/torque_threshold"
+                }
+            }
+        },
+        {
+            "name": "SearchHole",
+            "task_specification": {
+                "from-insertions_lib-version-0.1.0": true,
+                "is-search_xy_force_z": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/insertions_lib/task_specifications/search_xy_force_z.etasl.lua",
+                "parameters": {
+                    "contact_force": "$blackboard/application_params/peg_insertion_contact_force",
+                    "force_threshold": "$blackboard/application_params/force_threshold",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "maxvel": "$blackboard/application_params/maxvel_contact",
+                    "K_F": [
+                        2700,
+                        2700,
+                        2700
+                    ],
+                    "K_T": [
+                        200,
+                        200,
+                        200
+                    ],
+                    "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
+                    "tool_weight": "$blackboard/application_params/tool_weight",
+                    "task_frame": "tool0_insertions_root",
+                    "tf_2_insframe": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1
+                    ],
+                    "torque_threshold":"$blackboard/application_params/torque_threshold"
+                }
+            }
+        },
+        {
+            "name": "InsertAfterSearch",
+            "task_specification": {
+                "from-insertions_lib-version-0.1.0": true,
+                "is-guarded_z_world_xy_compl": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/insertions_lib/task_specifications/guarded_z_world_xy_compl.etasl.lua",
+                "parameters": {
+                    "contact_force": "$blackboard/application_params/peg_insertion_contact_force",
+                    "force_threshold": "$blackboard/application_params/force_threshold",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "maxvel": "$blackboard/application_params/maxvel_contact",
+                    "K_F": [
+                        2700,
+                        2700,
+                        2700
+                    ],
+                    "K_T": [
+                        200,
+                        200,
+                        200
+                    ],
+                    "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
+                    "tool_weight": "$blackboard/application_params/tool_weight",
+                    "task_frame": "tool0_insertions_root",
+                    "tf_2_insframe": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1
+                    ],
+                    "torque_threshold":"$blackboard/application_params/torque_threshold"
+                }
+            }
+        },
+        {
+            "name": "Rotate90z_simulation",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-rotate_with_progress_simulation": true,
+                "file_path":"$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/rotate_with_progress_simulation.etasl.lua",
+                "parameters": {
+                    "delta_euler": [
+                        0,
+                        0,
+                        -1.5709
+                    ],
+                    "delta_pos": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.5,
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "task_frame": "tool0_insertions_root",
+                    "wrt_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "Rotate90z",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-rotate_with_progress": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/rotate_with_progress.etasl.lua",
+                "parameters": {
+                    "delta_euler": [
+                        0,
+                        0,
+                        -1.5709
+                    ],
+                    "maxacc": 0.1,
+                    "maxvel": 0.05,
+                    "task_frame": "tool0_insertions_root",
+                    "contact_force": "$blackboard/application_params/peg_insertion_contact_force",
+                    "force_threshold": "$blackboard/application_params/force_threshold",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "K_F": [
+                        3500,
+                        3500,
+                        3500
+                    ],
+                    "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
+                    "tool_weight": "$blackboard/application_params/tool_weight",
+                    "torque_threshold": "$blackboard/application_params/torque_threshold"
+                }
+            }
+        }
+    ]
+}

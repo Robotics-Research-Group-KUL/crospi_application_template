@@ -57,7 +57,7 @@
                     "maxvel": "$blackboard/application_params/maxvel_contact",
                     "eq_r": "$blackboard/application_params/eq_r",
                     "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose",
-                    "task_frame": "tool0_cables_root"
+                    "task_frame": "tool0_insertions_root"
                 }
             }
         }
