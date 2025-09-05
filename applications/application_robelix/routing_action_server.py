@@ -1,3 +1,4 @@
+from typing import Generator
 import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
@@ -24,6 +25,30 @@ from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfs
 from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_pivot_fixture_skill import PivotFixtureSkill, MoveGripperToPosition
 from skill_specifications.libraries.peg_insertions_robelix.skill_specifications.peg_insertion_skill import PegInsertionSkill
 
+class ComputeFixturePosition(Generator):
+    def __init__(self, fixture_id:int, bb_location:str):
+        super().__init__("GetFixturePosition",[SUCCEED])
+        self.fixture_id = fixture_id
+        self.bb_location = bb_location
+    
+    def co_execute(self,blackboard):
+        pos_x = blackboard["output_param"][self.bb_location]["x_tf"]
+        pos_y = blackboard["output_param"][self.bb_location]["y_tf"]
+        pos_z = blackboard["output_param"][self.bb_location]["z_tf"]
+
+        T_root_board = blackboard["initial_board_pose"]
+
+        T_root_fixture = np.eye(4)
+        T_root_fixture[:3, 3] = np.array([pos_x, pos_y, pos_z])
+
+        T_board_fixture = np.linalg.inv(T_root_board) @ T_root_fixture
+
+        if "board_real" not in blackboard:
+            blackboard["board_real"] = {}
+        blackboard["board_real"][self.fixture_id] = T_board_fixture[:2, 3].tolist()
+
+        yield SUCCEED
+
 class GetFrame(Generator):
     def __init__(self, params, route_task_model, board_model):
         super().__init__("GetFrame",[SUCCEED])
@@ -32,25 +57,6 @@ class GetFrame(Generator):
         self.params = params
 
     def co_execute(self,bb):
-        # T_root_board = bb["initial_board_pose"]
-
-        # # sm_to_execute = eTaSL_StateMachine("MovingHome", "MovingHome", node=self)
-        # T_board_fixture_1 = np.eye(4)
-        # T_board_fixture_1[:3, 3] = np.array([0.06, 0.4575, 0.07])
-
-        # T_root_fixture_1 = T_root_board @ T_board_fixture_1
-
-        # T_board_gripper = np.eye(4)
-        # T_board_gripper[:3, 3] = np.array([0.0, 0.0, 0.0])
-        # T_board_gripper[:3, :3] = R.from_euler('ZYX', [np.pi, 0.0, 0.0], degrees=False).as_matrix()
-
-        # T_root_gripper = T_root_fixture_1 @ T_board_gripper
-        # pos_root_gripper = T_root_gripper[:3, 3]
-        # rot_root_gripper = R.from_matrix(T_root_gripper[:3, :3]).as_quat()
-
-        # bb["application_params"]["fixture_1_pose"] = [pos_root_gripper[0], pos_root_gripper[1], pos_root_gripper[2],
-        #                                               rot_root_gripper[0], rot_root_gripper[1], rot_root_gripper[2], rot_root_gripper[3]]
-
         T_root_board = bb["initial_board_pose"]
 
         initial_fixture_id = self.route_task_model["Route"][0]
@@ -83,6 +89,23 @@ class GetFrame(Generator):
         bb["application_params"]["fixture_1_pose_offset"] = [pos_root_gripper_offset[0], pos_root_gripper_offset[1], pos_root_gripper_offset[2],
                                                       rot_root_gripper[0], rot_root_gripper[1], rot_root_gripper[2], rot_root_gripper[3]]
         
+        yield SUCCEED
+
+class SetupGoalResult(Generator):
+    def __init__(self, result):
+        super().__init__("SetupGoalResult",[SUCCEED])
+        self.result = result
+
+    def co_execute(self,blackboard):
+        board_model_updated = {"Fixtures": {}}
+        for fixture_id in blackboard["board_real"].keys():
+            board_model_updated["Fixtures"][fixture_id] = {}
+            board_model_updated["Fixtures"][fixture_id]["x"] = blackboard["board_real"][fixture_id][0]
+            board_model_updated["Fixtures"][fixture_id]["y"] = blackboard["board_real"][fixture_id][1]
+
+        self.result.outcome = "Success"
+        self.result.parameters = json.dumps({'board': board_model_updated})
+
         yield SUCCEED
 
 class ReadLogFromTopic(Generator):
@@ -176,7 +199,6 @@ class RoutingActionServer(Node):
         result = Task.Result()
 
         parameters_str = goal_handle.request.parameters
-        board_model, route_task_model = self.get_board_and_route(parameters_str)
 
         if goal_handle.request.task == "Routing_Task":
             routing_sm = self.generate_routing_sm(board_model, route_task_model)
@@ -192,7 +214,9 @@ class RoutingActionServer(Node):
                                                             eTaSL_StateMachine("goingToStarting", "GoingToStarting", node=self),
                                                             routing_sm])
             
-        elif goal_handle.request.task == "Go_to_fixtures":
+        elif goal_handle.request.task == "Prepare_board":
+            print("Prepare_board task")
+            board_model = self.get_board(parameters_str)
             all_fixtures_sm = []
             fixture_poses = []
             for i, fixture_id in enumerate(board_model["Fixtures"].keys()):
@@ -208,7 +232,10 @@ class RoutingActionServer(Node):
                 
                 # Append insertion skill
                 all_fixtures_sm.append(PegInsertionSkill(node=self, id=fixture_id, skill_params={}))
+                all_fixtures_sm.append(ComputeFixturePosition(fixture_id=fixture_id, bb_location=f"Rotate90z_simulation{fixture_id}"))
+                all_fixtures_sm.append(LogBlackboard("Logblackboard2",["output_param"]))
 
+            all_fixtures_sm.append(SetupGoalResult(result))
                 # all_fixtures_sm.append(TimedWait(f"TimedWait_{fixture_id}", Duration(seconds=10.0), node=self))
             
             states_to_execute = [eTaSL_StateMachine("MovingHome", "MovingHome", node=self),
@@ -225,8 +252,9 @@ class RoutingActionServer(Node):
         while outcome==TICKING:
             rate.sleep()
             outcome=sm_to_execute(self.blackboard)
-        self.get_logger().info(f'Finished state machine {goal_handle.request.task} with outcome {outcome}')
+        self.get_logger().info(f'Finished state machine {goal_handle.request.task} with outcome {outcome} and result: {result.parameters}')
 
+        print("Final board positions: ", self.blackboard["board_real"])
         goal_handle.succeed()  # Mark the goal as succeeded
         return result
     
@@ -275,6 +303,39 @@ class RoutingActionServer(Node):
 
         return board_model, route_task_model
     
+    def get_board(self, parameters_str):
+        """
+        Extract the board model task model from the parameters string.
+        :param parameters_str: The parameters string containing the board information.
+        :return: A tuple containing the board model
+        """
+
+        parameters_dict = json.loads(parameters_str)
+        board_model = parameters_dict["board"]
+
+        for fixture_id in board_model["Fixtures"]:
+            fixture = board_model["Fixtures"][fixture_id]
+            if fixture["type"] == "CHANNEL":
+                fixture["width"] = self.params["channel_width"]
+                fixture["height"] = self.params["channel_height"]
+                fixture["length"] = self.params["channel_length"]
+            elif fixture["type"] == "PIVOT":
+                fixture["radius"] = self.params["pivot_radius"]
+                fixture["dilated_radius"] = self.params["pivot_dilated_radius"]
+
+        return board_model
+
+    def get_route(self, parameters_str):
+        """
+        Extract the route task model from the parameters string.
+        :param parameters_str: The parameters string containing the route information.
+        :return: A tuple containing the route task model.
+        """
+        parameters_dict = json.loads(parameters_str)
+        route_task_model = {}
+        route_task_model["Route"] = list(parameters_dict["route"].keys())
+
+        return route_task_model
 
     def generate_routing_sm(self, board_model, route_task_model):
         """

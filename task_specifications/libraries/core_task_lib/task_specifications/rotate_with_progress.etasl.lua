@@ -285,8 +285,6 @@ ctx:setOutputExpression("x_tf",coord_x(origin(task_frame)))
 ctx:setOutputExpression("y_tf",coord_y(origin(task_frame)))
 ctx:setOutputExpression("z_tf",coord_z(origin(task_frame)))
 
-
-
 -- ============================== OUTPUT THROUGH PORTS===================================
 -- ctx:setOutputExpression("x_tf",coord_x(origin(task_frame)))
 -- ctx:setOutputExpression("y_tf",coord_y(origin(task_frame)))

@@ -102,6 +102,11 @@
                         "is-TopicOutputHandler" : true,
                         "topic-name" : "/etasl/tracking_error",
                         "variable-names" : ["tracking_error_j1","tracking_error_j2","tracking_error_j3", "tracking_error_j4", "tracking_error_j5", "tracking_error_j6", "tracking_error_j7"]
+                    },
+                    {
+                        "is-TopicOutputHandler": true,
+                        "topic-name": "/etasl/tcp_position",
+                        "variable-names": ["x_tf", "y_tf", "z_tf"]
                     }
                 ],
                 "inputhandlers": [
