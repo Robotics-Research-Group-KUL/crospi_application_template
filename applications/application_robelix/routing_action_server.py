@@ -24,6 +24,7 @@ from std_srvs.srv import Empty
 from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_channel_fixture_skill import ChannelFixtureSkill
 from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_pivot_fixture_skill import PivotFixtureSkill, MoveGripperToPosition
 from skill_specifications.libraries.peg_insertions_robelix.skill_specifications.peg_insertion_skill import PegInsertionSkill
+from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_pickup_fixture_skill import PickupFixtureSkill
 
 class ComputeFixturePosition(Generator):
     def __init__(self, fixture_id:int, bb_location:str):
@@ -108,6 +109,18 @@ class SetupGoalResult(Generator):
 
         yield SUCCEED
 
+class PublishFeedback(Generator):
+    def __init__(self, goal_handle, id:str):
+        super().__init__("PublishFeedback",[SUCCEED])
+        self.goal_handle = goal_handle
+        self.id = id
+
+    def co_execute(self,blackboard):
+        feedback_msg = Task.Feedback()
+        feedback_msg.state = self.id
+        self.goal_handle.publish_feedback(feedback_msg)
+        yield SUCCEED
+
 class ReadLogFromTopic(Generator):
     def __init__(self, topic_name:str, bb_key:str, number_data:int, node: Node = None):
         super().__init__("ReadFromTopic",[SUCCEED])
@@ -186,6 +199,7 @@ class RoutingActionServer(Node):
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/channel_fixture_skill.json")
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/pivot_fixture_skill.json")
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/initial_skills.json")
+        self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/pickup_fixture_skill.json")
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/peg_insertions_robelix/tasks/peg_insertion_skill.json")
 
         self.blackboard["application_params"] = self.params
@@ -199,8 +213,11 @@ class RoutingActionServer(Node):
         result = Task.Result()
 
         parameters_str = goal_handle.request.parameters
-
+        print("Parameters string: ", parameters_str)
         if goal_handle.request.task == "Routing_Task":
+            print("Starting Routing_Task")
+            board_model, route_task_model = self.get_board_and_route(parameters_str)
+
             routing_sm = self.generate_routing_sm(board_model, route_task_model)
 
             # WARNING: Do not change the home position of the robot or add a cartesian space motion before the taring to ensure z-axis is aligned with gravity
@@ -234,6 +251,7 @@ class RoutingActionServer(Node):
                 all_fixtures_sm.append(PegInsertionSkill(node=self, id=fixture_id, skill_params={}))
                 all_fixtures_sm.append(ComputeFixturePosition(fixture_id=fixture_id, bb_location=f"Rotate90z_simulation{fixture_id}"))
                 all_fixtures_sm.append(LogBlackboard("Logblackboard2",["output_param"]))
+                all_fixtures_sm.append(PublishFeedback(goal_handle=goal_handle, id=fixture_id))
 
             all_fixtures_sm.append(SetupGoalResult(result))
                 # all_fixtures_sm.append(TimedWait(f"TimedWait_{fixture_id}", Duration(seconds=10.0), node=self))
@@ -242,7 +260,11 @@ class RoutingActionServer(Node):
                                  ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self),
                                  ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self)] + all_fixtures_sm
                                                            
+            states_to_execute = []
+            # states_to_execute.append(eTaSL_StateMachine("MovingHome", "MovingHome", node=self))
+            states_to_execute.append(PickupFixtureSkill(node=self, id="PickupFixture", skill_params={}))
             sm_to_execute = Sequence("Intial", children = states_to_execute)
+
 
         rate = self.create_rate(100)
         rate.sleep()
@@ -279,30 +301,6 @@ class RoutingActionServer(Node):
             self.blackboard["tasks"] += parameters["tasks"]
             # import pdb; pdb.set_trace()
     
-    
-    def get_board_and_route(self, parameters_str):
-        """
-        Extract the board model and route task model from the parameters string.
-        :param parameters_str: The parameters string containing the board and route information.
-        :return: A tuple containing the board model and route task model.
-        """
-        parameters_dict = json.loads(parameters_str)
-        board_model = {"Fixtures": parameters_dict["route"]}
-        route_task_model = {}
-        route_task_model["Route"] = list(parameters_dict["route"].keys())
-
-        for fixture_id in board_model["Fixtures"]:
-            fixture = board_model["Fixtures"][fixture_id]
-            if fixture["type"] == "CHANNEL":
-                fixture["width"] = self.params["channel_width"]
-                fixture["height"] = self.params["channel_height"]
-                fixture["length"] = self.params["channel_length"]
-            elif fixture["type"] == "PIVOT":
-                fixture["radius"] = self.params["pivot_radius"]
-                fixture["dilated_radius"] = self.params["pivot_dilated_radius"]
-
-        return board_model, route_task_model
-    
     def get_board(self, parameters_str):
         """
         Extract the board model task model from the parameters string.
@@ -325,7 +323,7 @@ class RoutingActionServer(Node):
 
         return board_model
 
-    def get_route(self, parameters_str):
+    def get_board_and_route(self, parameters_str):
         """
         Extract the route task model from the parameters string.
         :param parameters_str: The parameters string containing the route information.
@@ -334,8 +332,19 @@ class RoutingActionServer(Node):
         parameters_dict = json.loads(parameters_str)
         route_task_model = {}
         route_task_model["Route"] = list(parameters_dict["route"].keys())
+        board_model = {"Fixtures": parameters_dict["route"]}
+        for fixture_id in board_model["Fixtures"]:
+            fixture = board_model["Fixtures"][fixture_id]
+            if fixture["type"] == "CHANNEL":
+                fixture["width"] = self.params["channel_width"]
+                fixture["height"] = self.params["channel_height"]
+                fixture["length"] = self.params["channel_length"]
+                fixture["rz"] = 0.0
+            elif fixture["type"] == "PIVOT":
+                fixture["radius"] = self.params["pivot_radius"]
+                fixture["dilated_radius"] = self.params["pivot_dilated_radius"]
 
-        return route_task_model
+        return board_model, route_task_model
 
     def generate_routing_sm(self, board_model, route_task_model):
         """
@@ -532,6 +541,7 @@ class RoutingActionServer(Node):
             
         print("Directions: ", route_task_model["Directions"])
         print("SM: ", routing_sm)
+        print("Board: ", board_model)
         fig, ax = plt.subplots()
         ru.plot_board(ax, board_model,tangent_lines,[],waypoints)
         ax.set_ylim(0.0, 0.91)

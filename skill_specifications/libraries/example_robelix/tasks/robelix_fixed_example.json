@@ -10,7 +10,7 @@
                 "parameters": {
                     "maxacc": 0.1,
                     "maxvel": 0.2,
-                    "target_joints": [0, -0.483, 0, 2.043, 0, 1.519, 0],
+                    "target_joints": [0, 0, 0, 1.56, 0, 1.519, 0],
                     "units": "radians"
                 }
             }
@@ -36,7 +36,7 @@
                 "is-move_cartesianspace_relative": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
                 "parameters": {
-                    "delta_pos": [0, 0, -0.2],
+                    "delta_pos": [0, 0, -0.12],
                     "eq_r": 0.08,
                     "maxacc": 0.1,
                     "maxvel": 0.2,

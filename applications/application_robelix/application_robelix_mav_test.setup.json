@@ -16,7 +16,7 @@
             "solver": {
                 "is-qpoasessolver": true,
                 "nWSR": 100,
-                "regularization_factor": 1E-3,
+                "regularization_factor": 1E-8,
                 "cputime": 10
             }
         },
@@ -25,7 +25,7 @@
                 {
                     "is-simple_kinematic_simulation": true,
                     "initial_joints": [0.3, 0.483, 0, 1.15, 0, 1.519, 0],
-                    "periodicity": 0.005,
+                    "periodicity": 0.01,
                     "robot_joints": [
                         "maira7M_joint1",
                         "maira7M_joint2",
@@ -35,9 +35,19 @@
                         "maira7M_joint6",
                         "maira7M_joint7"
                     ]
+                },
+                {
+                    "is-simple_kinematic_simulation": true,
+                    "initial_joints": [0, 0, 0],
+                    "periodicity": 0.01,
+                    "robot_joints": [
+                        "x_mobile_joint",
+                        "y_mobile_joint",
+                        "theta_mobile_joint"
+                    ]
                 }
             ],
-            "robotdrivers":[
+            "robotdrivers": [
                 {
                     "is-neura_manipulator_driver_etasl": true,
                     "periodicity": 0.001,
@@ -52,43 +62,26 @@
                         "maira7M_joint6",
                         "maira7M_joint7"
                     ]
+                },
+                {
+                    "is-mav_driver_etasl": true,
+                    "periodicity": 0.01,
+                    "command_topic": "/mav1500/twist_cmd",
+                    "feedback_topic": "/mav1500/pose",
+                    "robot_joints": [
+                        "x_mobile_joint",
+                        "y_mobile_joint",
+                        "theta_mobile_joint"
+                    ]
                 }
             ],
             "default_robot_specification": {
-                "is-inline_robotspecification": true,
-                "urdf_path": "$[etasl_ros2_application_template]/robot_models/urdf_models/robot_setups/robelix/use_case_setup_robelix_fixed.urdf",
-                "tcp_frame": {
-                    "child_link": "tool0_grip",
-                    "parent_link": "world"
-                },
-                "additional_frames": [
-                    {
-                        "name": "FT_sensor_frame",
-                        "child_link": "FT_sensor_frame",
-                        "parent_link": "maira7M_root_link"
-                    },
-                    {
-                        "name": "tool0_grip_root",
-                        "child_link": "tool0_grip",
-                        "parent_link": "maira7M_root_link"
-                    },
-                    {
-                        "name": "tool0_insertions_root",
-                        "child_link": "tool0_insertions",
-                        "parent_link": "maira7M_root_link"
-                    },
-                    {
-                        "name": "tool0_cables_root",
-                        "child_link": "tool0_cables",
-                        "parent_link": "maira7M_root_link"
-                    },
-                    {
-                        "name": "tool0_cables_debug_root",
-                        "child_link": "tool0_cables",
-                        "parent_link": "maira7M_link6"
-                    }
-                ],
+                "is-lua_robotspecification": true,
+                "file_path": "$[etasl_ros2_application_template]/robot_models/robot_specifications/robelix_neura.etasl.lua",
                 "robot_joints": [
+                    "x_mobile_joint",
+                    "y_mobile_joint",
+                    "theta_mobile_joint",
                     "maira7M_joint1",
                     "maira7M_joint2",
                     "maira7M_joint3",
@@ -141,7 +134,7 @@
                         "when_unpublished": "use_default",
                         "varname": "joystick_input"
                     },
-                    {
+                                        {
                         "is-WrenchInputHandler": true,
                         "topic-name": "/schunk/wrench",
                         "number_of_tries": 10,

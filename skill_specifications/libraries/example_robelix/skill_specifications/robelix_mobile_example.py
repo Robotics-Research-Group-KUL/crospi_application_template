@@ -75,11 +75,11 @@ class MyStateMachine(TickingStateMachine):
 
         self.add_state(
             eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
-            transitions={SUCCEED: "MovingJoystick", 
+            transitions={SUCCEED: "MovingJoystickVirtualFixture", 
                         ABORT: ABORT}
         )
         self.add_state(
-            eTaSL_StateMachine("MovingJoystick","MovingJoystick",node=None), 
+            eTaSL_StateMachine("MovingJoystickVirtualFixture","MovingJoystickVirtualFixture",node=None), 
             transitions={SUCCEED: "MovingHome", 
                         ABORT: ABORT}
         )

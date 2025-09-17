@@ -28,7 +28,7 @@ param = reqs.parameters(task_description,{
     reqs.params.scalar({name="a", description="Cable interaction parameter a", default=2.5,  required=true, minimum = 1.0, maximum = 5.0}),
     reqs.params.scalar({name="C", description="Cable interaction parameter C", default=0.5,  required=true, minimum = 0.0, maximum = 1.0}),
     reqs.params.scalar({name="turning_dir", description="Turning direction of the cable sliding", default=1.0,  required=true, minimum = -1.0, maximum = 1.0}),
-    reqs.params.array({name="desired_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="Array with the desired pose of the task frame in [x,y,z]", required=true, minimum = -1.5, maximum = 1.5, minItems = 3, maxItems = 3}),
+    reqs.params.array({name="desired_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="Array with the desired position of the task frame in [x,y,z]", required=true, minimum = -1.5, maximum = 1.5, minItems = 3, maxItems = 3}),
     reqs.params.array({name="T_root_board", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}, description="Array with the transformation from the root to the board frame in [x,y,z,qx,qy,qz,qw]", required=true, minimum = -2, maximum = 2, minItems = 7, maxItems = 7})
 })
 

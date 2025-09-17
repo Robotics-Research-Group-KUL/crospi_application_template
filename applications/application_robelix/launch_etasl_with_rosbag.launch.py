@@ -13,11 +13,11 @@ import datetime
 
 def generate_launch_description():
     # Get paths
-    simulation_arg = DeclareLaunchArgument(
-        'simulation',
-        description='Set to "true" for simulation mode, "false" for real hardware'
-    )
-    simulation = LaunchConfiguration('simulation')
+    # simulation_arg = DeclareLaunchArgument(
+    #     'simulation',
+    #     description='Set to "true" for simulation mode, "false" for real hardware'
+    # )
+    # simulation = LaunchConfiguration('simulation')
 
 
 
@@ -48,7 +48,7 @@ def generate_launch_description():
 
         
     return LaunchDescription([
-        simulation_arg,
+        # simulation_arg,
 
         Node(
             package='etasl_ros2',
@@ -57,7 +57,7 @@ def generate_launch_description():
             output='screen',
             parameters=[
                 {'config_file': config_file_path},
-                {'simulation': simulation}
+                {'simulation': False}
             ]
         ),
         launch.actions.ExecuteProcess(

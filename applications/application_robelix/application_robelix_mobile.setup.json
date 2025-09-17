@@ -21,14 +21,33 @@
             }
         },
         "robot": {
-            "robotsimulator": {
-                "is-simple_kinematic_simulation": true,
-                "initial_joints": [0,0,0, 0.3, 0.483, 0, 1.15, 0, 1.519, 0],
-                "periodicity": 0.01
-            },
-            "robotdriver":{
-                "is-no_driver": true
-            },
+            "robotsimulators": [
+                {
+                    "is-simple_kinematic_simulation": true,
+                    "initial_joints": [0.3, 0.483, 0, 1.15, 0, 1.519, 0],
+                    "periodicity": 0.01,
+                    "robot_joints": [
+                        "maira7M_joint1",
+                        "maira7M_joint2",
+                        "maira7M_joint3",
+                        "maira7M_joint4",
+                        "maira7M_joint5",
+                        "maira7M_joint6",
+                        "maira7M_joint7"
+                    ]
+                },
+                {
+                    "is-mav_driver_etasl_robotsimulator": true,
+                    "periodicity": 0.01,
+                    "command_topic": "/mav/cmd_vel",
+                    "feedback_topic": "/mav/pose",
+                    "robot_joints": [
+                        "x_mobile_joint",
+                        "y_mobile_joint",
+                        "theta_mobile_joint"
+                    ]
+                }
+            ],
             "default_robot_specification": {
                 "is-lua_robotspecification": true,
                 "file_path": "$[etasl_ros2_application_template]/robot_models/robot_specifications/robelix_neura.etasl.lua",

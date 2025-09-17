@@ -155,10 +155,11 @@ if __name__ == "__main__":
 
     plugins = get_plugins_by_base_class('etasl::RobotDriver')
     description = "Robotdriver interfaces robot hardware with eTaSL and runs in a separate thread, communicating via shared memory for reduced latency"
-    additional_refs = [
-        "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/no_driver.json"
-    ]
-    success = generate_json_schema(plugins, "robotdriver.json", description, additional_refs)
+    # additional_refs = [
+    #     "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/no_driver.json"
+    # ]
+    # success = generate_json_schema(plugins, "robotdriver.json", description, additional_refs)
+    success = generate_json_schema(plugins, "robotdriver.json", description)
 
     plugins = get_plugins_by_base_class('etasl::InputHandler')
     description = "An inputhandler get information from the outside world and put it into eTaSL, e.g. via ROS2 topics or other types of communication"

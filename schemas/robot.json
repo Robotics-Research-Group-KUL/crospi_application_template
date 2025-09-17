@@ -4,17 +4,23 @@
     "title":"eTaSL robot configuration",
     "type":"object",
     "description":"Configuration to setup the robot kinematic model and robot driver",
-    "required": ["robotsimulator","default_robot_specification","robotdriver"],
+    "required": ["default_robot_specification"],
     "properties": {
-        "robotsimulator":{
-            "title":"RobotSimulator",
-            "description":"RobotSimulator interfaces simulated robot hardware with eTaSL and runs in a separate thread, communicating with shared memory for reduced latency.",
-            "$ref": "generated/robotsimulator.json"
+        "robotsimulators":{
+            "title":"RobotSimulators",
+            "description":"A RobotSimulator interfaces simulated robot hardware with eTaSL and runs in a separate thread (one per each RobotSimulator), communicating via shared memory (lock-free and wait-free) with the eTaSL thread for reduced latency.",
+            "type" : "array",
+            "items" : {
+                "$ref": "generated/robotsimulator.json"
+            }
         },
-        "robotdriver": {
-            "title":"Robotdriver",
-            "description":"Robotdriver interfaces robot hardware with eTaSL and runs in a separate thread, communicating with shared memory for reduced latency",
-            "$ref": "generated/robotdriver.json"
+        "robotdrivers": {
+            "title":"Robotdrivers",
+            "description":"A Robotdriver interfaces robot hardware with eTaSL and runs in a separate thread (one per Robotdriver), communicating via shared memory (lock-free and wait-free) with the eTaSL thread for reduced latency",
+            "type" : "array",
+            "items" : {
+                "$ref": "generated/robotdriver.json"
+            }
         },
         "default_robot_specification": {
             "title":"default_robot_specification",

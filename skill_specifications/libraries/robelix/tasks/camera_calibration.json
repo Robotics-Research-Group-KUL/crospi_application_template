@@ -10,7 +10,21 @@
                 "parameters": {
                     "maxacc": 0.1,
                     "maxvel": 0.1,
-                    "target_joints": [-0.7435, 1.302, 0.0953, 1.08, 0, 2.313, 0],
+                    "target_joints": [0, 0, 0, 1.56, 0, 1.519, 0],
+                    "units": "radians"
+                }
+            }
+        },
+        {
+            "name": "MovingPreCalibrate",
+            "task_specification": {
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_jointspace_trap": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "target_joints": [-0.951298415,1.5063874,-0.0480623580,1.076750755,-0.2682241797,2.082351922,-0.2799020],
                     "units": "radians"
                 }
             }
@@ -174,7 +188,7 @@
                 "parameters": {
                     "delta_pos": [
                         0,
-                        0.2,
+                        -0.1,
                         0
                     ],
                     "delta_euler": [

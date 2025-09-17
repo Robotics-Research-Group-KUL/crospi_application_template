@@ -73,6 +73,20 @@ class MyStateMachine(TickingStateMachine):
         #     transitions={SUCCEED: "MovingDown", 
         #                 ABORT: ABORT})
 
+        #Up and down:
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
+        #     transitions={SUCCEED: "MovingDown", 
+        #                 ABORT: ABORT}
+        # )
+
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingDown","MovingDown",node=None), 
+        #     transitions={SUCCEED: "MovingHome", 
+        #                 ABORT: ABORT}
+        # )
+
+        #Spline sequence
         self.add_state(
             eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
             transitions={SUCCEED: "MovingDown", 
