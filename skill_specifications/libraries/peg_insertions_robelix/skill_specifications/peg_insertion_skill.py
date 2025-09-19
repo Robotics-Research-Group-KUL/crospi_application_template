@@ -19,14 +19,18 @@ class PegInsertionSkill(Sequence):
         self.skill_params = skill_params
 
         
-        # self.add_state(eTaSL_StateMachine("MakeBoardContact","MakeBoardContact", node=node))
-        # self.add_state(eTaSL_StateMachine("SearchHole","SearchHole", node=node))
-        # self.add_state(MoveGripperToPosition(finger_position=25.0, gripping_velocity=50.0, node=node))
-        # self.add_state(eTaSL_StateMachine("InsertAfterSearch","InsertAfterSearch", node=node))
-        # self.add_state(MoveGripperToPosition(finger_position=30.0, gripping_velocity=50.0, node=node))
-        # self.add_state(eTaSL_StateMachine("Rotate90z","Rotate90z", node=node))
+        self.add_state(eTaSL_StateMachine("MakeBoardContact","MakeBoardContact", node=node))
+        self.add_state(eTaSL_StateMachine("SearchHole","SearchHole", node=node))
+        self.add_state(MoveGripperToPosition(finger_position=25.0, gripping_velocity=50.0, node=node))
+        self.add_state(eTaSL_StateMachine("InsertAfterSearch","InsertAfterSearch", node=node))
+        self.add_state(MoveGripperToPosition(finger_position=30.0, gripping_velocity=50.0, node=node))
+        self.add_state(eTaSL_StateMachine(f"Rotate90z{id}","Rotate90z", output_topic="/etasl/tcp_position", node=node))
+       
+        # self.add_state(eTaSL_StateMachine(f"Rotate90z_simulation{id}","Rotate90z_simulation", output_topic="/etasl/tcp_position", node=node))
+        
+        self.add_state(MoveGripperToPosition(finger_position=0.0, gripping_velocity=50.0, node=node))
+        self.add_state(eTaSL_StateMachine("RetractAfterInsertion","RetractAfterInsertion", node=node))
 
-        self.add_state(eTaSL_StateMachine(f"Rotate90z_simulation{id}","Rotate90z_simulation", output_topic="/etasl/tcp_position", node=node))
 
         # self.add_state("search for hole")
         # self.add_state("align and insert with hole")

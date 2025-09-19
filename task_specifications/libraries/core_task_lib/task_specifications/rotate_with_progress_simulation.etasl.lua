@@ -150,13 +150,13 @@ Constraint{
 
 
 -- ========================= Velocity contraint joint ==================
-shoulder_joint = ctx:getScalarExpr(robot.robot_joints[1])
+base_joint = ctx:getScalarExpr(robot.robot_joints[1])
 Constraint{
     context = ctx,
     name    = "low_vel_joint",
-    expr    = shoulder_joint - 0*time,
+    expr    = base_joint - 0*time,
     K       = 0,
-    weight  = 1,
+    weight  = 4,
     priority= 2
 }
 

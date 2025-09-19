@@ -20,7 +20,12 @@ local frames = robot_worldmodel:getExpressions(VL,ctx,{
                                                             tcp_frame_wrt_link2={'maira7M_flange','maira7M_link2'}, --Frame at the end effector, attached to the robot, wrt the link2
                                                             tcp_frame_wrt_mav={'maira7M_flange','mav_base_link'}, -- Frame at the end effector, attached to the robot, wrt center of mobile mav
                                                             linear_axis_base={'linear_axis_base','world'}, --Frame at the robot base, attached to mobile mav, wrt world
-                                                            mav_base_link={'mav_base_link','world'} --Frame at the center of mobile mav, attached to mobile mav, wrt world
+                                                            mav_base_link={'mav_base_link','world'}, --Frame at the center of mobile mav, attached to mobile mav, wrt world
+                                                            tool0_cables_mav={'tool0_cables','mav_base_link'}, -- Frame at the end effector, attached to the robot, wrt center of mobile mav
+                                                            tool0_cables_root={'tool0_cables','maira7M_root_link'}, -- Frame at the end effector, attached to the robot, wrt center of mobile mav
+                                                            tool0_cables_world={'tool0_cables','world'}, -- Frame at the end effector, attached to the robot, wrt center of mobile mav
+                                                            tool0_insertions_root={'tool0_insertions','maira7M_root_link'}, -- Frame at the end effector, attached to the robot, wrt center of mobile mav
+                                                            FT_sensor_frame = {'FT_sensor_frame','maira7M_root_link'}
                                                         })
 
 -- The following is the kinematic constraint of a differential drive robot (which cannot move in the lateral direction)

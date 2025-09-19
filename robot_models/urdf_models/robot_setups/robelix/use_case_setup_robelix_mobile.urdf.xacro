@@ -55,7 +55,7 @@
                 <parent link="y_mobile_link" />
                 <child link="$(arg robot_ns)_base_link" />
                 <axis xyz="0 0 1" />
-                <limit lower="-30" upper="30" effort="100000" velocity="0.3" />
+                <limit lower="-30" upper="30" effort="100000" velocity="0.15" />
 	    </joint>
 
 
@@ -74,6 +74,20 @@
 		<parent link="FT_sensor_frame" />
 		<child link = "tool0_grip" />
 		<origin xyz="0.0 0.0 0.18" rpy="0.0 3.1416 0.0" />
+	</joint>
+
+    <link name="tool0_grip_rot" />
+	<joint name="tool0_grip_rot_joint" type="fixed">
+		<parent link="tool0_grip" />
+		<child link = "tool0_grip_rot" />
+		<origin xyz="0.0 0.0 0.0" rpy="0.0 -1.0472 0.0" />
+	</joint>
+
+    <link name="tool0_insertions" />
+	<joint name="tool0_insertions_joint" type="fixed">
+		<parent link="tool0_grip_rot" />
+		<child link = "tool0_insertions" />
+		<origin xyz="0.0 0.0 -0.085" rpy="0.0 0.0 -1.5708" />
 	</joint>
 
     <link name="tool0_cables" />

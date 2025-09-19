@@ -165,6 +165,31 @@
                     "torque_threshold": "$blackboard/application_params/torque_threshold"
                 }
             }
+        },
+        {
+            "name": "RetractAfterInsertion",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "delta_pos": [
+                        0,
+                        0,
+                        0.2
+                    ],
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
+                    "eq_r": "$blackboard/application_params/eq_r",
+                    "task_frame": "tool0_insertions_root",
+                    "wrt_frame": "tcp_frame" 
+                }
+            }
         }
     ]
 }

@@ -147,7 +147,7 @@
                         "is-PoseInputHandler": true,
                         "number_of_tries": 10,
                         "depth": 1,
-                        "topic-name": "/charuco_detector/pose",
+                        "topic-name": "/charuco_detector/pose_world_board",
                         "when_unpublished": "throw_error",
                         "varname": "board_pose",
                         "default_pose": {

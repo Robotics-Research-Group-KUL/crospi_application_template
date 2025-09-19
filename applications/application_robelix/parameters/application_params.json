@@ -13,8 +13,8 @@
     "channel_insertion_diff": 0.04,
     "initial_fixture_height": 0.053,
     "initial_fixture_offset": 0.05,
-    "maxvel_freespace": 0.02,
-    "maxacc_freespace": 0.004,
+    "maxvel_freespace": 0.1,
+    "maxacc_freespace": 0.05,
     "maxvel_contact": 0.14,
     "maxacc_contact": 0.07,
     "maxacc_jointspace": 0.1,
@@ -46,8 +46,8 @@
     "peg_insertion_contact_force": 13.0,
     "fixture_pickup_home": [1.224451, 1.118963, 0.3424582, 1.761125, -0.93279, 1.557330, -0.127220],
     "pickup_big_channel_approximate": [1.245942, 1.301674, 0.2671710, 1.57562, -0.965516, 1.57706, -0.09312],
-    "pivot_pickup_cartesian_pose_prepick":   [-0.0260, -0.272404182, 0.7229385, 0.4545195, 0.4545195, -0.5416752, 0.5416752],
-    "channel_pickup_cartesian_pose_prepick": [-0.1260, -0.272404182, 0.7229385, 0.4545195, 0.4545195, -0.5416752, 0.5416752],
-    "pivot_pickup_cartesian_pose_pick":   [-0.0260, -0.204, 0.535, 0.4545195, 0.4545195, -0.5416752, 0.5416752],
-    "channel_pickup_cartesian_pose_pick": [-0.1260, -0.204, 0.535, 0.4545195, 0.4545195, -0.5416752, 0.5416752]
+    "pivot_prepickup_cartesian_pose":   [-0.0260, -0.272404182, 0.7229385, 0.4545195, 0.4545195, -0.5416752, 0.5416752],
+    "channel_prepickup_cartesian_pose": [-0.1260, -0.272404182, 0.7229385, 0.4545195, 0.4545195, -0.5416752, 0.5416752],
+    "pivot_pickup_cartesian_pose":   [-0.0260, -0.204, 0.535, 0.4545195, 0.4545195, -0.5416752, 0.5416752],
+    "channel_pickup_cartesian_pose": [-0.1260, -0.204, 0.535, 0.4545195, 0.4545195, -0.5416752, 0.5416752]
 }

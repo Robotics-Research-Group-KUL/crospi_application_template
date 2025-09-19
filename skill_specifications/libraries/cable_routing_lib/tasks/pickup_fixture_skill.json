@@ -24,35 +24,13 @@
             }
         },
         {
-            "name": "MovingPrePickupChannel",
-            "task_specification":{
-                "from-core_task_lib-version-0.1.0": true,
-                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap_subset.etasl.lua",
-                "is-move_jointspace_trap_subset": true,
-                "parameters": {
-                    "maxacc": "$blackboard/application_params/maxacc_jointspace",
-                    "maxvel": "$blackboard/application_params/maxvel_jointspace",
-                    "robot_joints": [
-                        "maira7M_joint1",
-                        "maira7M_joint2",
-                        "maira7M_joint3",
-                        "maira7M_joint4",
-                        "maira7M_joint5",
-                        "maira7M_joint6",
-                        "maira7M_joint7"
-                    ],
-                    "target_joints": "$blackboard/application_params/pickup_big_channel_approximate"
-                }
-            }
-        },
-        {
-            "name": "MovingToPrePickup",
+            "name": "MovingToPrePickupChannel",
             "task_specification":{
                 "from-core_task_lib-version-0.1.0": true,
                 "is-move_cartesianspace_absolute_pose": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
                 "parameters": {
-                    "desired_pose": "$blackboard/application_params/channel_pickup_cartesian_pose_prepick",
+                    "desired_pose": "$blackboard/output_param/channel_prepickup_cartesian_pose",
                     "maxacc": "$blackboard/application_params/maxacc_freespace",
                     "maxvel": "$blackboard/application_params/maxvel_freespace",
                     "eq_r": "$blackboard/application_params/eq_r",
@@ -61,13 +39,118 @@
             }
         },
         {
-            "name": "MovingToPickup",
+            "name": "MovingToPickupChannel",
             "task_specification":{
                 "from-core_task_lib-version-0.1.0": true,
                 "is-move_cartesianspace_absolute_pose": true,
                 "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
                 "parameters": {
-                    "desired_pose": "$blackboard/application_params/channel_pickup_cartesian_pose_pick",
+                    "desired_pose": "$blackboard/application_params/channel_pickup_cartesian_pose",
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
+                    "eq_r": "$blackboard/application_params/eq_r",
+                    "task_frame": "tool0_cables_mav"
+                }
+            }
+        },
+        {
+            "name": "MovingToPrePickupPivot_1",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_absolute_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "parameters": {
+                    "desired_pose": "$blackboard/output_param/pivot_prepickup_cartesian_pose_1",
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
+                    "eq_r": "$blackboard/application_params/eq_r",
+                    "task_frame": "tool0_cables_mav"
+                }
+            }
+        },
+        {
+            "name": "MovingToPrePickupPivot_2",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_absolute_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "parameters": {
+                    "desired_pose": "$blackboard/output_param/pivot_prepickup_cartesian_pose_2",
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
+                    "eq_r": "$blackboard/application_params/eq_r",
+                    "task_frame": "tool0_cables_mav"
+                }
+            }
+        },
+        {
+            "name": "MovingToPrePickupPivot_3",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_absolute_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "parameters": {
+                    "desired_pose": "$blackboard/output_param/pivot_prepickup_cartesian_pose_3",
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
+                    "eq_r": "$blackboard/application_params/eq_r",
+                    "task_frame": "tool0_cables_mav"
+                }
+            }
+        },
+        {
+            "name": "MovingToPickupPivot",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_absolute_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "parameters": {
+                    "desired_pose": "$blackboard/application_params/pivot_pickup_cartesian_pose",
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
+                    "eq_r": "$blackboard/application_params/eq_r",
+                    "task_frame": "tool0_cables_mav"
+                }
+            }
+        },
+        {
+            "name": "MovingToPrePickupChannel_1",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_absolute_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "parameters": {
+                    "desired_pose": "$blackboard/output_param/channel_prepickup_cartesian_pose_1",
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
+                    "eq_r": "$blackboard/application_params/eq_r",
+                    "task_frame": "tool0_cables_mav"
+                }
+            }
+        },
+        {
+            "name": "MovingToPrePickupChannel_2",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_absolute_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "parameters": {
+                    "desired_pose": "$blackboard/output_param/channel_prepickup_cartesian_pose_2",
+                    "maxacc": "$blackboard/application_params/maxacc_freespace",
+                    "maxvel": "$blackboard/application_params/maxvel_freespace",
+                    "eq_r": "$blackboard/application_params/eq_r",
+                    "task_frame": "tool0_cables_mav"
+                }
+            }
+        },
+        {
+            "name": "MovingToPrePickupChannel_3",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_cartesianspace_absolute_pose": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                "parameters": {
+                    "desired_pose": "$blackboard/output_param/channel_prepickup_cartesian_pose_3",
                     "maxacc": "$blackboard/application_params/maxacc_freespace",
                     "maxvel": "$blackboard/application_params/maxvel_freespace",
                     "eq_r": "$blackboard/application_params/eq_r",

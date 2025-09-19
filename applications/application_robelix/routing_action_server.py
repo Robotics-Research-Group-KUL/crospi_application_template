@@ -1,4 +1,3 @@
-from typing import Generator
 import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
@@ -234,36 +233,7 @@ class RoutingActionServer(Node):
         elif goal_handle.request.task == "Prepare_board":
             print("Prepare_board task")
             board_model = self.get_board(parameters_str)
-            all_fixtures_sm = []
-            fixture_poses = []
-            for i, fixture_id in enumerate(board_model["Fixtures"].keys()):
-                fixture = board_model["Fixtures"][fixture_id]
-                fixture_poses.append([fixture["x"], fixture["y"], 0.05,
-                                0, 0, 0, 1])
-                
-                all_fixtures_sm.append(eTaSL_StateMachine(f"goingOnTopFixture_{fixture_id}", "GoingOnTopFixture", 
-                                                            cb = lambda bb, i=i: {
-                                                                "desired_pose": fixture_poses[i]
-                                                            }, 
-                                                            node=self))
-                
-                # Append insertion skill
-                all_fixtures_sm.append(PegInsertionSkill(node=self, id=fixture_id, skill_params={}))
-                all_fixtures_sm.append(ComputeFixturePosition(fixture_id=fixture_id, bb_location=f"Rotate90z_simulation{fixture_id}"))
-                all_fixtures_sm.append(LogBlackboard("Logblackboard2",["output_param"]))
-                all_fixtures_sm.append(PublishFeedback(goal_handle=goal_handle, id=fixture_id))
-
-            all_fixtures_sm.append(SetupGoalResult(result))
-                # all_fixtures_sm.append(TimedWait(f"TimedWait_{fixture_id}", Duration(seconds=10.0), node=self))
-            
-            states_to_execute = [eTaSL_StateMachine("MovingHome", "MovingHome", node=self),
-                                 ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self),
-                                 ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self)] + all_fixtures_sm
-                                                           
-            states_to_execute = []
-            # states_to_execute.append(eTaSL_StateMachine("MovingHome", "MovingHome", node=self))
-            states_to_execute.append(PickupFixtureSkill(node=self, id="PickupFixture", skill_params={}))
-            sm_to_execute = Sequence("Intial", children = states_to_execute)
+            sm_to_execute = self.generate_board_assembly_sm(board_model=board_model, result=result, goal_handle=goal_handle)
 
 
         rate = self.create_rate(100)
@@ -345,6 +315,46 @@ class RoutingActionServer(Node):
                 fixture["dilated_radius"] = self.params["pivot_dilated_radius"]
 
         return board_model, route_task_model
+    
+    def generate_board_assembly_sm(self, board_model, result, goal_handle):
+        board_assembly_sm = []
+        board_assembly_sm.append(eTaSL_StateMachine("MovingHome", "MovingHome", node=self))
+        # TODO: Add cartesian place to tare the FT sensor
+        board_assembly_sm.append(ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self))
+        board_assembly_sm.append(ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self))
+        fixture_poses = []
+        for i, fixture_id in enumerate(board_model["Fixtures"].keys()):
+            fixture = board_model["Fixtures"][fixture_id]
+            if fixture["type"] == "CHANNEL":
+                board_assembly_sm.append(PickupFixtureSkill(node=self, fixture_type="CHANNEL"))
+            elif fixture["type"] == "PIVOT":
+                print("Adding pickup skill for pivot fixture")
+                board_assembly_sm.append(PickupFixtureSkill(node=self, fixture_type="PIVOT"))
+            
+            fixture_poses.append([fixture["x"], fixture["y"], 0.05,
+                            0, 0, 0, 1])
+            board_assembly_sm.append(eTaSL_StateMachine(f"MovingHome_{fixture_id}", "MovingHome", node=self))
+            board_assembly_sm.append(ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self))
+            board_assembly_sm.append(eTaSL_StateMachine(f"goingOnTopFixture_{fixture_id}", "GoingOnTopFixture", 
+                                                        cb = lambda bb, i=i: {
+                                                            "desired_pose": fixture_poses[i]
+                                                        }, 
+                                                        node=self))
+            
+            # Append insertion skill
+            board_assembly_sm.append(PegInsertionSkill(node=self, id=fixture_id, skill_params={}))
+            board_assembly_sm.append(ComputeFixturePosition(fixture_id=fixture_id, bb_location=f"Rotate90z{fixture_id}"))
+            # board_assembly_sm.append(ComputeFixturePosition(fixture_id=fixture_id, bb_location=f"Rotate90z_simulation{fixture_id}"))
+            board_assembly_sm.append(LogBlackboard("Logblackboard2",["output_param"]))
+            board_assembly_sm.append(PublishFeedback(goal_handle=goal_handle, id=fixture_id))
+            board_assembly_sm.append(eTaSL_StateMachine(f"MovingHomeFinishing_{fixture_id}", "MovingHome", node=self))
+
+
+        board_assembly_sm.append(SetupGoalResult(result))
+            # board_assembly_sm.append(TimedWait(f"TimedWait_{fixture_id}", Duration(seconds=10.0), node=self))
+        print("Board assembly state machine: ", board_assembly_sm)
+        return Sequence("Intial", children = board_assembly_sm)
+
 
     def generate_routing_sm(self, board_model, route_task_model):
         """
