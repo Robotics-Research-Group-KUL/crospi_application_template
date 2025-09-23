@@ -332,8 +332,8 @@ Constraint{
     name        ="mav_x_trapezoidal_profile",
     expr        = coord_x(origin(mav_base_link)) - target_x_mav,
     priority    = 2,
-    weight      = 10*(constant(1)-variable_weight_mav_vel),
-    K           = 3
+    weight      = 10000*(constant(1)-variable_weight_mav_vel),
+    K           = 4
 }
 print("Hola4")
 task_frame_inst_mobile_base = inv(make_constant(mav_base_link))*mav_base_link
@@ -344,7 +344,7 @@ Constraint{
     expr    = coord_x(origin(task_frame_inst_mobile_base)),
     target  = constant(0.0)*time, -- Zero velocity constraint
     K       = 0,
-    weight  = 10000000*variable_weight_mav_vel,
+    weight  = 100000*variable_weight_mav_vel,
     priority= 2
 };
 print("Hola5")
@@ -357,7 +357,7 @@ Constraint{
     expr     = theta_mav,
     target   = constant(0.0)*time, -- Zero velocity constraint
     K        = 0,
-    weight   = 10000000*variable_weight_mav_vel,
+    weight   = 100000*variable_weight_mav_vel,
     priority = 2
 };
 
@@ -385,7 +385,7 @@ Constraint{
     name     = "maintain_mav_alignment_with_board_trapezoidal",
     expr     = targetrot_mav*rotation_control_mav,
     K        = 3,
-    weight   = 10,
+    weight   = 10000,
     priority = 2
 };
 

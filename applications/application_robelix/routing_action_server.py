@@ -381,7 +381,10 @@ class RoutingActionServer(Node):
         fixture_poses = []
         for i, fixture_id in enumerate(board_model["Fixtures"].keys()):
             skill_params = {}
-            skill_params["fixture_x_coordinate"] = board_model["Fixtures"][fixture_id]["x"] + 0.15
+            if board_model["Fixtures"][fixture_id]["y"] >= 0.46:
+                skill_params["fixture_x_coordinate"] = board_model["Fixtures"][fixture_id]["x"] + 0.05
+            else:
+                skill_params["fixture_x_coordinate"] = board_model["Fixtures"][fixture_id]["x"] + 0.15
             fixture = board_model["Fixtures"][fixture_id]
             if fixture["type"] == "CHANNEL":
                 print("Adding pickup skill for channel fixture")

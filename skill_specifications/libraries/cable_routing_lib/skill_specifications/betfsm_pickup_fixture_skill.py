@@ -17,7 +17,7 @@ class PickupFixtureSkill(Sequence):
         print("Initial")
         self.add_state(MoveGripperToPosition(finger_position = 0.0, gripping_velocity = 50.0, node=node))
         print("State added 1")
-
+        
         self.add_state(eTaSL_StateMachine("MovingPickupHome","MovingPickupHome",
                                           cb = lambda bb: {
                                                             "target_x_coordinate_mav": skill_params["fixture_x_coordinate"]
