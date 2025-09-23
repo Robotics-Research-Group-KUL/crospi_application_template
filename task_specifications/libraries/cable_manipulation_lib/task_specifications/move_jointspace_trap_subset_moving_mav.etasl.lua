@@ -37,7 +37,7 @@ robot_joints = param.get("robot_joints")
 
 mav_base_link  = robot.getFrame("mav_base_link")
 
-base_frame   = ctx:createInputChannelFrame("board_pose")
+T_world_board   = ctx:createInputChannelFrame("board_pose")
 
 
 
@@ -57,6 +57,17 @@ units = param.get("units")
 target_joints = reqs.adapt_to_units(target_joints,units)
 
 -- ========================================= VELOCITY PROFILE ===================================
+eps=constant(1E-14)
+function close_to_zero( e, yes_expr, no_expr)
+    return cached( conditional( e - eps, no_expr, conditional( -e+eps,  no_expr, yes_expr)) )
+end
+
+function normalize( v )
+    n  = cached( norm(v) )
+    vn = cached( close_to_zero(n, vector(constant(1),constant(0),constant(0)), v/n) )
+    return vn,n
+end
+
 
 mp = create_motionprofile_trapezoidal()
 mp:setProgress(time)
@@ -71,6 +82,14 @@ end
 
 mp:addOutput( initial_value(time, coord_x(origin(mav_base_link))), target_x_coordinate_mav, maxvel_mav, maxacc_mav)
 
+maxvel_mav_theta = constant(0.1)
+maxacc_mav_theta = constant(0.1)
+initial_rot_mav = initial_value(time, rotation(mav_base_link))
+target_R_mav = rotation(T_world_board)
+
+diff_rot_mav                = cached(  getRotVec( inv(initial_rot_mav)*target_R_mav )) -- eq. axis of rotation for rotation from start to end:w
+diff_rot_mav, angle_mav         = normalize( diff_rot_mav )
+mp:addOutput(constant(0), angle_mav, maxvel_mav_theta, maxacc_mav_theta)
 
 
 
@@ -148,23 +167,14 @@ end
 
 
 -- --------------------Constraints for MAV --------------------
--- board_frame_wrt_world = initial_value(time,base_frame)*frame(rot_y(constant(10*math.pi/180)))
-board_frame_wrt_world = base_frame
+-- board_frame_wrt_world = initial_value(time,T_world_board)*frame(rot_y(constant(10*math.pi/180)))
+board_frame_wrt_world = T_world_board
 
 feature_variable_pitch = Variable{context=ctx, name="feature_variable_pitch", initial_value=0.0}
 feature_variable_roll  = Variable{context=ctx, name="feature_variable_roll", initial_value=0.0}
 print("Hola2")
 rotation_control_mav = rotation(mav_base_link)*rot_y(feature_variable_roll)*rot_x(feature_variable_pitch)
 
--- Uncomment this to leave MAV orientation aligned with BOARD (vision needed!!)
-Constraint{
-    context  = ctx,
-    name     = "maintain_mav_alignment_with_board",
-    expr     = inv(rotation(board_frame_wrt_world))*rotation_control_mav,
-    K        = 3,
-    weight   = 10,
-    priority = 2
-};
 -- Constraint{
 --     context = ctx,
 --     name    = "mav_x_trapezoidal_profile",
@@ -185,7 +195,32 @@ Constraint{
     K           = 3
 };
 
--- --------------------Constraints for MAV --------------------
+
+-- --------------------Constraints for MAV orientation --------------------
+
+rot_mav_mp        = get_output_profile(mp, #robot_joints+1) --get_output_profile is zero-index-based
+targetrot_mav = initial_rot_mav*rotVec(diff_rot_mav,rot_mav_mp)
+
+-- Uncomment this to leave MAV orientation aligned with board following a trapezoidal motion provile (vision needed!!)
+Constraint{
+    context  = ctx,
+    name     = "maintain_mav_alignment_with_board_trapezoidal",
+    expr     = targetrot_mav*rotation_control_mav,
+    K        = 3,
+    weight   = 10,
+    priority = 2
+};
+
+-- Uncomment this to leave MAV orientation aligned with BOARD (vision needed!!)
+-- Constraint{
+--     context  = ctx,
+--     name     = "maintain_mav_alignment_with_board",
+--     expr     = inv(rotation(board_frame_wrt_world))*rotation_control_mav,
+--     K        = 3,
+--     weight   = 10,
+--     priority = 2
+-- };
+
 -- =================================== MONITOR TO FINISH THE MOTION ========================
 
 Monitor{

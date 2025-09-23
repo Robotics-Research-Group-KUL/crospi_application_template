@@ -54,6 +54,32 @@
                 }
             }
         },
+        {   
+        "name": "MovingHome_withMav",
+            "task_specification": {
+                "from-cable_manipulation_lib-version-0.1.0": true,
+                "is-move_jointspace_trap_subset_moving_mav": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/move_jointspace_trap_subset_moving_mav.etasl.lua",
+                "parameters": {
+                    "maxacc": "$blackboard/application_params/maxacc_jointspace",
+                    "maxvel": "$blackboard/application_params/maxvel_jointspace",
+                    "maxacc_mav": "$blackboard/application_params/maxacc_mav",
+                    "maxvel_mav": "$blackboard/application_params/maxvel_mav",
+                    "target_x_coordinate_mav": 0.2,
+                    "target_joints": "$blackboard/application_params/maira_home",
+                    "units": "radians",
+                    "robot_joints": [
+                        "maira7M_joint1",
+                        "maira7M_joint2",
+                        "maira7M_joint3",
+                        "maira7M_joint4",
+                        "maira7M_joint5",
+                        "maira7M_joint6",
+                        "maira7M_joint7"
+                    ]
+                }
+            }
+        },
         {
             "name": "GoingOnTopFixture",
             "task_specification":{

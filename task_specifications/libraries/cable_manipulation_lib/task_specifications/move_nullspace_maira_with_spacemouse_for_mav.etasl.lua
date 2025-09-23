@@ -37,6 +37,8 @@ mav_base_link  = robot.getFrame("mav_base_link")
 
 base_frame   = ctx:createInputChannelFrame("board_pose")
 
+joystick_input   = ctx:createInputChannelTwist("joystick_input")
+
 
 -- ========================================= PARAMETERS ===================================
 maxvel    = constant(param.get("maxvel"))
@@ -164,6 +166,19 @@ Constraint{
 --     priority = 2
 -- };
 
+-- desired_vel_theta = coord_z(rotvel(joystick_input))*constant(0.3)
+
+-- theta_mav = ctx:getScalarExpr("theta_mobile_joint")
+-- Constraint{
+--     context  = ctx,
+--     name     = "mav_theta_vel_joystick",
+--     expr     = theta_mav,
+--     target   = desired_vel_theta*time,
+--     K        = 0,
+--     weight   = 5,
+--     priority = 2
+-- };
+
 -- mav_base_wrt_board_transform = inv(make_constant(rotation(frame_test)))*rotation(mav_base_link)
 -- diff_rot_mav = getRotVec(mav_base_wrt_board_transform)
 -- diff_rot_mav, error_angle_mav         = normalize( diff_rot_mav )
@@ -190,7 +205,6 @@ end
 value_const = 0.1
 variable_weight = linear_weight(constant(1) , constant(0.5), abs(coord_x(origin(task_frame_mav))),value_const-0.02, value_const)
 
-joystick_input   = ctx:createInputChannelTwist("joystick_input")
 linear_scale = constant(0.3)
 desired_vel_x = coord_x(transvel(joystick_input))*linear_scale
 

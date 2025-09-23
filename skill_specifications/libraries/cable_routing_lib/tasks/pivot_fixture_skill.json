@@ -2,7 +2,7 @@
     "$schema": "../../../../task_specifications/tasks-schema.json",
     "tasks": [
         {
-            "name": "CableSliding",
+            "name": "CableSlidingMaira",
             "task_specification":{
                 "from-cable_manipulation_lib-version-0.1.0": true,
                 "is-cable_sliding": true,
@@ -22,6 +22,32 @@
                     "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
                     "tool_weight": "$blackboard/application_params/tool_weight",
                     "T_root_board": "$blackboard/output_param/vision_detection/initial_board_pose"
+                }
+            }
+        },
+        {
+            "name": "CableSlidingPivot",
+            "task_specification":{
+                "from-cable_manipulation_lib-version-0.1.0": true,
+                "is-cable_sliding_mobile": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/cable_sliding_mobile.etasl.lua",
+                "parameters": {
+                    "a": "$blackboard/application_params/cable_a",
+                    "C": "$blackboard/application_params/cable_C",
+                    "cable_tens": "$blackboard/application_params/cable_tension",
+                    "force_threshold": "$blackboard/application_params/force_threshold",
+                    "torque_threshold": "$blackboard/application_params/torque_threshold",
+                    "turning_dir": "$application_defined_parameter",
+                    "desired_pos": "$application_defined_parameter",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "task_frame_world": "tool0_cables_world",
+                    "task_frame_mav": "tool0_cables_mav",
+                    "maxacc": "$blackboard/application_params/maxacc_contact",
+                    "maxvel": "$blackboard/application_params/maxvel_contact",
+                    "tool_COG": "$blackboard/application_params/cog_FT_sensor_frame",
+                    "tool_weight": "$blackboard/application_params/tool_weight",
+                    "maxacc_mav": "$blackboard/application_params/maxacc_mav",
+                    "maxvel_mav": "$blackboard/application_params/maxvel_mav"
                 }
             }
         },

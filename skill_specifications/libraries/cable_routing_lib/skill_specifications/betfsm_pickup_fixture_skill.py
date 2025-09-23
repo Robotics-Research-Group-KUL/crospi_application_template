@@ -9,20 +9,29 @@ import numpy as np
 class PickupFixtureSkill(Sequence):
     """
     """
-    def __init__(self, node, fixture_type:str):
+    def __init__(self, node, fixture_type:str, skill_params:dict):
         super().__init__("Pickup_fixture_skill")
         self.node = node
         self.fixture_type = fixture_type
-
+        self.skill_params = skill_params
+        print("Initial")
         self.add_state(MoveGripperToPosition(finger_position = 0.0, gripping_velocity = 50.0, node=node))
-        self.add_state(eTaSL_StateMachine("MovingPickupHome","MovingPickupHome",node=node))
+        print("State added 1")
 
+        self.add_state(eTaSL_StateMachine("MovingPickupHome","MovingPickupHome",
+                                          cb = lambda bb: {
+                                                            "target_x_coordinate_mav": skill_params["fixture_x_coordinate"]
+                                                        }, 
+                                          node=node))
+        print("State added 2")
         if fixture_type=="CHANNEL":
             self.channel_fixture_pickup()
         elif fixture_type=="PIVOT":
             self.pivot_fixture_pickup()
         else:
             raise ValueError(f"Unknown fixture type {fixture_type}")
+        
+        print("State added 3")
 
 
     def channel_fixture_pickup(self):

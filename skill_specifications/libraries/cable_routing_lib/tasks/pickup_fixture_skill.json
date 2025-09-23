@@ -4,9 +4,9 @@
         {
             "name": "MovingPickupHome",
             "task_specification":{
-                "from-core_task_lib-version-0.1.0": true,
-                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap_subset.etasl.lua",
-                "is-move_jointspace_trap_subset": true,
+                "from-cable_manipulation_lib-version-0.1.0": true,
+                "is-move_jointspace_trap_subset_moving_mav": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/move_jointspace_trap_subset_moving_mav.etasl.lua",
                 "parameters": {
                     "maxacc": "$blackboard/application_params/maxacc_jointspace",
                     "maxvel": "$blackboard/application_params/maxvel_jointspace",
@@ -19,7 +19,10 @@
                         "maira7M_joint6",
                         "maira7M_joint7"
                     ],
-                    "target_joints": "$blackboard/application_params/fixture_pickup_home"
+                    "target_joints": "$blackboard/application_params/fixture_pickup_home",
+                    "maxacc_mav": "$blackboard/application_params/maxacc_mav",
+                    "maxvel_mav": "$blackboard/application_params/maxvel_mav",
+                    "target_x_coordinate_mav": "$application_defined_parameter"
                 }
             }
         },

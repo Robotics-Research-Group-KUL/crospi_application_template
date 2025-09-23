@@ -30,7 +30,7 @@ class ChannelFixtureSkill(Sequence):
         # print(skill_params)
         self.add_state(MoveGripperToPosition(finger_position = skill_params["cable_slide_pos"], gripping_velocity = skill_params["gripper_vel"], node=node))
 
-        self.add_state(eTaSL_StateMachine("cableSliding","CableSliding",
+        self.add_state(eTaSL_StateMachine("cableSlidingChannel","CableSlidingChannel",
                                                         cb = lambda bb: {
                                                             "turning_dir": skill_params["turning_dir_sliding"],
                                                             "desired_pos": skill_params["desired_pos"]
@@ -38,13 +38,13 @@ class ChannelFixtureSkill(Sequence):
                                                         node=node))
         self.add_state(GripPart(gripping_velocity=skill_params["gripper_vel"], gripping_force=skill_params["gripper_force"],
                                 gripping_direction=skill_params["gripper_direction"], node=node))
-        self.add_state(eTaSL_StateMachine("cableChannelAligning","CableChannelAligning",
+        self.add_state(eTaSL_StateMachine("cableChannelAligningWorld","CableChannelAligningWorld",
                                                         cb = lambda bb: {
                                                             "desired_pose": skill_params["channel_aligning_pose"]
                                                         },
                                                         node=node))
         self.add_state(TimedWait("TransitionWait1", Duration(seconds=0.5), node=node))
-        self.add_state(eTaSL_StateMachine("cableChannelInserting","CableChannelInserting",
+        self.add_state(eTaSL_StateMachine("cableChannelInsertingWorld","CableChannelInsertingWorld",
                                                         cb = lambda bb: {
                                                             "desired_pose": skill_params["channel_inserting_pose"],
                                                         },

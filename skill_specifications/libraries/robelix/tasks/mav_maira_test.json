@@ -133,6 +133,29 @@
                 }
 
             }
+        },
+        {
+            "name": "NullspaceMairaJoystickMav",
+            "task_specification":{
+                "from-cable_manipulation_lib-version-0.1.0": true,
+                "is-move_nullspace_maira_with_spacemouse_for_mav": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/cable_manipulation_lib/task_specifications/move_nullspace_maira_with_spacemouse_for_mav.etasl.lua",
+                "parameters": {
+                    "desired_pose": [
+                        0.0,
+                        0.5,
+                        1.6,
+                        0, 0, 0.7071068, 0.7071068
+                    ],
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "eq_r": 0.5,
+                    "error_pos_th": 0.0002,
+                    "error_rot_th": 0.01,
+                    "task_frame_world": "tool0_cables_world",
+                    "task_frame_mav": "tool0_cables_mav"
+                }
+            }
         }
     ]
 }

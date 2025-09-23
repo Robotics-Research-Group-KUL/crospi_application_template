@@ -39,6 +39,39 @@
                     "activate_angular": false
                 }
             }
+        },
+        {
+            "name": "Idle",
+            "task_specification":{
+                "from-core_task_lib-version-0.1.0": true,
+                "is-idle": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/idle.etasl.lua",
+                "parameters": {
+                }
+            }
+        },
+        {
+            "name": "MovingPos2",
+            "task_specification": {
+                "from-core_task_lib-version-0.1.0": true,
+                "is-move_jointspace_trap_subset": true,
+                "file_path": "$[etasl_ros2_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap_subset.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.1,
+                    "maxvel": 0.1,
+                    "robot_joints": [
+                        "maira7M_joint1",
+                        "maira7M_joint2",
+                        "maira7M_joint3",
+                        "maira7M_joint4",
+                        "maira7M_joint5",
+                        "maira7M_joint6",
+                        "maira7M_joint7"
+                    ],
+                    "target_joints": [0, -0.483, 0, 1.5, 0.5, 1.5, 0.5],
+                    "units": "radians"
+                }
+            }
         }
     ]
 }

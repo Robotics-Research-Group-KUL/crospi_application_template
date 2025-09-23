@@ -73,22 +73,35 @@ class MyStateMachine(TickingStateMachine):
         #     transitions={SUCCEED: "MovingDown", 
         #                 ABORT: ABORT})
 
+        # self.add_state(
+        #     eTaSL_StateMachine("Idle","Idle",node=None), 
+        #     transitions={SUCCEED: SUCCEED, 
+        #                 ABORT: ABORT}
+        # )
+
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
+        #     transitions={SUCCEED: "MovingJoystickVirtualFixture", 
+        #                 ABORT: ABORT}
+        # )
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingJoystickVirtualFixture","MovingJoystickVirtualFixture",node=None), 
+        #     transitions={SUCCEED: "MovingHome", 
+        #                 ABORT: ABORT}
+        # )
+
+
         self.add_state(
             eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
-            transitions={SUCCEED: "MovingJoystickVirtualFixture", 
-                        ABORT: ABORT}
-        )
-        self.add_state(
-            eTaSL_StateMachine("MovingJoystickVirtualFixture","MovingJoystickVirtualFixture",node=None), 
-            transitions={SUCCEED: "MovingHome", 
+            transitions={SUCCEED: "MovingPos2", 
                         ABORT: ABORT}
         )
 
-        # self.add_state(
-        #     eTaSL_StateMachine("MovingDown","MovingDown",node=None), 
-        #     transitions={SUCCEED: "MovingUp", 
-        #                 ABORT: ABORT}
-        # )
+        self.add_state(
+            eTaSL_StateMachine("MovingPos2","MovingPos2",node=None), 
+            transitions={SUCCEED: "MovingHome", 
+                        ABORT: ABORT}
+        )
 
         # self.add_state(
         #     eTaSL_StateMachine("MovingUp","MovingUp",node=None), 

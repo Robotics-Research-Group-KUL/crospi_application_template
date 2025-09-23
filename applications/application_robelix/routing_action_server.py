@@ -25,6 +25,40 @@ from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfs
 from skill_specifications.libraries.peg_insertions_robelix.skill_specifications.peg_insertion_skill import PegInsertionSkill
 from skill_specifications.libraries.cable_routing_lib.skill_specifications.betfsm_pickup_fixture_skill import PickupFixtureSkill
 
+
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
+
+class MavLCSM(TickingStateMachine):
+    def __init__(self, name:str, mav_node:str, node:Node = None):
+
+        super().__init__(name, outcomes=[SUCCEED, ABORT, TIMEOUT])
+
+        self.add_state(LifeCycle(name="DeactivateMAV", srv_name=f"/{mav_node}", 
+                                 transition=Transition.DEACTIVATE, node=node, 
+                                 timeout=Duration(seconds=5)),
+                                 transitions={SUCCEED: "CleanupMAV",
+                                                ABORT: "CleanupMAV",
+                                                TIMEOUT: ABORT})
+
+        self.add_state(LifeCycle(name="CleanupMAV", srv_name=f"/{mav_node}", 
+                                 transition=Transition.CLEANUP, node=node, 
+                                 timeout=Duration(seconds=5)),
+                                 transitions={SUCCEED: "ConfigureMAV",
+                                                ABORT: "ConfigureMAV",
+                                                TIMEOUT: ABORT})
+
+        self.add_state(LifeCycle(name="ConfigureMAV", srv_name=f"/{mav_node}", 
+                                 transition=Transition.CONFIGURE, node=node, 
+                                 timeout=Duration(seconds=5)),
+                                 transitions={SUCCEED: "ActivateMAV",
+                                                ABORT: ABORT})
+
+        self.add_state(LifeCycle(name="ActivateMAV", srv_name=f"/{mav_node}", 
+                                 transition=Transition.ACTIVATE, node=node, 
+                                 timeout=Duration(seconds=5)),
+                                 transitions={SUCCEED: SUCCEED})
+
+
 class ComputeFixturePosition(Generator):
     def __init__(self, fixture_id:int, bb_location:str):
         super().__init__("GetFixturePosition",[SUCCEED])
@@ -129,6 +163,7 @@ class ReadLogFromTopic(Generator):
         self.bb_key = bb_key
         self.number_data = number_data
         self.actual_data = 0
+        self.subscription = None
 
     def cb_msg(self,msg):
         euler = R.from_quat([msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w]).as_euler('xyz', degrees=False)
@@ -139,7 +174,18 @@ class ReadLogFromTopic(Generator):
 
     def co_execute(self,blackboard):
         # subscribe to the topic
-        self.node.create_subscription(Pose, self.topic, self.cb_msg, 1)
+        sensor_qos = QoSProfile(
+            history=HistoryPolicy.KEEP_LAST,
+            depth=1,  # typical depth for sensor data
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE,
+            lifespan=rclpy.duration.Duration(seconds=0),  # messages never expire
+            deadline=rclpy.duration.Duration(seconds=0)  # no deadline
+            # liveliness=rclpy.qos.LivelinessPolicy.SYSTEM_DEFAULT,
+            # liveliness_lease_duration=rclpy.duration.Duration(seconds=0),
+            # avoid_ros_namespace_conventions=False,
+        )
+        self.subscription = self.node.create_subscription(Pose, self.topic, self.cb_msg, sensor_qos)
         # store the message in the blackboard
         # TODO: Add a timeout
         while self.actual_data < self.number_data:
@@ -158,8 +204,10 @@ class ReadLogFromTopic(Generator):
         blackboard["output_param"]["vision_detection"][self.bb_key] = T_root_board
         get_logger().info(f"Read {self.actual_data} messages from topic {self.topic}, averaged to: ------------- \n {blackboard[self.bb_key]}")
 
-        # Destroy the subscription
-        self.node.destroy_subscription(self.topic)
+        # Destroy the subscription properly
+        if self.subscription is not None:
+            self.node.destroy_subscription(self.subscription)
+            self.subscription = None
         yield SUCCEED
 
 
@@ -220,7 +268,12 @@ class RoutingActionServer(Node):
             routing_sm = self.generate_routing_sm(board_model, route_task_model)
 
             # WARNING: Do not change the home position of the robot or add a cartesian space motion before the taring to ensure z-axis is aligned with gravity
-            sm_to_execute = Sequence("Intial", children = [eTaSL_StateMachine("MovingHome", "MovingHome", node=self),
+            sm_to_execute = Sequence("Intial", children = [
+                                                            # LifeCycle(name="ConfigureMAV", srv_name="/schwarzmuller_driver_lifecycle_node", transition=Transition.CONFIGURE, node=self, timeout=Duration(seconds=5)),
+                                                            # LifeCycle(name="ActivateMAV", srv_name="/schwarzmuller_driver_lifecycle_node", transition=Transition.ACTIVATE, node=self, timeout=Duration(seconds=5)),
+                                                            MavLCSM(name="MAV_LCSM", mav_node="schwarzmuller_driver_lifecycle_node", node=self),
+                                                            # eTaSL_StateMachine("MovingHome", "MovingHome", node=self),
+                                                            eTaSL_StateMachine("MovingHome_withMav", "MovingHome_withMav", node=self),
                                                             MoveGripperToPosition(finger_position=0.0, gripping_velocity=self.params["gripper_vel"], node=self),
                                                             ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self),
                                                             TimedWait("timed_wait",Duration(seconds=1.0),node=self ),
@@ -318,22 +371,31 @@ class RoutingActionServer(Node):
     
     def generate_board_assembly_sm(self, board_model, result, goal_handle):
         board_assembly_sm = []
+        # board_assembly_sm.append(LifeCycle(name="ConfigureMAV", srv_name="/schwarzmuller_driver_lifecycle_node", transition=Transition.CONFIGURE, node=self, timeout=Duration(seconds=5)))
+        # board_assembly_sm.append(LifeCycle(name="ActivateMAV", srv_name="/schwarzmuller_driver_lifecycle_node", transition=Transition.ACTIVATE, node=self, timeout=Duration(seconds=5)))
+        board_assembly_sm.append(MavLCSM(name="MAV_LCSM", mav_node="schwarzmuller_driver_lifecycle_node", node=self))
         board_assembly_sm.append(eTaSL_StateMachine("MovingHome", "MovingHome", node=self))
         # TODO: Add cartesian place to tare the FT sensor
         board_assembly_sm.append(ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self))
         board_assembly_sm.append(ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self))
         fixture_poses = []
         for i, fixture_id in enumerate(board_model["Fixtures"].keys()):
+            skill_params = {}
+            skill_params["fixture_x_coordinate"] = board_model["Fixtures"][fixture_id]["x"] + 0.15
             fixture = board_model["Fixtures"][fixture_id]
             if fixture["type"] == "CHANNEL":
-                board_assembly_sm.append(PickupFixtureSkill(node=self, fixture_type="CHANNEL"))
+                print("Adding pickup skill for channel fixture")
+                board_assembly_sm.append(PickupFixtureSkill(node=self, fixture_type="CHANNEL", skill_params=skill_params))
+                print("Pickup skill added for channel fixture")
             elif fixture["type"] == "PIVOT":
                 print("Adding pickup skill for pivot fixture")
-                board_assembly_sm.append(PickupFixtureSkill(node=self, fixture_type="PIVOT"))
-            
+                board_assembly_sm.append(PickupFixtureSkill(node=self, fixture_type="PIVOT", skill_params=skill_params))
+                print("Pickup skill added for pivot fixture")
+
             fixture_poses.append([fixture["x"], fixture["y"], 0.05,
                             0, 0, 0, 1])
             board_assembly_sm.append(eTaSL_StateMachine(f"MovingHome_{fixture_id}", "MovingHome", node=self))
+            board_assembly_sm.append(ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self))
             board_assembly_sm.append(ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self))
             board_assembly_sm.append(eTaSL_StateMachine(f"goingOnTopFixture_{fixture_id}", "GoingOnTopFixture", 
                                                         cb = lambda bb, i=i: {
@@ -344,7 +406,8 @@ class RoutingActionServer(Node):
             # Append insertion skill
             board_assembly_sm.append(PegInsertionSkill(node=self, id=fixture_id, skill_params={}))
             board_assembly_sm.append(ComputeFixturePosition(fixture_id=fixture_id, bb_location=f"Rotate90z{fixture_id}"))
-            # board_assembly_sm.append(ComputeFixturePosition(fixture_id=fixture_id, bb_location=f"Rotate90z_simulation{fixture_id}"))
+            # TO CHECK ROTATION DIRECTION IN SIMULATION UNCOMMENT THE FOLLOWING LINE
+            # # # board_assembly_sm.append(ComputeFixturePosition(fixture_id=fixture_id, bb_location=f"Rotate90z_simulation{fixture_id}"))
             board_assembly_sm.append(LogBlackboard("Logblackboard2",["output_param"]))
             board_assembly_sm.append(PublishFeedback(goal_handle=goal_handle, id=fixture_id))
             board_assembly_sm.append(eTaSL_StateMachine(f"MovingHomeFinishing_{fixture_id}", "MovingHome", node=self))

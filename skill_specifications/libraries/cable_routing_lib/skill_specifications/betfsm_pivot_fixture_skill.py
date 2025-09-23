@@ -59,7 +59,7 @@ class PivotFixtureSkill(Sequence):
         self.skill_params = skill_params
 
         self.add_state(MoveGripperToPosition(finger_position=skill_params["cable_slide_pos"], gripping_velocity = skill_params["gripper_vel"], node=node))
-        self.add_state(eTaSL_StateMachine("cableSliding","CableSliding",
+        self.add_state(eTaSL_StateMachine("cableSlidingPivot","CableSlidingPivot",
                                                         cb = lambda bb: {
                                                             "turning_dir": skill_params["turning_dir_sliding"],
                                                             "desired_pos": skill_params["desired_pos"]
