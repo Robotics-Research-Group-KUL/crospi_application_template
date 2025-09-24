@@ -9,8 +9,8 @@ reqs = require("task_requirements")
 task_description = "This task specification allows to control the angular and linear velocity the end effector via a 6D joystick (a.k.a. spacemouse)."
 
 param = reqs.parameters(task_description,{
-    reqs.params.scalar({name="linear_scale", description="Scales the magnitude of the linear velocity coming from the joystick", default = 1, required=false}),
-    reqs.params.scalar({name="angular_scale", description="Scales the magnitude of the angular velocity coming from the joystick", default = 1, required=false}),
+    reqs.params.scalar({name="linear_scale", description="Scales the magnitude of the linear velocity coming from the joystick", default = 0.3, required=false}),
+    reqs.params.scalar({name="angular_scale", description="Scales the magnitude of the angular velocity coming from the joystick", default = 0.3, required=false}),
     reqs.params.string({name="task_frame", description="Name of frame used to control the robot in cartesian space", default = "tcp_frame", required=false}),
     reqs.params.bool({name="activate_linear", description="If true, the linear velocities of the joystick will control the linear velocities of the defined frame", default = true, required=true}),
     reqs.params.bool({name="activate_angular", description="If true, the angular velocities of the joystick will control the angular velocities of the defined frame", default = false, required=true}),

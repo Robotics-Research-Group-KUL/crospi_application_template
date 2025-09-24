@@ -56,7 +56,11 @@ tool0_cables_mav  = robot.getFrame("tool0_cables_mav")
 
 debug_frame = robot.getFrame("tool0_cables_debug_root")
 
-task_frame_world_without_mav_feedforward = make_constant(mav_base_link)*tool0_cables_mav
+mav_pose_wrt_world   = ctx:createInputChannelFrame("mav_pose_wrt_world")
+
+
+-- task_frame_world_without_mav_feedforward = make_constant(mav_base_link)*tool0_cables_mav
+task_frame_world_without_mav_feedforward = mav_pose_wrt_world*tool0_cables_mav
 
 
 -- ========================================= PARAMETERS ===================================
@@ -265,6 +269,8 @@ Constraint{
 	priority = 2,
 	weight = 100,
 };
+
+-- Constraint{}
 
 -- Constant Orientation Maira
 feature_variable_z_rotation_maira = Variable{context=ctx, name="feature_variable_z_rotation_maira", initial_value=0.0}

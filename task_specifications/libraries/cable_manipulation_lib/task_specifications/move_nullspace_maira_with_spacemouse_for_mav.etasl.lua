@@ -18,6 +18,7 @@ param = reqs.parameters(task_description,{
     reqs.params.string({name="task_frame_world", description="Task frame from world to tcp", default = "tcp_frame", required=false}),
     reqs.params.string({name="task_frame_mav", description="Task frame from mav to tcp", default = "tcp_frame_wrt_mav", required=false}),
     reqs.params.array({name="desired_pose", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}, description="Array with the desired pose of the task frame in [x,y,z,qx,qy,qz,qw]", required=true, minItems = 7, maxItems = 7}),
+    reqs.params.string({name="mav_pose_wrt_world", description="The specified task frame will be kept still relative to this base frame that will continuously adapt. This frame should come from a PoseInputHandler or a TFInputHandler", default = "mav_pose_wrt_world", required=true}),
 })
 
 -- ======================================== Robot model requirements ========================================
@@ -31,12 +32,20 @@ robot = reqs.robot_model({--This function loads the robot model and checks that 
 })
 
 robot_joints = robot.robot_joints
-task_frame_world = robot.getFrame(param.get("task_frame_world"))
 task_frame_mav  = robot.getFrame(param.get("task_frame_mav"))
 mav_base_link  = robot.getFrame("mav_base_link")
+tool0_cables_mav  = robot.getFrame("tool0_cables_mav")
+
+
+mav_pose_wrt_world   = ctx:createInputChannelFrame(param.get("mav_pose_wrt_world"))
+
+-- task_frame_world_without_mav_feedforward = make_constant(mav_base_link)*tool0_cables_mav
+task_frame_world_without_mav_feedforward = mav_pose_wrt_world*tool0_cables_mav
+
+task_frame_world = task_frame_world_without_mav_feedforward
+-- task_frame_world = robot.getFrame(param.get("task_frame_world"))
 
 base_frame   = ctx:createInputChannelFrame("board_pose")
-
 joystick_input   = ctx:createInputChannelTwist("joystick_input")
 
 

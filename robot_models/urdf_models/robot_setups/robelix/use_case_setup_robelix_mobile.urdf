@@ -1062,7 +1062,7 @@
   <joint name="tool0_grip_joint" type="fixed">
     <parent link="FT_sensor_frame"/>
     <child link="tool0_grip"/>
-    <origin rpy="0.0 3.1416 0.0" xyz="0.0 0.0 0.18"/>
+    <origin rpy="0.0 3.1416 0.0" xyz="0.0 0.0 0.172"/>
   </joint>
   <link name="tool0_grip_rot"/>
   <joint name="tool0_grip_rot_joint" type="fixed">
@@ -1080,6 +1080,6 @@
   <joint name="tool0_cables_joint" type="fixed">
     <parent link="FT_sensor_frame"/>
     <child link="tool0_cables"/>
-    <origin rpy="0.0 3.1416 0.0" xyz="0.0 0.0 0.14"/>
+    <origin rpy="0.0 3.1416 0.0" xyz="0.0 0.0 0.132"/>
   </joint>
 </robot>

@@ -58,6 +58,27 @@ class MavLCSM(TickingStateMachine):
                                  timeout=Duration(seconds=5)),
                                  transitions={SUCCEED: SUCCEED})
 
+class ShutdownFSM(TickingStateMachine):
+    def __init__(self, name:str, mav_node:str, etasl_node:str, node:Node = None):
+
+        super().__init__(name, outcomes=[SUCCEED, ABORT, TIMEOUT])
+
+        self.add_state(LifeCycle(name="ShutdownEtasl", 
+                    srv_name=f"/{etasl_node}", 
+                    transition=Transition.ACTIVE_SHUTDOWN, 
+                    node=node, 
+                    timeout=Duration(seconds=5)),
+                    transitions={SUCCEED: "DeactivateMAV",
+                                ABORT: "DeactivateMAV",
+                                TIMEOUT: ABORT})
+
+        self.add_state(LifeCycle(name="DeactivateMAV", srv_name=f"/{mav_node}", 
+                                    transition=Transition.DEACTIVATE, node=node, 
+                                    timeout=Duration(seconds=5)),
+                                    transitions={SUCCEED: SUCCEED,
+                                                ABORT: SUCCEED,
+                                                TIMEOUT: SUCCEED})
+
 
 class ComputeFixturePosition(Generator):
     def __init__(self, fixture_id:int, bb_location:str):
@@ -136,7 +157,7 @@ class SetupGoalResult(Generator):
             board_model_updated["Fixtures"][fixture_id] = {}
             board_model_updated["Fixtures"][fixture_id]["x"] = blackboard["board_real"][fixture_id][0]
             board_model_updated["Fixtures"][fixture_id]["y"] = blackboard["board_real"][fixture_id][1]
-
+            board_model_updated["Fixtures"][fixture_id]["type"] = blackboard["board_model"]["Fixtures"][fixture_id]["type"]
         self.result.outcome = "Success"
         self.result.parameters = json.dumps({'board': board_model_updated})
 
@@ -242,7 +263,7 @@ class RoutingActionServer(Node):
         except FileNotFoundError:
             self.get_logger().error(f"Parameter file not found: {parameter_path}")
         
-        self.blackboard = {"tasks": []}
+        self.blackboard = {"tasks": [], "output_param": {}}
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/channel_fixture_skill.json")
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/pivot_fixture_skill.json")
         self.load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/cable_routing_lib/tasks/initial_skills.json")
@@ -251,6 +272,20 @@ class RoutingActionServer(Node):
 
         self.blackboard["application_params"] = self.params
 
+        self.clients_created = {}
+        self.actions_created = {}
+
+    def get_client(self, srv_type, srv_name):
+        if srv_name not in self.clients_created:
+            self.get_logger().info(f"Creating new client for {srv_name}")
+            self.clients_created[srv_name] = self.create_client(srv_type, srv_name)
+        return self.clients_created[srv_name]
+    
+    def get_action(self, action_type, action_name):
+        if action_name not in self.actions_created:
+            self.get_logger().info(f"Creating new action for {action_name}")
+            self.actions_created[action_name] = ActionClient(self, action_type, action_name)
+        return self.actions_created[action_name]
 
     def execute_callback(self, goal_handle):
         self.get_logger().info('Executing cable routing task ...')
@@ -264,9 +299,17 @@ class RoutingActionServer(Node):
         if goal_handle.request.task == "Routing_Task":
             print("Starting Routing_Task")
             board_model, route_task_model = self.get_board_and_route(parameters_str)
-
+            import time
+            # i = 0
+            # while i < 5:
+            #     start_time = time.time()
+            #     end_time = time.time()
+            #     print(f"Time empty loop: {end_time - start_time} seconds")
+            #     i += 1
+            start_time = time.time()
             routing_sm = self.generate_routing_sm(board_model, route_task_model)
-
+            end_time = time.time()
+            print(f"Time to generate routing state machine: {end_time - start_time} seconds")
             # WARNING: Do not change the home position of the robot or add a cartesian space motion before the taring to ensure z-axis is aligned with gravity
             sm_to_execute = Sequence("Intial", children = [
                                                             # LifeCycle(name="ConfigureMAV", srv_name="/schwarzmuller_driver_lifecycle_node", transition=Transition.CONFIGURE, node=self, timeout=Duration(seconds=5)),
@@ -274,18 +317,21 @@ class RoutingActionServer(Node):
                                                             MavLCSM(name="MAV_LCSM", mav_node="schwarzmuller_driver_lifecycle_node", node=self),
                                                             # eTaSL_StateMachine("MovingHome", "MovingHome", node=self),
                                                             eTaSL_StateMachine("MovingHome_withMav", "MovingHome_withMav", node=self),
-                                                            MoveGripperToPosition(finger_position=0.0, gripping_velocity=self.params["gripper_vel"], node=self),
+                                                            # MoveGripperToPosition(finger_position=0.0, gripping_velocity=self.params["gripper_vel"], node=self),
                                                             ServiceClient("taring_ft_sensor","/schunk/tare_sensor", Empty, [SUCCEED], node=self),
                                                             TimedWait("timed_wait",Duration(seconds=1.0),node=self ),
                                                             ReadLogFromTopic('/charuco_detector/pose', 'initial_board_pose', 10, node=self),
                                                             GetFrame(params=self.params, board_model=board_model, route_task_model=route_task_model),
-                                                            eTaSL_StateMachine("goingToPreStarting", "GoingToPreStarting", node=self),
-                                                            eTaSL_StateMachine("goingToStarting", "GoingToStarting", node=self),
-                                                            routing_sm])
+                                                            # eTaSL_StateMachine("goingToPreStarting", "GoingToPreStarting", node=self),
+                                                            # eTaSL_StateMachine("goingToStarting", "GoingToStarting", node=self),
+                                                            routing_sm,
+                                                            ShutdownFSM(name="SHUTDOWN_ROBOT", mav_node="schwarzmuller_driver_lifecycle_node", etasl_node="etasl_node", node=self)
+                                                            ])
             
         elif goal_handle.request.task == "Prepare_board":
             print("Prepare_board task")
             board_model = self.get_board(parameters_str)
+            self.blackboard["board_model"] = board_model
             sm_to_execute = self.generate_board_assembly_sm(board_model=board_model, result=result, goal_handle=goal_handle)
 
 
@@ -299,7 +345,9 @@ class RoutingActionServer(Node):
             outcome=sm_to_execute(self.blackboard)
         self.get_logger().info(f'Finished state machine {goal_handle.request.task} with outcome {outcome} and result: {result.parameters}')
 
-        print("Final board positions: ", self.blackboard["board_real"])
+        # Check if the board_real is in the blackboard and print it
+        if "board_real" in self.blackboard:
+            print("Final board positions: ", self.blackboard["board_real"])
         goal_handle.succeed()  # Mark the goal as succeeded
         return result
     
@@ -387,13 +435,10 @@ class RoutingActionServer(Node):
                 skill_params["fixture_x_coordinate"] = board_model["Fixtures"][fixture_id]["x"] + 0.15
             fixture = board_model["Fixtures"][fixture_id]
             if fixture["type"] == "CHANNEL":
-                print("Adding pickup skill for channel fixture")
                 board_assembly_sm.append(PickupFixtureSkill(node=self, fixture_type="CHANNEL", skill_params=skill_params))
-                print("Pickup skill added for channel fixture")
             elif fixture["type"] == "PIVOT":
-                print("Adding pickup skill for pivot fixture")
                 board_assembly_sm.append(PickupFixtureSkill(node=self, fixture_type="PIVOT", skill_params=skill_params))
-                print("Pickup skill added for pivot fixture")
+            # Compute the fixture pose in the world frame
 
             fixture_poses.append([fixture["x"], fixture["y"], 0.05,
                             0, 0, 0, 1])
@@ -417,6 +462,8 @@ class RoutingActionServer(Node):
 
 
         board_assembly_sm.append(SetupGoalResult(result))
+        board_assembly_sm.append(ShutdownFSM(name="SHUTDOWN_ROBOT", mav_node="schwarzmuller_driver_lifecycle_node", etasl_node="etasl_node", node=self))
+        
             # board_assembly_sm.append(TimedWait(f"TimedWait_{fixture_id}", Duration(seconds=10.0), node=self))
         print("Board assembly state machine: ", board_assembly_sm)
         return Sequence("Intial", children = board_assembly_sm)
@@ -440,6 +487,21 @@ class RoutingActionServer(Node):
         channel_dist_min = self.params["channel_dist_min"]
         channel_dist_delta = self.params["channel_dist_delta"]
         slack = self.params["slack"]
+
+        start_fixture_id = route_task_model["Route"][0]
+        if board_model["Fixtures"][start_fixture_id]["type"] == "INITIAL":
+            pre_insert_offset = 0.1
+            start_fixture = board_model["Fixtures"][start_fixture_id]
+            self.blackboard["output_param"]["pre_insert_wire_pose"] = [start_fixture["x"] + pre_insert_offset, start_fixture["y"], 0.075,
+                                                                      0, 0, 1.0, 0.0]
+            self.blackboard["output_param"]["insert_wire_pose"] = [start_fixture["x"] + 0.055, start_fixture["y"], 0.075,
+                                                                      0, 0, 1.0, 0.0]
+            routing_sm.append(eTaSL_StateMachine("GoingToPreInsertWire", "GoingToPreInsertWire", node=self))
+            routing_sm.append(eTaSL_StateMachine("GoingToInsertWire", "GoingToInsertWire", node=self))
+            # return Sequence("CableRouting", children = routing_sm)
+
+        else:
+            raise ValueError(f"The first fixture in the route must be 'INITIAL' and is of type {board_model['Fixtures'][start_fixture_id]['type']}")
 
         for i in range(len(route_task_model["Route"])-2):
             skill_params = {}
@@ -512,11 +574,11 @@ class RoutingActionServer(Node):
                 skill_params["frame_next_fixture_wrt_board"] = [next_fixture["x"], next_fixture["y"], self.params["slide_height"],
                                                    0, 0, 0, 1]
 
-                # print(f"Fixture {current_fixture_id} parameters: {skill_params}")
-                
                 routing_sm.append(PivotFixtureSkill(node=self, id=current_fixture_id, skill_params=skill_params))
-
-            if current_fixture["type"] == "CHANNEL":
+            
+            
+            elif current_fixture["type"] == "CHANNEL":
+                print("Adding channel skill for fixture ", current_fixture_id)
                 T_insertion_frame = np.eye(4)
                 T_insertion_frame[:3, 3] = np.array([current_fixture["x"], current_fixture["y"], self.params["slide_height"]])
                 
@@ -536,10 +598,9 @@ class RoutingActionServer(Node):
                 skill_params["channel_inserting_pose"] = [channel_frame_x, channel_frame_y, self.params["channel_height"] - self.params["channel_insertion_diff"],
                                                             quaternion[0], quaternion[1], quaternion[2], quaternion[3]]
 
-                # print(f"Fixture {current_fixture_id} parameters: {skill_params}")
-                
                 routing_sm.append(ChannelFixtureSkill(node=self, id=current_fixture_id, skill_params=skill_params))
         
+
         # ---------------------------- Last fixture --------------------------------------------------------
         last_fixture_id = route_task_model["Route"][-1]
         prev_fixture_id = route_task_model["Route"][-2]
@@ -556,7 +617,6 @@ class RoutingActionServer(Node):
             tangent = ru.compute_tangent(prev_fixture, last_fixture, d1 = prev_segment_dir, d2 = direction_segment, dilate_2 = True)
             
             tangent_lines.append(tangent)
-            # pdb.set_trace()
             unit_tangent_vector = np.array(np.array(tangent[1]) - np.array(tangent[0]))/np.linalg.norm(np.array(tangent[1]) - np.array(tangent[0]))
 
             # Modify the slack for channels based on the orientation difference between the tangent vector and the channel fixture orientation
@@ -609,8 +669,6 @@ class RoutingActionServer(Node):
             skill_params["channel_inserting_pose"] = [channel_frame_x, channel_frame_y, self.params["channel_height"] - self.params["channel_insertion_diff"],
                                                         quaternion[0], quaternion[1], quaternion[2], quaternion[3]]
 
-            # print(f"Fixture {last_fixture_id} parameters: {skill_params}")
-            
             routing_sm.append(ChannelFixtureSkill(node=self, id=last_fixture_id, skill_params=skill_params))
 
         # -----------------------------------------------------------------------------------------------------
@@ -624,9 +682,10 @@ class RoutingActionServer(Node):
         plt.axis('equal')
         # save the figure
         plt.savefig("waypoints.pdf")
-        
-        # import pdb
-        # pdb.set_trace()
+
+        routing_sm.append(MoveGripperToPosition(finger_position=0.0, gripping_velocity=self.params["gripper_vel"], node=self))
+        routing_sm.append(eTaSL_StateMachine("RetractAfterRouting", "RetractAfterRouting", node=self))
+        routing_sm.append(eTaSL_StateMachine("MovingHome_FinishedRouting", "MovingHome", node=self))
 
         return Sequence("CableRouting", children = routing_sm)
 

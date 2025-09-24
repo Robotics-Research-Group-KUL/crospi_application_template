@@ -88,7 +88,7 @@ class MavLCSM(TickingStateMachine):
 
 load_task_list("$[etasl_ros2_application_template]/skill_specifications/libraries/robelix/tasks/mav_maira_test.json",blackboard)
 sm  = Sequence("CalibrationRoutine", children=[
-                                                MavLCSM(name="MAV_LCSM", mav_node="schwarzmuller_driver_lifecycle_node", node=my_node)
+                                                MavLCSM(name="MAV_LCSM", mav_node="schwarzmuller_driver_lifecycle_node", node=my_node),
                                                 # eTaSL_StateMachine("MovingHome","MovingHome",node=None),
                                                 # LCSM_MAV(mav_node="schwarzmuller_driver_lifecycle_node", transition_id=Transition.TRANSITION_ACTIVATE, node=my_node),
                                                 # LifeCycle(name="DeactivateMAV", srv_name="/schwarzmuller_driver_lifecycle_node", transition=Transition.DEACTIVATE, node=my_node, timeout=Duration(seconds=5)),
@@ -101,7 +101,7 @@ sm  = Sequence("CalibrationRoutine", children=[
                                                 # eTaSL_StateMachine("MovingMairaMav","MovingMairaMav",node=None),
                                                 # eTaSL_StateMachine("MovingHome","MovingHome",node=None),
                                                 # eTaSL_StateMachine("TestMavOrientation","TestMavOrientation",node=None),
-                                                # eTaSL_StateMachine("NullspaceMairaJoystickMav","NullspaceMairaJoystickMav",node=None),
+                                                eTaSL_StateMachine("NullspaceMairaJoystickMav","NullspaceMairaJoystickMav",node=None),
                                                 # eTaSL_StateMachine("MovingMairaMavTrapezoidal","MovingMairaMavTrapezoidal",node=None),
                                                 # LifeCycle(name="DeactivateMAV", srv_name="/schwarzmuller_driver_lifecycle_node", transition=Transition.DEACTIVATE, node=my_node, timeout=Duration(seconds=5))
                                                 ])

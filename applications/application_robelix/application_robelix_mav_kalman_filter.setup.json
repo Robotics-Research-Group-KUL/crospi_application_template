@@ -164,6 +164,28 @@
                                 "z": 0
                             }
                         }
+                    },
+                    {
+                        "is-PoseInputHandler": true,
+                        "number_of_tries": 10,
+                        "depth": 1,
+                        "topic-name": "/charuco_detector/pose_world_mav",
+                        "feedforward_input_topic": "/mav1500/twist_world_frame_kalman",
+                        "when_unpublished": "throw_error",
+                        "varname": "mav_pose_wrt_world",
+                        "default_pose": {
+                            "orientation":{
+                                "is-rpy": true,
+                                "pitch": 0,
+                                "roll": 0,
+                                "yaw": 0
+                            },
+                            "origin": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 0
+                            }
+                        }
                     }
                 ]
             }

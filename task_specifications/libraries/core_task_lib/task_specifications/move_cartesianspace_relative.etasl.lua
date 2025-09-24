@@ -13,6 +13,8 @@ param = reqs.parameters(task_description,{
     reqs.params.scalar({name="maxvel", description="Maximum velocity [m/s]", default = 0.1, required=true, maximum = 0.5}),
     reqs.params.scalar({name="maxacc", description="Maximum acceleration [m/s^2]", default = 0.1, required=true, maximum = 0.5}),
     reqs.params.scalar({name="eq_r", description="Equivalent radius", default = 0.08, required=false}),
+    reqs.params.scalar({name="error_pos_th", description="Position error threshold for monitoring [m]", default = 0.0005, required=false}),
+    reqs.params.scalar({name="error_rot_th", description="Rotation error threshold for monitoring [rad]", default = 0.01, required=false}),
     reqs.params.string({name="task_frame", description="Name of frame used to control the robot in cartesian space", default = "tcp_frame", required=false}),
     reqs.params.array({name="delta_pos", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="3D array of distances [m] that the robot will move w.r.t. the starting position in the X,Y,Z coordinates w.r.t. robot base", required=true,minimum = -1.5, maximum=1.5,minItems = 3, maxItems = 3}),
     reqs.params.array({name="delta_euler", type=reqs.array_types.number, default={0.0, 0.0, 0.0}, description="3D array of euler angles [rad] that the robot will move w.r.t. the starting orientation following RPY convention w.r.t the robot base", required=true,minimum = -6.28, maximum=6.28,minItems = 3, maxItems = 3}),
@@ -62,6 +64,9 @@ task_frame = robot.getFrame(param.get("task_frame"))
 maxvel    = constant(param.get("maxvel"))
 maxacc    = constant(param.get("maxacc"))
 eqradius  = constant(param.get("eq_r"))
+
+error_pos_th = constant(param.get("error_pos_th"))
+error_rot_th = constant(param.get("error_rot_th"))
 
 delta_pos = param.get("delta_pos")
 delta_x   = constant(delta_pos[1])
@@ -137,13 +142,30 @@ Constraint{
 }
 
 -- =========================== MONITOR ============================================
+--Error calculation
+local rot_vec = getRotVec(inv(rotation(task_frame))*endrot)
+local diff_rot_error
+local angle_error
+diff_rot_error, angle_error = normalize(rot_vec)
+
+local error_pos = norm(endpos-origin(task_frame))
+local error_orient = angle_error
+local error = conditional(error_pos-error_pos_th, constant(0), constant(1))*conditional(error_orient-error_rot_th, constant(0), constant(1)) -- Returns zero if the error is too big
+
 Monitor{
-        context=ctx,
-        name='finish_after_motion',
-        upper=0.0,
-        actionname='exit',
-        expr=time-get_duration(mp) - constant(1)
+    context=ctx,
+    name='finish_after_motion',
+    upper = 0.8, -- The error, that comes from a conditional, is binary (0 or 1)
+    actionname = "exit",
+    expr=error
 }
+-- Monitor{
+--         context=ctx,
+--         name='finish_after_motion',
+--         upper=0.0,
+--         actionname='exit',
+--         expr=time-get_duration(mp) - constant(1)
+-- }
 
 -- Monitor{
 --     context=ctx,

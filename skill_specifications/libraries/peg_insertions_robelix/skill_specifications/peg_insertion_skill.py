@@ -5,8 +5,7 @@ from betfsm.betfsm import *
 from betfsm.betfsm_ros import *
 from betfsm.betfsm_etasl import *
 from betfsm.betfsm_action_server import *
-from std_srvs.srv import Empty
-from .gripper_actions import MoveGripperToPosition, GripPart
+from .gripper_actions import MoveGripperToPosition
 
 class PegInsertionSkill(Sequence):
     """

@@ -73,7 +73,7 @@ class PivotFixtureSkill(Sequence):
                                                             "z_down": skill_params["z_down"]
                                                         },
                                                         node=node)),
-        self.add_state(TimedWait("TransitionWait", Duration(seconds=0.5), node=node))
+        # self.add_state(TimedWait("TransitionWait", Duration(seconds=0.5), node=node))
         self.add_state(eTaSL_StateMachine("cablePivoting","CablePivoting",
                                                         cb = lambda bb: {
                                                             "frame_next_fixture_wrt_board": skill_params["frame_next_fixture_wrt_board"],
@@ -81,7 +81,6 @@ class PivotFixtureSkill(Sequence):
                                                         },
                                                         node=node))
         self.add_state(MoveGripperToPosition(finger_position = skill_params["cable_slide_pos"], gripping_velocity = skill_params["gripper_vel"], node=node))
-
 
 def test_gripper(node=None):
     """

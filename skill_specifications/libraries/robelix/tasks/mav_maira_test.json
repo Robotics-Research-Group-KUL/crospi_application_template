@@ -153,7 +153,8 @@
                     "error_pos_th": 0.0002,
                     "error_rot_th": 0.01,
                     "task_frame_world": "tool0_cables_world",
-                    "task_frame_mav": "tool0_cables_mav"
+                    "task_frame_mav": "tool0_cables_mav",
+                    "mav_pose_wrt_world": "mav_pose_wrt_world"
                 }
             }
         }

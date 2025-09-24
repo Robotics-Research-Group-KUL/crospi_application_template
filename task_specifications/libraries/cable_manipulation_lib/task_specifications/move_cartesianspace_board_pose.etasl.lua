@@ -15,7 +15,9 @@ param = reqs.parameters(task_description,{
     reqs.params.scalar({name="eq_r", description="Equivalent radius [m]", default = 0.08, required=false}),
     reqs.params.string({name="task_frame", description="Name of frame used to control the robot in cartesian space", default = "tcp_frame", required=false}),
     reqs.params.array({name="desired_pose", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}, description="Array with the desired pose of the task frame in [x,y,z,qx,qy,qz,qw]", required=true, minimum = -1.5, maximum = 1.5, minItems = 7, maxItems = 7}),
-    reqs.params.array({name="T_root_board", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}, description="Array with the transformation from the root to the board frame in [x,y,z,qx,qy,qz,qw]", required=true, minimum = -2, maximum = 2, minItems = 7, maxItems = 7})
+    reqs.params.array({name="T_root_board", type=reqs.array_types.number, default={0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}, description="Array with the transformation from the root to the board frame in [x,y,z,qx,qy,qz,qw]", required=true, minimum = -2, maximum = 2, minItems = 7, maxItems = 7}),
+    reqs.params.scalar({name="error_pos_th", description="Position error threshold for monitoring [m]", default = 0.0005, required=false}),
+    reqs.params.scalar({name="error_rot_th", description="Rotation error threshold for monitoring [rad]", default = 0.01, required=false}),
 })
 
 -- TODO: Change order of quaterinions in the skill.
@@ -37,6 +39,8 @@ maxvel    = constant(param.get("maxvel"))
 maxacc    = constant(param.get("maxacc"))
 eqradius  = constant(param.get("eq_r"))
 
+error_pos_th = constant(param.get("error_pos_th"))
+error_rot_th = constant(param.get("error_rot_th"))
 
 desired_pose = param.get("desired_pose")
 
@@ -127,13 +131,32 @@ Constraint{
 }
 
 -- =========================== MONITOR ============================================
+
+--Error calculation
+local rot_vec = getRotVec(inv(rotation(task_frame))*target_R)
+local diff_rot_error
+local angle_error
+diff_rot_error, angle_error = normalize(rot_vec)
+
+local error_pos = norm(target_P-origin(task_frame))
+local error_orient = angle_error
+local error = conditional(error_pos-error_pos_th, constant(0), constant(1))*conditional(error_orient-error_rot_th, constant(0), constant(1)) -- Returns zero if the error is too big
+
 Monitor{
-        context=ctx,
-        name='finish_after_motion',
-        upper=0.0,
-        actionname='exit',
-        expr=time-get_duration(mp) - constant(2)
+    context=ctx,
+    name='finish_after_motion',
+    upper = 0.8, -- The error, that comes from a conditional, is binary (0 or 1)
+    actionname = "exit",
+    expr=error
 }
+
+-- Monitor{
+--         context=ctx,
+--         name='finish_after_motion',
+--         upper=0.0,
+--         actionname='exit',
+--         expr=time-get_duration(mp) - constant(2)
+-- }
 
 -- Monitor{
 --     context=ctx,

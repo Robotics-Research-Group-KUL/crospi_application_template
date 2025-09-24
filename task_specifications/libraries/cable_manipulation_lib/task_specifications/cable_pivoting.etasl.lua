@@ -275,7 +275,7 @@ beta = atan2(y, x+small_number_position)
 -- beta_cond = conditional(beta, beta, beta + 2*math.pi)
 
 
-error_band = 30*math.pi/180
+error_band = 20*math.pi/180
 
 time_start = conditional(time-1,0,200)
 Monitor{

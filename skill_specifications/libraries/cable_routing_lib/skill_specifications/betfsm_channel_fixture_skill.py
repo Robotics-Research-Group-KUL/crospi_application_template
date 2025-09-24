@@ -43,13 +43,13 @@ class ChannelFixtureSkill(Sequence):
                                                             "desired_pose": skill_params["channel_aligning_pose"]
                                                         },
                                                         node=node))
-        self.add_state(TimedWait("TransitionWait1", Duration(seconds=0.5), node=node))
+        # self.add_state(TimedWait("TransitionWait1", Duration(seconds=0.5), node=node))
         self.add_state(eTaSL_StateMachine("cableChannelInsertingWorld","CableChannelInsertingWorld",
                                                         cb = lambda bb: {
                                                             "desired_pose": skill_params["channel_inserting_pose"],
                                                         },
                                                         node=node))
-        self.add_state(TimedWait("TransitionWait2", Duration(seconds=0.5), node=node))
+        # self.add_state(TimedWait("TransitionWait2", Duration(seconds=0.5), node=node))
         self.add_state(eTaSL_StateMachine("cableTensioning","CableTensioning",
                                                         node=node))
         self.add_state(MoveGripperToPosition(finger_position = skill_params["cable_slide_pos"], gripping_velocity = skill_params["gripper_vel"], node=node))
