@@ -79,7 +79,7 @@ install(DIRECTORY applications task_specifications skill_specifications robot_mo
   DESTINATION share/${PROJECT_NAME})
 
 # Install Python node scripts
-install(PROGRAMS nodes/pose_msg_to_tf.py nodes/sine_wave_tf.py
+install(PROGRAMS example_nodes/pose_msg_to_tf.py example_nodes/sine_wave_tf.py
   DESTINATION lib/${PROJECT_NAME})
 
 
