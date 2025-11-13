@@ -21,17 +21,37 @@
             }
         },
         "robot": {
-            "robotsimulator": {
-                "is-simple_kinematic_simulation": true,
-                "initial_joints": [1.5708, -1.5708, 2.0944, -2.0944, -1.5708, 0.2],
-                "periodicity": 0.01
-            },
-            "robotdriver":{
-                "is-ur10_e_driver_etasl": true,
-                "ip_address": "192.168.56.102",
-                "periodicity": 0.02,
-                "q_acceleration": 1.2
-            },
+            "robotsimulators": [
+                {
+                    "is-simple_kinematic_simulation": true,
+                    "initial_joints": [1.5708, -1.5708, 1.5708, -1.5708, -1.5708, 0],
+                    "periodicity": 0.01,
+                    "robot_joints": [
+                        "shoulder_pan_joint",
+                        "shoulder_lift_joint",
+                        "elbow_joint",
+                        "wrist_1_joint",
+                        "wrist_2_joint",
+                        "wrist_3_joint"
+                    ]
+                }
+            ],
+            "robotdrivers":[
+                {
+                    "is-ur10_e_driver_etasl": true,
+                    "ip_address": "192.168.56.102",
+                    "periodicity": 0.02,
+                    "q_acceleration": 1.2,
+                    "robot_joints": [
+                        "shoulder_pan_joint",
+                        "shoulder_lift_joint",
+                        "elbow_joint",
+                        "wrist_1_joint",
+                        "wrist_2_joint",
+                        "wrist_3_joint"
+                    ]
+                }
+            ],
             "default_robot_specification": {
                 "is-inline_robotspecification": true,
                 "urdf_path": "$[etasl_ros2_application_template]/robot_models/urdf_models/robot_setups/ur10e/use_case_setup_ur10e.urdf",
@@ -74,13 +94,13 @@
                     },
                     {
                         "is-TopicOutputDerivativesHandler": true,
-                        "topic-name": "platform_velocities",
+                        "topic-name": "tf_velocity",
                         "variable-names": ["x_tf", "y_tf", "z_tf"]
                     },
                     {
                         "is-TopicOutputHandler": true,
-                        "topic-name": "platform_positions",
-                        "variable-names": ["x_tf", "y_tf", "z_tf"]
+                        "topic-name": "tf_pose",
+                        "variable-names": ["x_tf", "y_tf", "z_tf", "qx_tf", "qy_tf", "qz_tf", "qw_tf"]
                     }
                 ],
                 "inputhandlers": [
@@ -92,27 +112,6 @@
                         "topic-name": "/spacenav/twist",
                         "when_unpublished": "use_default",
                         "varname": "joystick_input"
-                    },
-                    {
-                        "is-PoseInputHandler": true,
-                        "number_of_tries": 10,
-                        "depth": 1,
-                        "topic-name": "/charuco_detector/pose",
-                        "when_unpublished": "throw_error",
-                        "varname": "board_pose",
-                        "default_pose": {
-                            "orientation":{
-                                "is-rpy": true,
-                                "pitch": 0,
-                                "roll": 0,
-                                "yaw": 0
-                            },
-                            "origin": {
-                                "x": 0,
-                                "y": 0,
-                                "z": 0
-                            }
-                        }
                     }
                 ]
             }

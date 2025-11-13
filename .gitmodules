@@ -1,0 +1,9 @@
+[submodule "task_specifications/libraries/core_task_lib"]
+	path = task_specifications/libraries/core_task_lib
+	url = git@gitlab.kuleuven.be:rob-expressiongraphs/ros2/task_specification_libs/core_task_lib.git
+[submodule "task_specifications/libraries/debug_lib"]
+	path = task_specifications/libraries/debug_lib
+	url = git@gitlab.kuleuven.be:rob-expressiongraphs/ros2/task_specification_libs/debug_lib.git
+[submodule "task_specifications/libraries/dummy_lib"]
+	path = task_specifications/libraries/dummy_lib
+	url = git@gitlab.kuleuven.be:rob-expressiongraphs/ros2/task_specification_libs/dummy_lib.git

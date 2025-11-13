@@ -87,42 +87,42 @@ class MyStateMachine(TickingStateMachine):
         # )
 
         # Uncomment for example sequence
-        # self.add_state(
-        #     eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
-        #     transitions={SUCCEED: "MovingDown", 
-        #                 ABORT: ABORT}
-        # )
-
-        # self.add_state(
-        #     eTaSL_StateMachine("MovingDown","MovingDown",node=None), 
-        #     transitions={SUCCEED: "MovingUp", 
-        #                 ABORT: ABORT}
-        # )
-
-        # self.add_state(
-        #     eTaSL_StateMachine("MovingUp","MovingUp",node=None), 
-        #     transitions={SUCCEED: "MovingSpline", 
-        #                 ABORT: ABORT}
-        # )
-
-        # self.add_state(
-        #     eTaSL_StateMachine("MovingSpline","MovingSpline",node=None), 
-        #     transitions={SUCCEED: "MovingHome", 
-        #                 ABORT: ABORT}
-        # )
-
-        # Uncomment for example sequence
         self.add_state(
             eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
-            transitions={SUCCEED: "keep_frame", 
+            transitions={SUCCEED: "MovingDown", 
                         ABORT: ABORT}
         )
 
         self.add_state(
-            eTaSL_StateMachine("keep_frame","keep_frame",node=None), 
-            transitions={SUCCEED: SUCCEED, 
+            eTaSL_StateMachine("MovingDown","MovingDown",node=None), 
+            transitions={SUCCEED: "MovingUp", 
                         ABORT: ABORT}
         )
+
+        self.add_state(
+            eTaSL_StateMachine("MovingUp","MovingUp",node=None), 
+            transitions={SUCCEED: "MovingSpline", 
+                        ABORT: ABORT}
+        )
+
+        self.add_state(
+            eTaSL_StateMachine("MovingSpline","MovingSpline",node=None), 
+            transitions={SUCCEED: "MovingHome", 
+                        ABORT: ABORT}
+        )
+
+        # Uncomment for example sequence
+        # self.add_state(
+        #     eTaSL_StateMachine("MovingHome","MovingHome",node=None), 
+        #     transitions={SUCCEED: "keep_frame", 
+        #                 ABORT: ABORT}
+        # )
+
+        # self.add_state(
+        #     eTaSL_StateMachine("keep_frame","keep_frame",node=None), 
+        #     transitions={SUCCEED: SUCCEED, 
+        #                 ABORT: ABORT}
+        # )
 
         # self.add_state(
         #     eTaSL_StateMachine("follow_position_vector","follow_position_vector",node=None), 

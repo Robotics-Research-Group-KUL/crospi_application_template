@@ -13,7 +13,6 @@
   <test_depend>ament_lint_common</test_depend>
 
   <depend>etasl_ros2</depend>
-  <depend>template_driver_etasl</depend>
   <export>
     <build_type>ament_cmake</build_type>
   </export>
