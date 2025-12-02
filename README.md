@@ -1,26 +1,19 @@
-# Etasl ROS2 Application Template
+# Crospi Application Template
 
-TODO
-
-Notes Erwin:
-- parameters in blackboard ["tasks][taskname]
-
-## Dependencies
-
-dkjson is used to generate a pretty json schema for each of the task specifications. To install it use luarocks:
-
-```bash
-sudo luarocks install dkjson
-```
-
-(The standard json library does not support pretty encoding)
+[Under development]
 
 
-## Questions and remarks from Erwin
+This package was created to be able to develop constraint-based reactive robot behaviors with eTaSL that can fully operate with the ROS2 architecture. This is a template that facilitates development and provides development functionalities to speed up development and deployment with Crospi.
 
-- Missing some way to deal with orientations and frames:  use SE3.py/SO3.py/quaternion.py/dualquaternion.py python libraries from robotgenskill?
-  Would recommend quaternions for transfer to eTaSL
+
+## Documentation
+
+For documentation and tutorials, checkout our [crospi website](https://crospi-website-907f83.pages.gitlab.kuleuven.be/).
 
 
 
+## Main Contributors
 
+- Santiago Iregui <santiago.iregui@kuleuven.be>
+- Erwin Aertbeliën <erwin.aertbelien@kuleuven.be>
+- Federico Ulloa <federico.ulloarios@kuleuven.be>

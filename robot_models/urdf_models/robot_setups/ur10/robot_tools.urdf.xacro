@@ -27,7 +27,7 @@
   <link name="adaptor_link" >
     <visual>
       <geometry>
-        <mesh filename="package://etasl_ros2_application_template/robot_models/urdf_models/meshes/adaptor.stl" scale=".001 .001 .001"/>
+        <mesh filename="package://crospi_application_template/robot_models/urdf_models/meshes/adaptor.stl" scale=".001 .001 .001"/>
       </geometry>
       <material name="Dark_Grey">
         <color rgba="0.4 0.4 0.4 1"/>
@@ -35,7 +35,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://etasl_ros2_application_template/robot_models/urdf_models/meshes/adaptor.stl" scale=".001 .001 .001"/>
+        <mesh filename="package://crospi_application_template/robot_models/urdf_models/meshes/adaptor.stl" scale=".001 .001 .001"/>
       </geometry>
     </collision>
   </link>
@@ -51,7 +51,7 @@
   <link name="load_cell_link" >
     <visual>
       <geometry>
-        <mesh filename="package://etasl_ros2_application_template/robot_models/urdf_models/meshes/load_cell_67.stl" scale=".001 .001 .001"/>
+        <mesh filename="package://crospi_application_template/robot_models/urdf_models/meshes/load_cell_67.stl" scale=".001 .001 .001"/>
       </geometry>
       <material name="Blue">
         <color rgba="0 0 0.3 1"/>
@@ -59,7 +59,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://etasl_ros2_application_template/robot_models/urdf_models/meshes/load_cell_67.stl" scale=".001 .001 .001"/>
+        <mesh filename="package://crospi_application_template/robot_models/urdf_models/meshes/load_cell_67.stl" scale=".001 .001 .001"/>
       </geometry>
     </collision>
   </link>

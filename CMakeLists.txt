@@ -1,5 +1,24 @@
+
+#  Copyright (c) 2025 KU Leuven, Belgium
+#
+#  Author: Santiago Iregui
+#  email: <santiago.iregui@kuleuven.be>
+#
+#  GNU Lesser General Public License Usage
+#  Alternatively, this file may be used under the terms of the GNU Lesser
+#  General Public License version 3 as published by the Free Software
+#  Foundation and appearing in the file LICENSE.LGPLv3 included in the
+#  packaging of this file. Please review the following information to
+#  ensure the GNU Lesser General Public License version 3 requirements
+#  will be met: https://www.gnu.org/licenses/lgpl.html.
+# 
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
+
 cmake_minimum_required(VERSION 3.15)
-project(etasl_ros2_application_template)
+project(crospi_application_template)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -73,7 +92,7 @@ add_custom_target(
 
 
 # Ensure that the JSON schema is generated before building
-# add_dependencies(etasl_ros2_application_template generate_json_schema)
+# add_dependencies(crospi_application_template generate_json_schema)
 
 install(DIRECTORY applications task_specifications skill_specifications robot_models schemas
   DESTINATION share/${PROJECT_NAME})

@@ -3,7 +3,7 @@
     "$id": "blackboard-schema.json",
     "title": "Blackboard",
     "type": "object",
-    "description": "Schema defining configuration properties for the etasl_node",
+    "description": "Schema defining configuration properties for the crospi_node",
     "properties": {
         "blackboard": {
             "type": "object",

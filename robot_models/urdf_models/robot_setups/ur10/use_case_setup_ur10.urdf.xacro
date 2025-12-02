@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="etasl_vision_scene" >
 	<!-- robot -->
-	<xacro:include filename="$(find etasl_ros2_application_template)/robot_models/urdf_models/robot_setups/ur10/robot_tools.urdf.xacro"/>
+	<xacro:include filename="$(find crospi_application_template)/robot_models/urdf_models/robot_setups/ur10/robot_tools.urdf.xacro"/>
 
 	<!-- environment -->
-	<xacro:include filename="$(find etasl_ros2_application_template)/robot_models/urdf_models/robot_setups/ur10/environment.urdf.xacro"/>
+	<xacro:include filename="$(find crospi_application_template)/robot_models/urdf_models/robot_setups/ur10/environment.urdf.xacro"/>
 
 	<xacro:property name="pi" value="3.14159265" />
 	<xacro:property name="x_w" value="0"/>

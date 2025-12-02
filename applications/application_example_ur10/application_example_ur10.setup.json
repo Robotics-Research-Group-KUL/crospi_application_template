@@ -21,20 +21,40 @@
             }
         },
         "robot": {
-            "robotsimulator": {
-                "is-simple_kinematic_simulation": true,
-                "initial_joints": [3.1416, -1.5708, 1.5708, -1.5708, -1.5708, 0],
-                "periodicity": 0.01
-            },
-            "robotdriver":{
-                "is-ur10_e_driver_etasl": true,
-                "ip_address": "192.168.56.102",
-                "periodicity": 0.02,
-                "q_acceleration": 1.2
-            },
+            "robotsimulators": [
+                {
+                    "is-simple_kinematic_simulation": true,
+                    "initial_joints": [3.1416, -1.5708, 1.5708, -1.5708, -1.5708, 0],
+                    "periodicity": 0.01,
+                    "robot_joints": [
+                        "shoulder_pan_joint",
+                        "shoulder_lift_joint",
+                        "elbow_joint",
+                        "wrist_1_joint",
+                        "wrist_2_joint",
+                        "wrist_3_joint"
+                    ]
+                }
+            ],
+            "robotdrivers":[
+                {
+                    "is-ur10_driver_etasl": true,
+                    "ip_address": "192.168.56.102",
+                    "periodicity": 0.02,
+                    "q_acceleration": 1.2,
+                    "robot_joints": [
+                        "shoulder_pan_joint",
+                        "shoulder_lift_joint",
+                        "elbow_joint",
+                        "wrist_1_joint",
+                        "wrist_2_joint",
+                        "wrist_3_joint"
+                    ]
+                }
+            ],
             "default_robot_specification": {
                 "is-inline_robotspecification": true,
-                "urdf_path": "$[etasl_ros2_application_template]/robot_models/urdf_models/robot_setups/ur10/use_case_setup_ur10.urdf",
+                "urdf_path": "$[crospi_application_template]/robot_models/urdf_models/robot_setups/ur10/use_case_setup_ur10.urdf",
                 "tcp_frame": {
                     "child_link": "tool0",
                     "parent_link": "base_link"

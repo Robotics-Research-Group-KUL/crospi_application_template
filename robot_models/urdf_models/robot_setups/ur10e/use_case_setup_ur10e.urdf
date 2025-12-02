@@ -593,7 +593,7 @@
     <child link="tool0"/>
   </joint>
   <!-- environment
-	<xacro:include filename="$(find etasl_ros2_application_template)/robot_models/urdf_models/robot_setups/ur10e/environment.urdf.xacro"/>
+	<xacro:include filename="$(find crospi_application_template)/robot_models/urdf_models/robot_setups/ur10e/environment.urdf.xacro"/>
 
 	<xacro:property name="pi" value="3.14159265" />
 	<xacro:property name="x_w" value="0"/>

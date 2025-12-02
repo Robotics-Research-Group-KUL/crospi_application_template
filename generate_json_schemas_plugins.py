@@ -1,3 +1,22 @@
+
+#  Copyright (c) 2025 KU Leuven, Belgium
+#
+#  Author: Santiago Iregui
+#  email: <santiago.iregui@kuleuven.be>
+#
+#  GNU Lesser General Public License Usage
+#  Alternatively, this file may be used under the terms of the GNU Lesser
+#  General Public License version 3 as published by the Free Software
+#  Foundation and appearing in the file LICENSE.LGPLv3 included in the
+#  packaging of this file. Please review the following information to
+#  ensure the GNU Lesser General Public License version 3 requirements
+#  will be met: https://www.gnu.org/licenses/lgpl.html.
+# 
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
+
 import os
 from ament_index_python.resources import get_resource, get_resources
 # from ament_index_python.resources import get_resource_types
@@ -10,11 +29,11 @@ import json
 def get_plugins_by_base_class(base_class_type: str) -> dict:
     plugins = {}
     # get_resource_types() --> Use this to see what you can put as argument of get_resources
-    resource_names = get_resources('etasl_ros2__pluginlib__plugin')
+    resource_names = get_resources('crospi_core__pluginlib__plugin')
     # print(f"Discovered pluginlib packages: {resource_names}")
 
     for package_name in resource_names:
-        content, _ = get_resource('etasl_ros2__pluginlib__plugin', package_name)
+        content, _ = get_resource('crospi_core__pluginlib__plugin', package_name)
         relative_xml_path = content.strip()
 
         # Remove the leading 'share/<package_name>/' from relative_xml_path if present

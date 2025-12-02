@@ -1,5 +1,24 @@
 #!/bin/bash
 
+
+#  Copyright (c) 2025 KU Leuven, Belgium
+#
+#  Author: Santiago Iregui
+#  email: <santiago.iregui@kuleuven.be>
+#
+#  GNU Lesser General Public License Usage
+#  Alternatively, this file may be used under the terms of the GNU Lesser
+#  General Public License version 3 as published by the Free Software
+#  Foundation and appearing in the file LICENSE.LGPLv3 included in the
+#  packaging of this file. Please review the following information to
+#  ensure the GNU Lesser General Public License version 3 requirements
+#  will be met: https://www.gnu.org/licenses/lgpl.html.
+# 
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
+
 # Check if a directory is provided as an argument
 if [ -z "$3" ]; then
   echo "Usage: $0 <directory_with_task_libraries> <path_to_etasl_robot_specification> <path_to_etasl_robot_specification_to_be_interpolated>" 
@@ -42,7 +61,7 @@ for task_libraries in "$TASK_LIBRARIES_DIR"/*; do
         echo "Generating JSON-SCHEMA file for task specification: $lua_file_dir..."
         filename=$(basename "$lua_file_dir")
         filename_without_ext="${filename%.lua}"
-        # dir_luafile="/home/santiregui/ros2_ws/src/etasl_ros2_application_template/etasl/task_specifications/test/${lua_file_dir}"
+        # dir_luafile="/home/santiregui/ros2_ws/src/crospi_application_template/etasl/task_specifications/test/${lua_file_dir}"
         # command_string="require('etasl_parameters');${command_string_robot};dofile('${lua_file_dir}'); write_json_schema('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
         command_string="require('task_requirements');_LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA='${task_libraries}/task_json_schemas/';dofile('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
 

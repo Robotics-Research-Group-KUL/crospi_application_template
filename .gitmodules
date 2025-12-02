@@ -9,4 +9,4 @@
 	url = git@gitlab.kuleuven.be:rob-expressiongraphs/ros2/task_specification_libs/dummy_lib.git
 [submodule "skill_specifications/libraries/skill_lib_example"]
 	path = skill_specifications/libraries/skill_lib_example
-	url = git@gitlab.kuleuven.be:rob-expressiongraphs/ros2/etasl_ros2_skill_libraries/skill_lib_example.git
+	url = git@gitlab.kuleuven.be:rob-expressiongraphs/ros2/crospi_core_skill_libraries/skill_lib_example.git
