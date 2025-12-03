@@ -1,12 +1,12 @@
 [submodule "task_specifications/libraries/core_task_lib"]
 	path = task_specifications/libraries/core_task_lib
-	url = git@gitlab.kuleuven.be:rob-expressiongraphs/ros2/task_specification_libs/core_task_lib.git
+	url = https://github.com/Robotics-Research-Group-KUL/core_task_lib.git
 [submodule "task_specifications/libraries/debug_lib"]
 	path = task_specifications/libraries/debug_lib
-	url = git@gitlab.kuleuven.be:rob-expressiongraphs/ros2/task_specification_libs/debug_lib.git
+	url = https://github.com/Robotics-Research-Group-KUL/debug_lib.git
 [submodule "task_specifications/libraries/dummy_lib"]
 	path = task_specifications/libraries/dummy_lib
-	url = git@gitlab.kuleuven.be:rob-expressiongraphs/ros2/task_specification_libs/dummy_lib.git
+	url = https://github.com/Robotics-Research-Group-KUL/dummy_lib.git
 [submodule "skill_specifications/libraries/skill_lib_example"]
 	path = skill_specifications/libraries/skill_lib_example
-	url = git@gitlab.kuleuven.be:rob-expressiongraphs/ros2/crospi_core_skill_libraries/skill_lib_example.git
+	url = https://github.com/Robotics-Research-Group-KUL/skill_lib_example.git
