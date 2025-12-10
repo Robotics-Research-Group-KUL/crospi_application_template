@@ -28,9 +28,13 @@ under the grant agreement No. <a href="https://cordis.europa.eu/project/id/10105
 <p/>
 
 ## Authors
-<p float="left>
-<a href="https://www.kuleuven.be/english/kuleuven/"><img src="./logo_kuleuven.png" alt="KU Leuven Logo" width="150" /></a>
-<a href="https://www.mech.kuleuven.be/en/research/ram"><img src="./logo_RAM.png" alt="RAM Logo" width="110" /></a>
+<p float="left">
+<a href="https://www.kuleuven.be/english/kuleuven/">
+    <img src="./logo_kuleuven.png" alt="KU Leuven Logo" width="150"/>
+</a>
+<a href="https://www.mech.kuleuven.be/en/research/ram">
+    <img src="./logo_RAM.png" alt="RAM Logo" width="110" />
+</a>
 </p>
 
 (c) 2025, KU Leuven, Department of Mechanical Engineering, ROB-Group:
