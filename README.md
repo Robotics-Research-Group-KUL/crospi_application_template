@@ -39,6 +39,6 @@ under the grant agreement No. <a href="https://cordis.europa.eu/project/id/10105
 
 (c) 2025, KU Leuven, Department of Mechanical Engineering, ROB-Group:
 
-- [Santiago Iregui Rincon](https://www.kuleuven.be/wieiswie/nl/person/00125886)
-- [Erwin Aertbeliën](https://www.kuleuven.be/wieiswie/nl/person/00002405)
-- [Federico Ulloa Rios](https://www.kuleuven.be/wieiswie/nl/person/00141400)
+- [Santiago Iregui Rincon](https://www.kuleuven.be/wieiswie/en/person/00125886)
+- [Erwin Aertbeliën](https://www.kuleuven.be/wieiswie/en/person/00002405)
+- [Federico Ulloa Rios](https://www.kuleuven.be/wieiswie/en/person/00141400)
