@@ -63,7 +63,7 @@ for task_libraries in "$TASK_LIBRARIES_DIR"/*; do
         filename_without_ext="${filename%.lua}"
         # dir_luafile="/home/santiregui/ros2_ws/src/crospi_application_template/etasl/task_specifications/test/${lua_file_dir}"
         # command_string="require('etasl_parameters');${command_string_robot};dofile('${lua_file_dir}'); write_json_schema('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
-        command_string="require('task_requirements');_LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA='${task_libraries}/task_json_schemas/';dofile('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
+        command_string="require('task_requirements');_APPLICATION_NAME='crospi_application_template';_LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA='${task_libraries}/task_json_schemas/';dofile('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
 
         # echo $command_string
         lua -e "${command_string}"
