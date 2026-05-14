@@ -3,7 +3,7 @@
     "blackboard": {
         "etasl": {
             "general": {
-                "event_topic": "etasl/events",
+                "event_topic": "crospi_node/events",
                 "sample_time": 0.01
             },
             "initializer": {
