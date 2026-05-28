@@ -62,7 +62,7 @@
                 "additional_frames": [
                     {
                         "name": "FT_sensor_frame",
-                        "child_link": "ft_frame",
+                        "child_link": "tool0",
                         "parent_link": "base_link"
                     }
                 ],
