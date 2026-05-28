@@ -38,7 +38,7 @@
             ],
             "robotdrivers":[
                 {
-                    "is-ur10_e_driver_etasl": true,
+                    "is-urXe_driver_crospi": true,
                     "ip_address": "192.168.56.102",
                     "periodicity": 0.02,
                     "q_acceleration": 1.2,
