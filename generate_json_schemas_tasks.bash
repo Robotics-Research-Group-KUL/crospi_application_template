@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 #  Copyright (c) 2025 KU Leuven, Belgium
 #
 #  Author: Santiago Iregui
@@ -25,15 +24,19 @@ if [ -z "$3" ]; then
   exit 1
 fi
 
-# Directory containing etasl Lua files (passed as a command-line argument)
+# Directory containing all task specifications whose json schema is going to be generated automatically
 TASK_LIBRARIES_DIR="$1"
 
-# Directory containing robot specification (passed as a command-line argument)
+# Directory that this script uses to find the robot specifications
 LUA_ROBOT_SPEC_DIR="$2"
 
-# Directory containing robot specification with format to be interpolated (passed as a command-line argument)
+# Directory containing robot specification with format to be interpolated (passed as a command-line argument).
+# where to find the robot specifications, in a format that can be interpolated, i.e. with "$[package_name]/..."
 LUA_ROBOT_SPEC_DIR_INTERPOLATE="$3"
 
+# package to be used for crospi references to the .etasl.lua references.
+# should correspond to what is declared in package.xml in this directory
+ROS2_PACKAGE="crospi_application_template"
 
 # Check if the directory exists
 if [ ! -d "$TASK_LIBRARIES_DIR" ]; then
@@ -43,29 +46,39 @@ fi
 
 # ------------------Generate one JSON schema per task specification located in $TASK_LIBRARIES_DIR---------------------
 
-for task_libraries in "$TASK_LIBRARIES_DIR"/*; do
-  if [ -d "$task_libraries" ] && [ -f "$task_libraries/task_library.json" ]; then
+for task_library in "$TASK_LIBRARIES_DIR"/*; do
+  if [ -d "$task_library" ] && [ -f "$task_library/task_library.json" ]; then    
+    # If the directory does not exist, create it:
+    mkdir -p "$task_library/task_json_schemas" 
 
-  if [ ! -d "$task_libraries/task_json_schemas" ]; then
-    mkdir "$task_libraries/task_json_schemas" #If the directory does not exist, create it
-  fi
+    task_library_name=$(basename "$task_libary")
 
-  # find . -name "*.bak" -type f -delete
-  find "$task_libraries/task_json_schemas" -name "*.etasl.json" -type f -delete #Deletes all json schemas first. This avoids having non-existing json schema files, e.g. when you change the name of a task specification
+    # Deletes all json schemas first. This avoids having non-existing json schema files, e.g. when you change the name of a task specification:
+    find "$task_library/task_json_schemas" -name "*.etasl.json" -type f -delete 
 
-    # Loop through each Lua file in the directory
-    for lua_file_dir in "$task_libraries"/task_specifications/*.etasl.lua; do #extensions with .etasl.lua
-      # Check if any Lua files exist
-      echo "-------------------"
-      if [ -f "$lua_file_dir" ]; then
-        echo "Generating JSON-SCHEMA file for task specification: $lua_file_dir..."
-        filename=$(basename "$lua_file_dir")
+    # Loop through each .etasl.lua file in the directory:
+    for lua_file in "$task_library"/task_specifications/*.etasl.lua; do
+      if [ -f "$lua_file" ]; then                                                   
+        echo "Generating JSON-SCHEMA file for task specification: $lua_file..."
+        filename=$(basename "$lua_file")
         filename_without_ext="${filename%.lua}"
-        # dir_luafile="/home/santiregui/ros2_ws/src/crospi_application_template/etasl/task_specifications/test/${lua_file_dir}"
-        # command_string="require('etasl_parameters');${command_string_robot};dofile('${lua_file_dir}'); write_json_schema('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
-        command_string="require('task_requirements');_APPLICATION_NAME='crospi_application_template';_LUA_FILEPATH_TO_GENERATE_JSON_SCHEMA='${task_libraries}/task_json_schemas/';dofile('${lua_file_dir}'); print('Finished generating file ${filename_without_ext}.json')"
 
-        # echo $command_string
+        # _GENERATE                    : if true generate schema instead of executing complete task description.        
+        # _FILEPATH_TASK_LIBRARY_JSON : full path of the file that describes the library: name, version and description of the task library, needed for the task schema.
+        # _URI_TASK_LUA               : to refer to lua task specification in the schema and files using the schema (can use $[..] directives of crospi)
+        # _FILEPATH_TASK_SCHEMA_JSON  : full path of the file to be written with schema for parameters of this task
+        
+        FILEPATH_TASK_LIBRARY_JSON="${task_library}/task_library.json"
+        URI_TASK_LUA="\$[${ROS2_PACKAGE}]/task_specifications/libraries/${task_library_name}/task_specifications/$filename"
+        FILEPATH_TASK_SCHEMA_JSON="${task_library}/task_json_schemas/${filename_without_ext}.json"
+
+        command_string="require('task_requirements');\
+                       _GENERATE=true;\
+                       _FILEPATH_TASK_LIBRARY_JSON='${FILEPATH_TASK_LIBRARY_JSON}';\
+                       _URI_TASK_LUA='${URI_TASK_LUA}';\
+                       _FILEPATH_TASK_SCHEMA_JSON='${FILEPATH_TASK_SCHEMA_JSON}';\
+                       dofile('${lua_file}');\
+                       print('Finished generating file')"
         lua -e "${command_string}"
       else
         echo "Error: No Lua files found in $TASK_LIBRARIES_DIR"
