@@ -1,0 +1,62 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"dockerFile": "Dockerfile",
+	"build": {
+		"args": {
+			"WORKSPACE": "${containerWorkspaceFolder}"
+		}
+	}, 
+	"remoteUser": "developer",
+	"runArgs": [
+		"--network=host",
+		"--cap-add=SYS_PTRACE", 
+        "--cap-add=SYS_NICE", 
+        "--privileged",
+		"--security-opt=seccomp:unconfined",
+		"--security-opt=apparmor:unconfined",
+		"--volume=/tmp/.X11-unix:/tmp/.X11-unix",
+		"--volume=/mnt/wslg:/mnt/wslg",
+		"--ipc=host",
+        "--ulimit=rtprio=98", //User program should never run at 99
+        "--ulimit=memlock=-1:-1"
+	], 
+	"workspaceMount": "source=${localWorkspaceFolder},target=/home/developer/devel_ws,type=bind",
+	"workspaceFolder": "/home/developer/devel_ws",
+	"containerEnv": {
+		"DISPLAY": "${localEnv:DISPLAY}", // Needed for GUI try ":0" for windows
+		"WAYLAND_DISPLAY": "${localEnv:WAYLAND_DISPLAY}",
+		"XDG_RUNTIME_DIR": "${localEnv:XDG_RUNTIME_DIR}",
+		"PULSE_SERVER": "${localEnv:PULSE_SERVER}",
+		"WORKSPACE":"/home/developer/devel_ws",
+		"LIBGL_ALWAYS_SOFTWARE": "1" // Needed for software rendering of opengl
+	},
+	// Set *default* container specific settings.json values on container create.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+                "ms-python.debugpy",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.vscode-python-envs",
+				"ms-python.python",
+				"ms-vscode.cpptools",
+				"ms-vscode.cpptools-extension-pack",
+				"ms-vscode.cmake-tools",
+				"ms-azuretools.vscode-docker",
+				"redhat.vscode-yaml",
+				"redhat.vscode-xml",
+				"ms-iot.vscode-ros",
+				"twxs.cmake",
+				"althack.ament-task-provider",
+				"ms-toolsai.jupyter",
+				"ms-toolsai.vscode-jupyter-powertoys",
+				"smilerobotics.urdf",
+				"sumneko.lua",
+				"ms-vscode.cpptools-themes",
+				"bierner.markdown-mermaid",
+				"geeklearningio.graphviz-markdown-preview",
+				"jebbs.plantuml"
+			] 
+		}
+	}
+}
