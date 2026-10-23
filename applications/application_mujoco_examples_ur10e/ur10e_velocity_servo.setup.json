@@ -43,10 +43,18 @@
                     },
                     "name_expr_joint_vel": "joint_vel",
                     "name_expr_joint_torque": "joint_torque",
+                    "tcp_link": "tool0",
+                    "name_expr_cartesian_wrench": "wrench_input",
                     "ros_node_name": "mujoco_robotsimulator",
                     "sensor_publishing": {
                         "topic_namespace": "/mujoco_sim/sensors",
                         "publish_period": 0.01
+                    },
+                    "external_wrench": {
+                        "topic": "/mujoco_sim/external_wrench_mouse_interaction",
+                        "timeout": 0.2,
+                        "max_force": 100.0,
+                        "max_torque": 20.0
                     }
                 }
             ],

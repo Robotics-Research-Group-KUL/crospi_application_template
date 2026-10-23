@@ -63,7 +63,14 @@
                     "visualization": {
                         "model_topic": "/mujoco_sim/model",
                         "state_topic": "/mujoco_sim/state",
-                        "publish_period": 0.033
+                        "publish_period": 0.033,
+                        "contact_topic": "/mujoco_sim/contacts"
+                    },
+                    "external_wrench": {
+                        "topic": "/mujoco_sim/external_wrench_mouse_interaction",
+                        "timeout": 0.2,
+                        "max_force": 100.0,
+                        "max_torque": 20.0
                     }
                 }
             ],

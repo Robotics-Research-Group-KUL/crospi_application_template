@@ -45,9 +45,11 @@ ros2 run crospi_core crospi_node --ros-args \
     -p config_file:="\$[crospi_application_template]/applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json" \
     -p simulation:=true
 
-# Terminal 2: viewer
+# Terminal 2: viewer (red arrows: contact forces, key T for transparency; Ctrl + right-drag: push the robot)
 PYGLFW_LIBRARY_VARIANT=x11 ros2 run mujoco_robotsimulator_crospi mujoco_viewer.py \
-    --model-topic /mujoco_sim/model --state-topic /mujoco_sim/state --render-rate 60
+    --model-topic /mujoco_sim/model --state-topic /mujoco_sim/state --render-rate 60 \
+    --wrench-topic /mujoco_sim/external_wrench_mouse_interaction --force-stiffness 200 --torque-stiffness 20 \
+    --contact-topic /mujoco_sim/contacts --contact-arrows per_body_pair --force-arrow-scale 0.025 --force-arrow-width 0.004
 
 # Terminal 3: BeTFSM script (must be run from its own folder: it loads its task list relative to the current directory)
 cd <your_ws>/src/crospi_application_template/skill_specifications/libraries/skill_lib_example/guarded_motion_sequence
@@ -71,7 +73,9 @@ ros2 run crospi_core crospi_node --ros-args \
 
 # Terminal 2: viewer
 PYGLFW_LIBRARY_VARIANT=x11 ros2 run mujoco_robotsimulator_crospi mujoco_viewer.py \
-    --model-topic /mujoco_sim/model --state-topic /mujoco_sim/state --render-rate 60
+    --model-topic /mujoco_sim/model --state-topic /mujoco_sim/state --render-rate 60 \
+    --wrench-topic /mujoco_sim/external_wrench_mouse_interaction --force-stiffness 200 --torque-stiffness 20 \
+    --contact-topic /mujoco_sim/contacts --contact-arrows per_body_pair --force-arrow-scale 0.025 --force-arrow-width 0.004
 
 # Terminal 3: BeTFSM script
 python3 <your_ws>/src/crospi_application_template/skill_specifications/libraries/skill_lib_example/circular_contour_following_example/circular_contour_following_example.py
@@ -95,7 +99,9 @@ ros2 run crospi_core crospi_node --ros-args \
 
 # Terminal 2: viewer
 PYGLFW_LIBRARY_VARIANT=x11 ros2 run mujoco_robotsimulator_crospi mujoco_viewer.py \
-    --model-topic /mujoco_sim/model --state-topic /mujoco_sim/state --render-rate 60
+    --model-topic /mujoco_sim/model --state-topic /mujoco_sim/state --render-rate 60 \
+    --wrench-topic /mujoco_sim/external_wrench_mouse_interaction --force-stiffness 200 --torque-stiffness 20 \
+    --contact-topic /mujoco_sim/contacts --contact-arrows per_body_pair --force-arrow-scale 0.025 --force-arrow-width 0.004
 
 # Terminal 3: BeTFSM script
 python3 <your_ws>/src/crospi_application_template/skill_specifications/libraries/skill_lib_example/large_sine_contour_following_example/large_sine_contour_following_example.py
