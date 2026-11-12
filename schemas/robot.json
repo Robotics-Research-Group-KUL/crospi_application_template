@@ -11,7 +11,19 @@
             "description":"A RobotSimulator interfaces simulated robot hardware with eTaSL and runs in a separate thread (one per each RobotSimulator), communicating via shared memory (lock-free and wait-free) with the eTaSL thread for reduced latency.",
             "type" : "array",
             "items" : {
-                "$ref": "generated/robotsimulator.json"
+                "allOf": [
+                    {"$ref": "generated/robotsimulator.json"},
+                    {
+                        "type": "object",
+                        "properties": {
+                            "thread_scheduling": {
+                                "description": "Scheduling of the thread that runs this robotsimulator. If not specified, the global /robot/thread_scheduling is used.",
+                                "allOf": [{"$ref": "thread_scheduling.json"}]
+                            }
+                        },
+                        "additionalProperties": true
+                    }
+                ]
             }
         },
         "robotdrivers": {
@@ -19,13 +31,31 @@
             "description":"A Robotdriver interfaces robot hardware with eTaSL and runs in a separate thread (one per Robotdriver), communicating via shared memory (lock-free and wait-free) with the eTaSL thread for reduced latency",
             "type" : "array",
             "items" : {
-                "$ref": "generated/robotdriver.json"
+                "allOf": [
+                    {"$ref": "generated/robotdriver.json"},
+                    {
+                        "type": "object",
+                        "properties": {
+                            "thread_scheduling": {
+                                "description": "Scheduling of the thread that runs this robotdriver. If not specified, the global /robot/thread_scheduling is used.",
+                                "allOf": [{"$ref": "thread_scheduling.json"}]
+                            }
+                        },
+                        "additionalProperties": true
+                    }
+                ]
             }
         },
         "default_robot_specification": {
             "title":"default_robot_specification",
             "description":"Robot specification that describes the kinematics, jointnames, relevant frames and others",
             "$ref": "https://gitlab.kuleuven.be/rob-expressiongraphs/ros2/etasl_json_schemas/raw/main/schemas/default_robot_specification.json"
+        },
+        "thread_scheduling": {
+            "title":"Thread scheduling",
+            "description":"Default scheduling of the threads that run the robotdrivers/robotsimulators. A robotdriver/robotsimulator can override it with its own thread_scheduling field. The default (SCHED_OTHER) keeps the default Linux scheduler, suitable without a real-time kernel.",
+            "default": {"policy": "SCHED_OTHER", "priority": 0},
+            "allOf": [{"$ref": "thread_scheduling.json"}]
         }
     },
     "additionalProperties":false

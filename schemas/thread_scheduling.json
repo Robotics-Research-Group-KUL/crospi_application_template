@@ -1,0 +1,23 @@
+{
+    "$schema":"http://json-schema.org/draft-06/schema",
+    "$id":"thread_scheduling.json",
+    "title":"Thread scheduling",
+    "description":"Scheduling of the thread that runs a robotdriver/robotsimulator.",
+    "type": "object",
+    "properties": {
+        "policy": {
+            "description": "Scheduling policy. SCHED_OTHER keeps the default Linux scheduler (the thread scheduling is not modified), suitable without a real-time kernel. SCHED_FIFO (first-in first-out) and SCHED_RR (round-robin) are real-time schedulers that require a real-time kernel (or the appropriate rtprio limits).",
+            "type": "string",
+            "enum": ["SCHED_OTHER", "SCHED_FIFO", "SCHED_RR"]
+        },
+        "priority": {
+            "description": "Priority of the thread. Ignored for SCHED_OTHER. For SCHED_FIFO and SCHED_RR it must be between 1 (lowest) and 98 (highest); 99 is reserved for critical system threads (e.g. watchdogs).",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 98,
+            "default": 0
+        }
+    },
+    "required": ["policy"],
+    "additionalProperties": false
+}
