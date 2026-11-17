@@ -12,7 +12,9 @@ These demos run force-controlled tasks on a simulated UR10e with a cylindrical c
 Each demo consists of:
 
 - a setup file in [applications/application_mujoco_examples_ur10e/](applications/application_mujoco_examples_ur10e/),
-  which selects the MuJoCo environment (from `mujoco_robotsimulator_crospi/config/environments/`);
+  which selects the MuJoCo environment (from [robot_models/mujoco_environments/](robot_models/mujoco_environments/),
+  copies of the environments of `mujoco_robotsimulator_crospi`, referenced as `$[crospi_application_template]/...` so
+  that they follow the package when it is renamed);
 - a BeTFSM python script and its task list (`.json`, same name) in
   [skill_specifications/libraries/skill_lib_example/](skill_specifications/libraries/skill_lib_example/), which use the
   task specifications of `core_task_lib` and `force_control_task_lib`.
@@ -126,6 +128,45 @@ ros2 run plotjuggler plotjuggler   # Streaming: ROS2 Topic Subscriber -> select 
 - The snapshots show the robot at the home pose of the demos; they are rendered by `docs/generate_snapshots.py` of
   `mujoco_robotsimulator_crospi` and copied to [docs/images/](docs/images/).
 
+
+## Crospi Playground
+
+This package is also the content of the [Crospi Playground](https://rob.pages.gitlab.kuleuven.be/crospi/) (crospi in the
+browser, without ROS 2): its examples, setups and task and skill libraries are the files of this package, and the
+playground can load a copy of it (also renamed with `configure_template.sh`) and download it again with the work done
+in the browser. What only the playground uses is in [crospi_playground/](crospi_playground/) (installed in the share
+directory, ignored by crospi):
+
+- [crospi_playground/playground.json](crospi_playground/playground.json): the examples of the playground. Task mode
+  (`task_examples`): a task specification, its parameters and the setup it runs with; Skill mode (`skill_examples`): a
+  skill (`skill_specifications/libraries/...`), its setup, and the files adapted to other robots (`robots`); optional
+  markers, fake inputs and plot layout of an example. Paths are relative to the package directory. Schema:
+  [playground.schema.json](crospi_playground/playground.schema.json).
+- [crospi_playground/display_names.json](crospi_playground/display_names.json): the names shown in the dropdowns of the
+  playground instead of the file names (setups, skills, task specifications); only the labels change.
+- [crospi_playground/task_examples/](crospi_playground/task_examples/): plain eTaSL examples of the Task mode.
+- The Python package `crospi_playground` (`playground_markers`, `betfsm_markers`): markers changed by a skill (shapes in
+  the 3D view of the playground). Installed by [CMakeLists.txt](CMakeLists.txt) (`ament_python_install_package`), so
+  that the same skills run with crospi, where they publish RViz markers (`visualization_msgs/Marker` on
+  `/visualization_marker`) instead.
+
+Setups used by the examples of the playground: [applications/application_mujoco_examples_ur10e/](applications/application_mujoco_examples_ur10e/)
+(`ur10e_empty_ready`, `ur10e_empty_above_table`, `ur10e_corner_above_table`: tool tip as `tcp_frame`, input handlers for
+the force/torque sensor and the SpaceMouse; `ur10e_joystick_teleoperation`), and the Franka Emika Panda and Trossen
+WidowX AI in [applications/application_mujoco_examples_franka_panda/](applications/application_mujoco_examples_franka_panda/)
+and [applications/application_mujoco_examples_widowx_ai/](applications/application_mujoco_examples_widowx_ai/) (these
+need `franka_description` / `trossen_arm_description` in the workspace). Task lists adapted to these robots are kept
+in the folder of their skill as `<skill>.<robot>.json` (e.g. `joystick_teleoperation.franka_panda.json`; with crospi,
+copy it over `<skill>.json`, the task list that the skill loads). Skills added for the playground in
+`skill_lib_example`: `joystick_teleoperation`, `markers_waypoints`, `markers_corner`, and `pick_and_place` (Panda and
+WidowX AI with their grippers: setups `<robot>_pick_and_place.setup.json`, environment
+`robot_models/mujoco_environments/pick_and_place/table_with_small_box.xml`; the BeTFSM states `GripperOpen`/`GripperClose`
+of `pick_and_place/gripper_states.py` command the gripper over ROS 2 topics, `/gripper/command` and
+`/gripper/joint_states`). The `gripper` entry of the MuJoCo simulator in these setups (the fingers driven by the
+simulator) is only implemented by the Crospi Playground for now, not yet by `mujoco_robotsimulator_crospi`.
+
+The playground packages the main branch of this repository (with its submodules): a change here reaches the playground
+when its assets are synchronized (`scripts/sync_assets.sh` of crospi_webassembly).
 
 ## Documentation
 

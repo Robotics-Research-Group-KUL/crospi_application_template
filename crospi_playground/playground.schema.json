@@ -1,0 +1,89 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "playground.schema.json",
+    "title": "Crospi Playground content",
+    "description": "Examples of the Crospi Playground (https://rob.pages.gitlab.kuleuven.be/crospi/) for this application package. Paths are relative to the package directory (the folder with package.xml), so they stay valid when the package is renamed with configure_template.sh.",
+    "type": "object",
+    "definitions": {
+        "path": {"type": "string", "pattern": "^[^/$].*", "description": "Path relative to the package directory."},
+        "extras": {
+            "type": "object",
+            "properties": {
+                "markers": {"$ref": "#/definitions/path", "description": "Markers of the Markers tab (JSON, as saved by the playground; e.g. crospi_playground/markers/<id>.markers.json)."},
+                "fake_inputs": {"$ref": "#/definitions/path", "description": "Lua script of the Fake inputs tab (debugging aid of the playground; e.g. crospi_playground/fake_inputs/<id>.lua)."},
+                "plots": {"$ref": "#/definitions/path", "description": "Layout of the Plots (JSON, as saved by the playground; e.g. crospi_playground/plots/<id>.plots.json)."}
+            }
+        },
+        "task_example": {
+            "type": "object",
+            "allOf": [{"$ref": "#/definitions/extras"}],
+            "properties": {
+                "id": {"type": "string", "description": "Identifier (unique among the Task examples)."},
+                "title": {"type": "string", "description": "Name shown in the list of examples."},
+                "description": {"type": "string"},
+                "task": {"$ref": "#/definitions/path", "description": "eTaSL task specification (Lua): one of a task library or a plain eTaSL file (crospi_playground/task_examples)."},
+                "params": {"type": "object", "description": "Parameters of the task (as the parameters of a task in a task list)."},
+                "setup": {"$ref": "#/definitions/path", "description": "Application setup (*.setup.json) used to run the task. Absent: the current setup is kept."},
+                "reset": {"type": "boolean", "description": "Put the robot at the initial joints of the setup when the example is loaded (it is also done whenever the setup changes)."}
+            },
+            "required": ["id", "title", "task"]
+        },
+        "skill_example": {
+            "type": "object",
+            "allOf": [{"$ref": "#/definitions/extras"}],
+            "properties": {
+                "id": {"type": "string", "description": "Identifier (unique among the Skill examples)."},
+                "title": {"type": "string", "description": "Name shown in the list of examples."},
+                "description": {"type": "string"},
+                "script": {"$ref": "#/definitions/path", "description": "BeTFSM skill (Python); its task list is the .json file with the same name."},
+                "setup": {"$ref": "#/definitions/path", "description": "Application setup (*.setup.json) of the skill."},
+                "robot": {"type": "string", "description": "id (of robots) of the robot the files of the example are for (default: the first robot). With it, the Robot selector offers only this robot and those of \"robots\"."},
+                "robots": {
+                    "type": "object",
+                    "description": "Files of the example adapted to other robots (keys: ids of 'robots'). An empty object: the example works unchanged with the default setup of that robot.",
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "setup": {"$ref": "#/definitions/path"},
+                            "tasks": {"$ref": "#/definitions/path", "description": "Task list adapted to this robot, kept in the folder of the skill: <skill>.<robot>.json (with crospi, copy it over <skill>.json, the task list loaded by the skill)."}
+                        }
+                    }
+                }
+            },
+            "required": ["id", "title", "script", "setup"]
+        }
+    },
+    "properties": {
+        "$schema": {"type": "string"},
+        "description": {"type": "string"},
+        "default_task_example": {"type": "string", "description": "id of the Task example loaded on the first visit."},
+        "default_skill_example": {"type": "string", "description": "id of the Skill example loaded on the first visit."},
+        "task_examples": {
+            "type": "array",
+            "description": "Groups of examples of the Task mode.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "group": {"type": "string"},
+                    "items": {"type": "array", "items": {"$ref": "#/definitions/task_example"}}
+                },
+                "required": ["group", "items"]
+            }
+        },
+        "skill_examples": {"type": "array", "items": {"$ref": "#/definitions/skill_example"}},
+        "robots": {
+            "type": "array",
+            "description": "Robots of the Skill mode (robot selector of the Setup tab). The first one is the robot the examples are written for.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string"},
+                    "title": {"type": "string"},
+                    "match": {"type": "string", "description": "Regular expression on the urdf_path of a setup: the setup is of this robot."},
+                    "setup": {"$ref": "#/definitions/path", "description": "Default setup of this robot (examples without files for it)."}
+                },
+                "required": ["id", "title", "match"]
+            }
+        }
+    }
+}

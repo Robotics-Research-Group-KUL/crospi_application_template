@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "display_names.schema.json",
+    "title": "Crospi Playground display names",
+    "description": "Names shown in the dropdowns of the Crospi Playground instead of the file names. Keys: paths relative to the package directory. Only the labels change: files, task names and file_path references stay the same.",
+    "type": "object",
+    "properties": {
+        "$schema": {"type": "string"},
+        "description": {"type": "string"},
+        "setups": {"type": "object", "additionalProperties": {"type": "string"}, "description": "Application setups (*.setup.json): Setup tabs and robot selector."},
+        "skills": {"type": "object", "additionalProperties": {"type": "string"}, "description": "Skill scripts (*.py) that are not examples of playground.json (list of skills of the Skill mode)."},
+        "task_specifications": {"type": "object", "additionalProperties": {"type": "string"}, "description": "Task specifications (*.etasl.lua): Task specs tab of the Skill mode and Open… of the Task mode."}
+    }
+}

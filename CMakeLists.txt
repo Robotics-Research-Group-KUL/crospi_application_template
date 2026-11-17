@@ -94,7 +94,7 @@ add_custom_target(
 # Ensure that the JSON schema is generated before building
 # add_dependencies(crospi_application_template generate_json_schema)
 
-install(DIRECTORY applications task_specifications skill_specifications robot_models schemas
+install(DIRECTORY applications task_specifications skill_specifications robot_models schemas crospi_playground
   DESTINATION share/${PROJECT_NAME})
 
 # Install Python node scripts
@@ -104,6 +104,9 @@ install(PROGRAMS example_nodes/pose_msg_to_tf.py example_nodes/sine_wave_tf.py
 
 # Install using setup.py
 ament_python_install_package(skill_specifications)
+# markers of the Crospi Playground for skills (crospi_playground.playground_markers / betfsm_markers): outside the
+# playground they publish RViz markers (visualization_msgs/Marker on /visualization_marker)
+ament_python_install_package(crospi_playground)
 
 
 if(BUILD_TESTING)

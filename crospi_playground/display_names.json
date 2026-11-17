@@ -1,0 +1,27 @@
+{
+    "$schema": "display_names.schema.json",
+    "description": "Names shown in the dropdowns of the Crospi Playground instead of the file names (paths relative to the package). Only the labels change: the files and the names used in task lists and setups stay the same.",
+    "setups": {
+        "applications/application_mujoco_examples_ur10e/ur10e_empty_ready.setup.json": "UR10e · empty · ready pose (tool_tip)",
+        "applications/application_mujoco_examples_ur10e/ur10e_empty_above_table.setup.json": "UR10e · empty · above the table (tool_tip)",
+        "applications/application_mujoco_examples_ur10e/ur10e_corner_above_table.setup.json": "UR10e · table with corner · above the table (tool_tip)",
+        "applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json": "UR10e · table with corner (guarded motions)",
+        "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json": "UR10e · circular contour",
+        "applications/application_mujoco_examples_ur10e/ur10e_contour_following_large_sine.setup.json": "UR10e · large sine contour",
+        "applications/application_mujoco_examples_ur10e/ur10e_joystick_teleoperation.setup.json": "UR10e · table with corner · SpaceMouse",
+        "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json": "UR10e · empty · position servo",
+        "applications/application_mujoco_examples_ur10e/ur10e_velocity_servo.setup.json": "UR10e · velocity servo",
+        "applications/application_mujoco_examples_ur10e/ur10e_kinematic.setup.json": "UR10e · kinematic",
+        "applications/application_mujoco_examples_ur10e/ur10e_peg_insertion_cylindrical.setup.json": "UR10e · cylindrical hole (1 mm clearance)",
+        "applications/application_mujoco_examples_ur10e/ur10e_peg_insertion_rectangular.setup.json": "UR10e · rectangular hole (1 mm clearance)",
+        "applications/application_mujoco_examples_ur10e/ur10e_pick_and_place.setup.json": "UR10e · table with box (pick and place)",
+        "applications/application_mujoco_examples_franka_panda/franka_panda.setup.json": "Franka Emika Panda",
+        "applications/application_mujoco_examples_franka_panda/franka_panda_joystick.setup.json": "Franka Emika Panda · SpaceMouse",
+        "applications/application_mujoco_examples_widowx_ai/widowx_ai.setup.json": "Trossen WidowX AI",
+        "applications/application_mujoco_examples_widowx_ai/widowx_ai_joystick.setup.json": "Trossen WidowX AI · SpaceMouse",
+        "applications/application_mujoco_examples_franka_panda/franka_panda_pick_and_place.setup.json": "Franka Emika Panda · pick and place (pedestal, table with a cube)",
+        "applications/application_mujoco_examples_widowx_ai/widowx_ai_pick_and_place.setup.json": "Trossen WidowX AI · pick and place (pedestal, table with a cube)"
+    },
+    "skills": {},
+    "task_specifications": {}
+}

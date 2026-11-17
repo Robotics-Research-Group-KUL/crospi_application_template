@@ -1,0 +1,359 @@
+{
+    "$schema": "playground.schema.json",
+    "description": "Content of the Crospi Playground for this application package (examples of the Task and Skill modes). Paths are relative to the package directory.",
+    "default_task_example": "joint_move",
+    "default_skill_example": "guarded",
+    "task_examples": [
+        {
+            "group": "Getting started (plain eTaSL)",
+            "items": [
+                {
+                    "id": "joint_move",
+                    "title": "Hello eTaSL: move in joint space",
+                    "description": "Each joint is driven to a target with a first-order behaviour; a monitor finishes the task.",
+                    "task": "crospi_playground/task_examples/joint_move.lua",
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_empty_ready.setup.json",
+                    "reset": true
+                },
+                {
+                    "id": "circle",
+                    "title": "Draw a circle with the tool tip",
+                    "description": "Cartesian position constraint that follows a time-dependent circle, constant orientation.",
+                    "task": "crospi_playground/task_examples/cartesian_circle.lua",
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_empty_above_table.setup.json",
+                    "reset": true
+                },
+                {
+                    "id": "hand_guiding",
+                    "title": "Hand guiding: move_admittance (force_control_task_lib)",
+                    "description": "Admittance control with the F/T sensor: pull the tool (Ctrl + right-drag) or twist it (Ctrl + left-drag) in the 3D view and it follows. wrench_convention = exerted_on_environment: the sign convention of the simulated sensor.",
+                    "task": "task_specifications/libraries/force_control_task_lib/task_specifications/move_admittance.etasl.lua",
+                    "params": {
+                        "K_t": 1000,
+                        "K_r": 50,
+                        "task_frame": "tcp_frame",
+                        "FT_sensor_frame": "FT_sensor_frame",
+                        "wrench_convention": "exerted_on_environment",
+                        "activate_linear": true,
+                        "activate_angular": true,
+                        "force_threshold": 0.5,
+                        "torque_threshold": 0.05,
+                        "tool_weight": 0,
+                        "tool_COG": [0, 0, 0]
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_empty_above_table.setup.json",
+                    "reset": true
+                },
+                {
+                    "id": "force_plain",
+                    "title": "Push on the table with 5 N",
+                    "description": "Force control with the simulated force/torque sensor (input channel \"wrench_input\").",
+                    "task": "crospi_playground/task_examples/force_plain.lua",
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_corner_above_table.setup.json",
+                    "reset": true
+                }
+            ]
+        },
+        {
+            "group": "crospi task libraries",
+            "items": [
+                {
+                    "id": "trap",
+                    "title": "move_jointspace_trap (core_task_lib)",
+                    "description": "Joint motion with a trapezoidal velocity profile.",
+                    "task": "task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                    "params": {
+                        "maxvel": 0.5,
+                        "maxacc": 0.5,
+                        "target_joints": [-90, -60, 90, -120, -90, 0],
+                        "units": "degrees"
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_empty_above_table.setup.json"
+                },
+                {
+                    "id": "cart_rel",
+                    "title": "move_cartesianspace_relative (core_task_lib)",
+                    "description": "Relative Cartesian motion of the tool with a trapezoidal profile.",
+                    "task": "task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                    "params": {
+                        "delta_pos": [0.1, 0, -0.05],
+                        "delta_euler": [0, 0, 0],
+                        "wrt_frame": "world_frame",
+                        "maxvel": 0.1,
+                        "maxacc": 0.1,
+                        "task_frame": "tcp_frame",
+                        "eq_r": 0.08,
+                        "error_pos_th": 0.001,
+                        "error_rot_th": 0.01
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_empty_above_table.setup.json"
+                },
+                {
+                    "id": "joystick",
+                    "title": "move_joystick (core_task_lib): SpaceMouse",
+                    "description": "Moves the tool with the emulated SpaceMouse: switch it on in the 3D view; it reaches joystick_input through the TwistInputHandler of the Settings. Right-drag: move, left-drag: rotate. Runs until stopped.",
+                    "task": "task_specifications/libraries/core_task_lib/task_specifications/move_joystick.etasl.lua",
+                    "params": {
+                        "linear_scale": 0.1,
+                        "angular_scale": 0.5,
+                        "task_frame": "tcp_frame",
+                        "activate_linear": true,
+                        "activate_angular": true,
+                        "execution_time": 0
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_corner_above_table.setup.json",
+                    "reset": true
+                },
+                {
+                    "id": "guarded",
+                    "title": "guarded_motion (force_control_task_lib)",
+                    "description": "Moves down until contact with the table (force monitor).",
+                    "task": "task_specifications/libraries/force_control_task_lib/task_specifications/guarded_motion.etasl.lua",
+                    "params": {
+                        "force_threshold": 0.5,
+                        "torque_threshold": 0.05,
+                        "contact_forces": [0, 0, 3],
+                        "force_monitor": 1,
+                        "axis": "z",
+                        "FT_sensor_frame": "FT_sensor_frame",
+                        "guarded_motion_frame": "world_frame",
+                        "K_F": [1500, 1500, 1500],
+                        "K_T": [200, 200, 200],
+                        "maxvel": 0.5,
+                        "task_frame": "tcp_frame",
+                        "tf_2_insframe": [0, 0, 0, 0, 0, 0, 1],
+                        "time_delay": 2,
+                        "tool_COG": [0, 0, 0],
+                        "tool_weight": 0
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_corner_above_table.setup.json",
+                    "reset": true
+                }
+            ]
+        },
+        {
+            "group": "Contour following: run the 5 steps in order",
+            "items": [
+                {
+                    "id": "contour1",
+                    "title": "1. Move home (above the contour)",
+                    "description": "Step 1/5 of the circular contour following demo of crospi (BeTFSM sequence).",
+                    "task": "task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                    "params": {
+                        "maxacc": 0.2,
+                        "maxvel": 0.5,
+                        "target_joints": [-1.57, -1.5708, 2.0944, -2.0944, -1.5708, 0],
+                        "units": "radians"
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json",
+                    "reset": true
+                },
+                {
+                    "id": "contour2",
+                    "title": "2. Guarded motion down",
+                    "description": "Step 2/5: down until contact with the table.",
+                    "task": "task_specifications/libraries/force_control_task_lib/task_specifications/guarded_motion.etasl.lua",
+                    "params": {
+                        "force_threshold": 0.5,
+                        "torque_threshold": 0.05,
+                        "contact_forces": [0, 0, 3],
+                        "force_monitor": 1,
+                        "axis": "z",
+                        "FT_sensor_frame": "FT_sensor_frame",
+                        "guarded_motion_frame": "world_frame",
+                        "K_F": [1500, 1500, 1500],
+                        "K_T": [200, 200, 200],
+                        "maxvel": 0.5,
+                        "task_frame": "tcp_frame",
+                        "tf_2_insframe": [0, 0, 0, 0, 0, 0, 1],
+                        "time_delay": 2,
+                        "tool_COG": [0, 0, 0],
+                        "tool_weight": 0
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json"
+                },
+                {
+                    "id": "contour3",
+                    "title": "3. Move up 3 cm",
+                    "description": "Step 3/5.",
+                    "task": "task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                    "params": {
+                        "delta_euler": [0, 0, 0],
+                        "delta_pos": [0, 0, 0.03],
+                        "eq_r": 0.08,
+                        "error_pos_th": 0.001,
+                        "error_rot_th": 0.01,
+                        "maxacc": 0.1,
+                        "maxvel": 0.1,
+                        "task_frame": "tcp_frame",
+                        "wrt_frame": "world_frame"
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json"
+                },
+                {
+                    "id": "contour4",
+                    "title": "4. Guarded motion to the contour",
+                    "description": "Step 4/5: along -x until contact with the contour.",
+                    "task": "task_specifications/libraries/force_control_task_lib/task_specifications/guarded_motion.etasl.lua",
+                    "params": {
+                        "force_threshold": 0.5,
+                        "torque_threshold": 0.05,
+                        "contact_forces": [-5, 0, 0],
+                        "force_monitor": 1,
+                        "axis": "x",
+                        "FT_sensor_frame": "FT_sensor_frame",
+                        "guarded_motion_frame": "world_frame",
+                        "K_F": [1500, 1500, 1500],
+                        "K_T": [200, 200, 200],
+                        "maxvel": 0.5,
+                        "task_frame": "tcp_frame",
+                        "tf_2_insframe": [0, 0, 0, 0, 0, 0, 1],
+                        "time_delay": 2,
+                        "tool_COG": [0, 0, 0],
+                        "tool_weight": 0
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json"
+                },
+                {
+                    "id": "contour5",
+                    "title": "5. 2D contour following",
+                    "description": "Step 5/5: follows the contour with a constant normal force (10 N).",
+                    "task": "task_specifications/libraries/force_control_task_lib/task_specifications/2D_contour_following.etasl.lua",
+                    "params": {
+                        "task_frame": "tcp_frame",
+                        "FT_sensor_frame": "FT_sensor_frame",
+                        "tf_2_contact_frame": [0, 0, 0, 0, 0, 0, 1],
+                        "wrench_convention": "exerted_on_environment",
+                        "normal_force": 10,
+                        "tangential_velocity": 0.03,
+                        "ramp_up_time": 3,
+                        "path_length": 1,
+                        "contact_stiffness": 5000,
+                        "K_force": 8,
+                        "K_tracking": 1,
+                        "K_hold": 4,
+                        "tool_COG": [0, 0, 0],
+                        "tool_weight": 0,
+                        "filter_cutoff_frequency": 5,
+                        "filter_order": 2
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json"
+                }
+            ]
+        }
+    ],
+    "skill_examples": [
+        {
+            "id": "guarded",
+            "title": "Guarded motion sequence (loop)",
+            "script": "skill_specifications/libraries/skill_lib_example/guarded_motion_sequence/guarded_motion_sequence.py",
+            "setup": "applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json",
+            "description": "Repeat(Sequence(CrospiTask ...)): move home, approach the table, guarded motions along z, x and y."
+        },
+        {
+            "id": "circular",
+            "title": "Circular contour following",
+            "script": "skill_specifications/libraries/skill_lib_example/circular_contour_following_example/circular_contour_following_example.py",
+            "setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json",
+            "description": "Move home, guarded motion down, move up, guarded motion to the contour, 2D contour following."
+        },
+        {
+            "id": "large_sine",
+            "title": "Large sine contour following",
+            "script": "skill_specifications/libraries/skill_lib_example/large_sine_contour_following_example/large_sine_contour_following_example.py",
+            "setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_large_sine.setup.json",
+            "description": "Contour following of a large sine-shaped contour."
+        },
+        {
+            "id": "loop_fsm",
+            "title": "Loop with a TickingStateMachine",
+            "script": "skill_specifications/libraries/skill_lib_example/skill_example_loop_fsm/skill_example_loop_fsm.py",
+            "setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json",
+            "description": "State machine (TickingStateMachine) looping over joint, Cartesian and spline motions."
+        },
+        {
+            "id": "loop_bt",
+            "title": "Loop with a behavior-tree sequence",
+            "script": "skill_specifications/libraries/skill_lib_example/skill_example_loop_bt_sequence/skill_example_loop_bt_sequence.py",
+            "setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json",
+            "description": "The same loop written as a behavior-tree Sequence inside a Repeat."
+        },
+        {
+            "id": "joystick",
+            "title": "Joystick teleoperation (SpaceMouse)",
+            "script": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.py",
+            "setup": "applications/application_mujoco_examples_ur10e/ur10e_joystick_teleoperation.setup.json",
+            "description": "Move home, then move_joystick. Switch the SpaceMouse on (3D view): the TwistInputHandler of the setup feeds /spacenav/twist to joystick_input.",
+            "robots": {
+                "panda": {
+                    "setup": "applications/application_mujoco_examples_franka_panda/franka_panda_joystick.setup.json",
+                    "tasks": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.franka_panda.json"
+                },
+                "widowx": {
+                    "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_joystick.setup.json",
+                    "tasks": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.widowx_ai.json"
+                }
+            }
+        },
+        {
+            "id": "markers_waypoints",
+            "title": "Markers: waypoints (BeTFSM blocks)",
+            "script": "skill_specifications/libraries/skill_lib_example/markers_waypoints/markers_waypoints.py",
+            "setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json",
+            "description": "Markers changed by the skill (crospi_playground): plan as paths, target per waypoint, pins, countdown, blinking. Sequence, Compute, Repeat, CrospiTask with a parameter callback, Concurrent + TimedWait, TimedRepeat; MarkerEdit, WithMarkers, MarkerUpdater."
+        },
+        {
+            "id": "markers_corner",
+            "title": "Markers: corner localization (BeTFSM blocks)",
+            "script": "skill_specifications/libraries/skill_lib_example/markers_corner/markers_corner.py",
+            "setup": "applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json",
+            "description": "Guarded motions to the corner on the table with markers: force arrow, contact pins, estimated corner vs ground truth. Fallback, While, Adapt, AlwaysOutcome, Concurrent, ConcurrentSequence, LogBlackboard; a ConfigCallback on /forces_etasl."
+        },
+        {
+            "id": "pick_and_place",
+            "title": "Pick and place with the gripper (Panda, WidowX AI)",
+            "description": "A cube (a free body of the simulation) moved to a target on the table: guarded motions find the table when picking and when placing; the gripper is commanded by BeTFSM states (gripper_states.py: GripperOpen, GripperClose) over ROS 2 topics, not by eTaSL. Franka Emika Panda or Trossen WidowX AI (Robot selector of the Setup tab).",
+            "script": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place.py",
+            "setup": "applications/application_mujoco_examples_franka_panda/franka_panda_pick_and_place.setup.json",
+            "robot": "panda",
+            "robots": {
+                "widowx": {
+                    "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_pick_and_place.setup.json",
+                    "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place.widowx_ai.json"
+                }
+            }
+        },
+        {
+            "id": "sine",
+            "title": "Sine wave on the last joint (debug)",
+            "script": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.py",
+            "setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json",
+            "description": "A single CrospiTask with a sine wave on the last joint.",
+            "robots": {
+                "panda": {
+                    "tasks": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.franka_panda.json"
+                },
+                "widowx": {}
+            }
+        }
+    ],
+    "robots": [
+        {
+            "id": "ur10e",
+            "title": "UR10e",
+            "match": "/ur10e[^/]*\\.urdf$|robot_setups/ur10e/"
+        },
+        {
+            "id": "panda",
+            "title": "Franka Emika Panda",
+            "match": "franka_description\\]?/urdf/",
+            "setup": "applications/application_mujoco_examples_franka_panda/franka_panda.setup.json"
+        },
+        {
+            "id": "widowx",
+            "title": "Trossen WidowX AI",
+            "match": "trossen_arm_description\\]?/urdf/",
+            "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai.setup.json"
+        }
+    ]
+}
