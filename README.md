@@ -137,9 +137,10 @@ playground can load a copy of it (also renamed with `configure_template.sh`) and
 in the browser. What only the playground uses is in [crospi_playground/](crospi_playground/) (installed in the share
 directory, ignored by crospi):
 
-- [crospi_playground/playground.json](crospi_playground/playground.json): the examples of the playground. Task mode
-  (`task_examples`): a task specification, its parameters and the setup it runs with; Skill mode (`skill_examples`): a
-  skill (`skill_specifications/libraries/...`), its setup, and the files adapted to other robots (`robots`); optional
+- [crospi_playground/playground.json](crospi_playground/playground.json): the examples of the playground, in groups (the
+  categories of the example lists). Task mode (`task_examples`): a task specification, its parameters and the setup it runs with; Skill mode (`skill_examples`): a
+  skill (`skill_specifications/libraries/...`) and the setups it supports (`setups`, the first one is its default; a
+  setup can have a task list adapted to it, e.g. for another robot: `tasks`); optional
   markers, fake inputs and plot layout of an example. Paths are relative to the package directory. Schema:
   [playground.schema.json](crospi_playground/playground.schema.json).
 - [crospi_playground/display_names.json](crospi_playground/display_names.json): the names shown in the dropdowns of the
@@ -149,6 +150,10 @@ directory, ignored by crospi):
   the 3D view of the playground). Installed by [CMakeLists.txt](CMakeLists.txt) (`ament_python_install_package`), so
   that the same skills run with crospi, where they publish RViz markers (`visualization_msgs/Marker` on
   `/visualization_marker`) instead.
+- Tare of the force/torque sensor: the force control examples call the `std_srvs/Trigger` service
+  `/mujoco_robotsimulator/tare_ft_sensor` of the playground's simulator right after moving home, with a betfsm_ros
+  `ServiceClient` state. `mujoco_robotsimulator_crospi` provides the same service, so the examples run unchanged with
+  crospi; with a real robot, use the tare service of your sensor driver.
 
 Setups used by the examples of the playground: [applications/application_mujoco_examples_ur10e/](applications/application_mujoco_examples_ur10e/)
 (`ur10e_empty_ready`, `ur10e_empty_above_table`, `ur10e_corner_above_table`: tool tip as `tcp_frame`, input handlers for
@@ -158,11 +163,14 @@ and [applications/application_mujoco_examples_widowx_ai/](applications/applicati
 need `franka_description` / `trossen_arm_description` in the workspace). Task lists adapted to these robots are kept
 in the folder of their skill as `<skill>.<robot>.json` (e.g. `joystick_teleoperation.franka_panda.json`; with crospi,
 copy it over `<skill>.json`, the task list that the skill loads). Skills added for the playground in
-`skill_lib_example`: `joystick_teleoperation`, `markers_waypoints`, `markers_corner`, and `pick_and_place` (Panda and
-WidowX AI with their grippers: setups `<robot>_pick_and_place.setup.json`, environment
+`skill_lib_example`: `joystick_teleoperation`, `markers_waypoints`, `markers_corner`, and `pick_and_place` (Panda,
+WidowX AI and UR10e with a generic parallel gripper (`ur10e_gripper_pick_and_place.setup.json`, URDF
+`robot_models/urdf_models/robot_setups/ur10e/ur10e_parallel_gripper.urdf`) with their grippers; `pick_and_place_simple.py`: motions to known poses only, `pick_and_place.py`: guarded
+motions, a "no cube" branch and markers; setups `<robot>_pick_and_place.setup.json`, environment
 `robot_models/mujoco_environments/pick_and_place/table_with_small_box.xml`; the BeTFSM states `GripperOpen`/`GripperClose`
-of `pick_and_place/gripper_states.py` command the gripper over ROS 2 topics, `/gripper/command` and
-`/gripper/joint_states`). The `gripper` entry of the MuJoCo simulator in these setups (the fingers driven by the
+of `pick_and_place/fake_gripper_control.py` command the simulated gripper over ROS 2 topics of the playground,
+`/gripper/command` and `/gripper/joint_states`: only for the simulation, a real gripper needs states written for its
+own driver). The `gripper` entry of the MuJoCo simulator in these setups (the fingers driven by the
 simulator) is only implemented by the Crospi Playground for now, not yet by `mujoco_robotsimulator_crospi`.
 
 The playground packages the main branch of this repository (with its submodules): a change here reaches the playground

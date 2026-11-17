@@ -7,7 +7,7 @@
     "properties": {
         "$schema": {"type": "string"},
         "description": {"type": "string"},
-        "setups": {"type": "object", "additionalProperties": {"type": "string"}, "description": "Application setups (*.setup.json): Setup tabs and robot selector."},
+        "setups": {"type": "object", "additionalProperties": {"type": "string"}, "description": "Application setups (*.setup.json): Setup tabs and Setup dropdown."},
         "skills": {"type": "object", "additionalProperties": {"type": "string"}, "description": "Skill scripts (*.py) that are not examples of playground.json (list of skills of the Skill mode)."},
         "task_specifications": {"type": "object", "additionalProperties": {"type": "string"}, "description": "Task specifications (*.etasl.lua): Task specs tab of the Skill mode and Open… of the Task mode."}
     }

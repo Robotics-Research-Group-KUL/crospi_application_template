@@ -36,21 +36,22 @@
                 "title": {"type": "string", "description": "Name shown in the list of examples."},
                 "description": {"type": "string"},
                 "script": {"$ref": "#/definitions/path", "description": "BeTFSM skill (Python); its task list is the .json file with the same name."},
-                "setup": {"$ref": "#/definitions/path", "description": "Application setup (*.setup.json) of the skill."},
-                "robot": {"type": "string", "description": "id (of robots) of the robot the files of the example are for (default: the first robot). With it, the Robot selector offers only this robot and those of \"robots\"."},
-                "robots": {
-                    "type": "object",
-                    "description": "Files of the example adapted to other robots (keys: ids of 'robots'). An empty object: the example works unchanged with the default setup of that robot.",
-                    "additionalProperties": {
+                "setups": {
+                    "type": "array",
+                    "minItems": 1,
+                    "description": "Setups supported by the skill (Setup dropdown of the Skill mode); the first one is its default, loaded when the example is opened. The dropdown also offers the other setups of the folder (\"show also unsupported setups\"): with them the task list of the skill (<skill>.json) is used.",
+                    "items": {
                         "type": "object",
                         "properties": {
-                            "setup": {"$ref": "#/definitions/path"},
-                            "tasks": {"$ref": "#/definitions/path", "description": "Task list adapted to this robot, kept in the folder of the skill: <skill>.<robot>.json (with crospi, copy it over <skill>.json, the task list loaded by the skill)."}
-                        }
+                            "setup": {"$ref": "#/definitions/path", "description": "Application setup (*.setup.json)."},
+                            "tasks": {"$ref": "#/definitions/path", "description": "Task list adapted to this setup (e.g. another robot), instead of <skill>.json; kept in the folder of the skill: <skill>.<robot>.json (with crospi, copy it over <skill>.json, the task list loaded by the skill)."}
+                        },
+                        "required": ["setup"],
+                        "additionalProperties": false
                     }
                 }
             },
-            "required": ["id", "title", "script", "setup"]
+            "required": ["id", "title", "script", "setups"]
         }
     },
     "properties": {
@@ -70,19 +71,16 @@
                 "required": ["group", "items"]
             }
         },
-        "skill_examples": {"type": "array", "items": {"$ref": "#/definitions/skill_example"}},
-        "robots": {
+        "skill_examples": {
             "type": "array",
-            "description": "Robots of the Skill mode (robot selector of the Setup tab). The first one is the robot the examples are written for.",
+            "description": "Groups of examples of the Skill mode.",
             "items": {
                 "type": "object",
                 "properties": {
-                    "id": {"type": "string"},
-                    "title": {"type": "string"},
-                    "match": {"type": "string", "description": "Regular expression on the urdf_path of a setup: the setup is of this robot."},
-                    "setup": {"$ref": "#/definitions/path", "description": "Default setup of this robot (examples without files for it)."}
+                    "group": {"type": "string"},
+                    "items": {"type": "array", "items": {"$ref": "#/definitions/skill_example"}}
                 },
-                "required": ["id", "title", "match"]
+                "required": ["group", "items"]
             }
         }
     }

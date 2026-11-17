@@ -89,6 +89,22 @@
                     "setup": "applications/application_mujoco_examples_ur10e/ur10e_empty_above_table.setup.json"
                 },
                 {
+                    "id": "cart_abs",
+                    "title": "move_cartesianspace_absolute_pose (core_task_lib)",
+                    "description": "Cartesian motion of the tool to an absolute pose (position and quaternion [x, y, z, qx, qy, qz, qw] in the robot base frame) with a trapezoidal profile: here 0.175 m along x, 4 cm lower and turned by 45 deg about the vertical.",
+                    "task": "task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_absolute_pose.etasl.lua",
+                    "params": {
+                        "desired_pose": [0.35, -0.6, 0.2, 0.38268, -0.92388, 0, 0],
+                        "maxvel": 0.1,
+                        "maxacc": 0.1,
+                        "task_frame": "tcp_frame",
+                        "eq_r": 0.08,
+                        "error_pos_th": 0.001,
+                        "error_rot_th": 0.01
+                    },
+                    "setup": "applications/application_mujoco_examples_ur10e/ur10e_empty_above_table.setup.json"
+                },
+                {
                     "id": "joystick",
                     "title": "move_joystick (core_task_lib): SpaceMouse",
                     "description": "Moves the tool with the emulated SpaceMouse: switch it on in the 3D view; it reaches joystick_input through the TwistInputHandler of the Settings. Right-drag: move, left-drag: rotate. Runs until stopped.",
@@ -244,116 +260,162 @@
     ],
     "skill_examples": [
         {
-            "id": "guarded",
-            "title": "Guarded motion sequence (loop)",
-            "script": "skill_specifications/libraries/skill_lib_example/guarded_motion_sequence/guarded_motion_sequence.py",
-            "setup": "applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json",
-            "description": "Repeat(Sequence(CrospiTask ...)): move home, approach the table, guarded motions along z, x and y."
-        },
-        {
-            "id": "circular",
-            "title": "Circular contour following",
-            "script": "skill_specifications/libraries/skill_lib_example/circular_contour_following_example/circular_contour_following_example.py",
-            "setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json",
-            "description": "Move home, guarded motion down, move up, guarded motion to the contour, 2D contour following."
-        },
-        {
-            "id": "large_sine",
-            "title": "Large sine contour following",
-            "script": "skill_specifications/libraries/skill_lib_example/large_sine_contour_following_example/large_sine_contour_following_example.py",
-            "setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_large_sine.setup.json",
-            "description": "Contour following of a large sine-shaped contour."
-        },
-        {
-            "id": "loop_fsm",
-            "title": "Loop with a TickingStateMachine",
-            "script": "skill_specifications/libraries/skill_lib_example/skill_example_loop_fsm/skill_example_loop_fsm.py",
-            "setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json",
-            "description": "State machine (TickingStateMachine) looping over joint, Cartesian and spline motions."
-        },
-        {
-            "id": "loop_bt",
-            "title": "Loop with a behavior-tree sequence",
-            "script": "skill_specifications/libraries/skill_lib_example/skill_example_loop_bt_sequence/skill_example_loop_bt_sequence.py",
-            "setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json",
-            "description": "The same loop written as a behavior-tree Sequence inside a Repeat."
-        },
-        {
-            "id": "joystick",
-            "title": "Joystick teleoperation (SpaceMouse)",
-            "script": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.py",
-            "setup": "applications/application_mujoco_examples_ur10e/ur10e_joystick_teleoperation.setup.json",
-            "description": "Move home, then move_joystick. Switch the SpaceMouse on (3D view): the TwistInputHandler of the setup feeds /spacenav/twist to joystick_input.",
-            "robots": {
-                "panda": {
-                    "setup": "applications/application_mujoco_examples_franka_panda/franka_panda_joystick.setup.json",
-                    "tasks": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.franka_panda.json"
+            "group": "Force control",
+            "items": [
+                {
+                    "id": "guarded",
+                    "title": "Guarded motion sequence (loop)",
+                    "script": "skill_specifications/libraries/skill_lib_example/guarded_motion_sequence/guarded_motion_sequence.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json"}
+                    ],
+                    "description": "Repeat(Sequence(CrospiTask ...)): move home, approach the table, guarded motions along z, x and y."
                 },
-                "widowx": {
-                    "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_joystick.setup.json",
-                    "tasks": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.widowx_ai.json"
-                }
-            }
-        },
-        {
-            "id": "markers_waypoints",
-            "title": "Markers: waypoints (BeTFSM blocks)",
-            "script": "skill_specifications/libraries/skill_lib_example/markers_waypoints/markers_waypoints.py",
-            "setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json",
-            "description": "Markers changed by the skill (crospi_playground): plan as paths, target per waypoint, pins, countdown, blinking. Sequence, Compute, Repeat, CrospiTask with a parameter callback, Concurrent + TimedWait, TimedRepeat; MarkerEdit, WithMarkers, MarkerUpdater."
-        },
-        {
-            "id": "markers_corner",
-            "title": "Markers: corner localization (BeTFSM blocks)",
-            "script": "skill_specifications/libraries/skill_lib_example/markers_corner/markers_corner.py",
-            "setup": "applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json",
-            "description": "Guarded motions to the corner on the table with markers: force arrow, contact pins, estimated corner vs ground truth. Fallback, While, Adapt, AlwaysOutcome, Concurrent, ConcurrentSequence, LogBlackboard; a ConfigCallback on /forces_etasl."
-        },
-        {
-            "id": "pick_and_place",
-            "title": "Pick and place with the gripper (Panda, WidowX AI)",
-            "description": "A cube (a free body of the simulation) moved to a target on the table: guarded motions find the table when picking and when placing; the gripper is commanded by BeTFSM states (gripper_states.py: GripperOpen, GripperClose) over ROS 2 topics, not by eTaSL. Franka Emika Panda or Trossen WidowX AI (Robot selector of the Setup tab).",
-            "script": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place.py",
-            "setup": "applications/application_mujoco_examples_franka_panda/franka_panda_pick_and_place.setup.json",
-            "robot": "panda",
-            "robots": {
-                "widowx": {
-                    "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_pick_and_place.setup.json",
-                    "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place.widowx_ai.json"
-                }
-            }
-        },
-        {
-            "id": "sine",
-            "title": "Sine wave on the last joint (debug)",
-            "script": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.py",
-            "setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json",
-            "description": "A single CrospiTask with a sine wave on the last joint.",
-            "robots": {
-                "panda": {
-                    "tasks": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.franka_panda.json"
+                {
+                    "id": "circular",
+                    "title": "Circular contour following",
+                    "script": "skill_specifications/libraries/skill_lib_example/circular_contour_following_example/circular_contour_following_example.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json"}
+                    ],
+                    "description": "Move home, guarded motion down, move up, guarded motion to the contour, 2D contour following."
                 },
-                "widowx": {}
-            }
-        }
-    ],
-    "robots": [
-        {
-            "id": "ur10e",
-            "title": "UR10e",
-            "match": "/ur10e[^/]*\\.urdf$|robot_setups/ur10e/"
+                {
+                    "id": "large_sine",
+                    "title": "Large sine contour following",
+                    "script": "skill_specifications/libraries/skill_lib_example/large_sine_contour_following_example/large_sine_contour_following_example.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_large_sine.setup.json"}
+                    ],
+                    "description": "Contour following of a large sine-shaped contour."
+                }
+            ]
         },
         {
-            "id": "panda",
-            "title": "Franka Emika Panda",
-            "match": "franka_description\\]?/urdf/",
-            "setup": "applications/application_mujoco_examples_franka_panda/franka_panda.setup.json"
+            "group": "Behavior trees and state machines",
+            "items": [
+                {
+                    "id": "loop_fsm",
+                    "title": "Loop with a TickingStateMachine",
+                    "script": "skill_specifications/libraries/skill_lib_example/skill_example_loop_fsm/skill_example_loop_fsm.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json"}
+                    ],
+                    "description": "State machine (TickingStateMachine) looping over joint, Cartesian and spline motions."
+                },
+                {
+                    "id": "loop_bt",
+                    "title": "Loop with a behavior-tree sequence",
+                    "script": "skill_specifications/libraries/skill_lib_example/skill_example_loop_bt_sequence/skill_example_loop_bt_sequence.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json"}
+                    ],
+                    "description": "The same loop written as a behavior-tree Sequence inside a Repeat."
+                }
+            ]
         },
         {
-            "id": "widowx",
-            "title": "Trossen WidowX AI",
-            "match": "trossen_arm_description\\]?/urdf/",
-            "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai.setup.json"
+            "group": "Teleoperation",
+            "items": [
+                {
+                    "id": "joystick",
+                    "title": "Joystick teleoperation (SpaceMouse)",
+                    "script": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_joystick_teleoperation.setup.json"},
+                        {
+                            "setup": "applications/application_mujoco_examples_franka_panda/franka_panda_joystick.setup.json",
+                            "tasks": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.franka_panda.json"
+                        },
+                        {
+                            "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_joystick.setup.json",
+                            "tasks": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.widowx_ai.json"
+                        }
+                    ],
+                    "description": "Move home, then move_joystick. Switch the SpaceMouse on (3D view): the TwistInputHandler of the setup feeds /spacenav/twist to joystick_input."
+                }
+            ]
+        },
+        {
+            "group": "Markers",
+            "items": [
+                {
+                    "id": "markers_waypoints",
+                    "title": "Markers: waypoints (BeTFSM blocks)",
+                    "script": "skill_specifications/libraries/skill_lib_example/markers_waypoints/markers_waypoints.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json"}
+                    ],
+                    "description": "Markers changed by the skill (crospi_playground): plan as paths, target per waypoint, pins, countdown, blinking. Sequence, Compute, Repeat, CrospiTask with a parameter callback, Concurrent + TimedWait, TimedRepeat; MarkerEdit, WithMarkers, MarkerUpdater."
+                },
+                {
+                    "id": "markers_corner",
+                    "title": "Markers: corner localization (BeTFSM blocks)",
+                    "script": "skill_specifications/libraries/skill_lib_example/markers_corner/markers_corner.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json"}
+                    ],
+                    "description": "Guarded motions to the corner on the table with markers: force arrow, contact pins, estimated corner vs ground truth. Fallback, While, Adapt, AlwaysOutcome, Concurrent, ConcurrentSequence, LogBlackboard; a ConfigCallback on /forces_etasl."
+                }
+            ]
+        },
+        {
+            "group": "Pick and place with a gripper",
+            "items": [
+                {
+                    "id": "pick_and_place_simple",
+                    "title": "Pick and place (simple)",
+                    "description": "A cube (a free body of the simulation) moved to a target on the table with the gripper, in a fixed sequence: motions to known poses (move_cartesianspace_absolute_pose; the poses in the task list of the robot), the gripper opened and closed by BeTFSM states (fake_gripper_control.py; simulation only) over ROS 2 topics, not by eTaSL. No guarded motions, no markers, the grasp is not checked (see Pick and place (advanced)). Franka Emika Panda, Trossen WidowX AI or UR10e with a parallel gripper (Setup dropdown of the Setup tab).",
+                    "script": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place_simple.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_franka_panda/franka_panda_pick_and_place.setup.json"},
+                        {
+                            "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_pick_and_place.setup.json",
+                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place_simple.widowx_ai.json"
+                        },
+                        {
+                            "setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_pick_and_place.setup.json",
+                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place_simple.ur10e_gripper.json"
+                        }
+                    ]
+                },
+                {
+                    "id": "pick_and_place",
+                    "title": "Pick and place (advanced)",
+                    "description": "A cube (a free body of the simulation) moved to a target on the table: fast motions to an absolute pose (move_cartesianspace_absolute_pose) until 2 cm above the table, then guarded motions find the table when picking and when placing; the simulated gripper is commanded by BeTFSM states (fake_gripper_control.py: GripperOpen, GripperClose; simulation only) over ROS 2 topics, not by eTaSL; without a cube, the gripper closes completely and the skill ends with NO_OBJECT. Franka Emika Panda, Trossen WidowX AI or UR10e with a parallel gripper (Setup dropdown of the Setup tab).",
+                    "script": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_franka_panda/franka_panda_pick_and_place.setup.json"},
+                        {
+                            "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_pick_and_place.setup.json",
+                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place.widowx_ai.json"
+                        },
+                        {
+                            "setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_pick_and_place.setup.json",
+                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place.ur10e_gripper.json"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "group": "Debug",
+            "items": [
+                {
+                    "id": "sine",
+                    "title": "Sine wave on the last joint (debug)",
+                    "script": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json"},
+                        {
+                            "setup": "applications/application_mujoco_examples_franka_panda/franka_panda.setup.json",
+                            "tasks": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.franka_panda.json"
+                        },
+                        {"setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai.setup.json"}
+                    ],
+                    "description": "A single CrospiTask with a sine wave on the last joint."
+                }
+            ]
         }
     ]
 }

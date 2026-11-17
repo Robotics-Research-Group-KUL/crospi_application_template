@@ -1,7 +1,8 @@
 <!--
-  Pick and place with a small robot gripper (Franka Emika Panda, Trossen WidowX AI) for mujoco_robotsimulator_crospi:
+  Pick and place with a robot gripper (Franka Emika Panda, Trossen WidowX AI, UR10e with a parallel gripper) for
+  mujoco_robotsimulator_crospi:
   the table of table_with_box.xml (top surface at z = 0.4 m), a free cube of 5 cm (0.15 kg: it fits the grippers of
-  both robots, 80 mm and 88 mm of maximal opening) and a pedestal for the robot, whose top is at z = 0.45 m.
+  the robots, 80 mm, 88 mm and 85 mm of maximal opening) and a pedestal for the robot, whose top is at z = 0.45 m.
 
   Setups (applications/application_mujoco_examples_<robot>/<robot>_pick_and_place.setup.json): the robot stands on
   the pedestal, base_position = (0.3, -0.4, 0.45), and faces the table (base_quaternion_xyzw = rotation of -90 deg about
