@@ -425,6 +425,28 @@
                     "description": "A single CrospiTask with a sine wave on the last joint."
                 }
             ]
+        },
+        {
+            "group": "Exercises (to be completed)",
+            "items": [
+                {
+                    "id": "exercise_joystick_virtual_fixture",
+                    "title": "Exercise: joystick teleoperation with a virtual fixture",
+                    "script": "skill_specifications/libraries/exercises_to_complete_skill_lib/joystick_teleoperation_virtual_fixture/joystick_teleoperation.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_joystick_teleoperation.setup.json"},
+                        {
+                            "setup": "applications/application_mujoco_examples_franka_panda/franka_panda_joystick.setup.json",
+                            "tasks": "skill_specifications/libraries/exercises_to_complete_skill_lib/joystick_teleoperation_virtual_fixture/joystick_teleoperation.franka_panda.json"
+                        },
+                        {
+                            "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_joystick.setup.json",
+                            "tasks": "skill_specifications/libraries/exercises_to_complete_skill_lib/joystick_teleoperation_virtual_fixture/joystick_teleoperation.widowx_ai.json"
+                        }
+                    ],
+                    "description": "Exercise to complete: it does not work until its TODOs are completed. Complete the TODOs of move_joystick_virtual_fixture.etasl.lua (exercises_to_complete_task_lib, Task specs tab): a cylindrical (or conical) virtual fixture that keeps the tool inside it while it is teleoperated with the emulated SpaceMouse (switch it on in the 3D view). The cone marker shows the virtual fixture."
+                }
+            ]
         }
     ]
 }
