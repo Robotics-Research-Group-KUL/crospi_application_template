@@ -8,7 +8,7 @@
         "applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json": "UR10e · table with corner (guarded motions)",
         "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json": "UR10e · circular contour",
         "applications/application_mujoco_examples_ur10e/ur10e_contour_following_large_sine.setup.json": "UR10e · large sine contour",
-        "applications/application_mujoco_examples_ur10e/ur10e_contour_following_asymmetrical_large.setup.json": "UR10e · asymmetrical L-shaped contour",
+        "applications/application_mujoco_examples_ur10e/ur10e_contour_following_L_shaped.setup.json": "UR10e · L-shaped contour",
         "applications/application_mujoco_examples_ur10e/ur10e_joystick_teleoperation.setup.json": "UR10e · table with corner · SpaceMouse",
         "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json": "UR10e · empty · position servo",
         "applications/application_mujoco_examples_ur10e/ur10e_velocity_servo.setup.json": "UR10e · velocity servo",

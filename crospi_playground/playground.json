@@ -290,13 +290,13 @@
                     "description": "Contour following of a large sine-shaped contour."
                 },
                 {
-                    "id": "asymmetrical",
-                    "title": "Asymmetrical contour following (L-shaped pocket)",
-                    "script": "skill_specifications/libraries/skill_lib_example/asymmetrical_contour_following_example/asymmetrical_contour_following_example.py",
+                    "id": "L_shaped",
+                    "title": "L-shaped contour following",
+                    "script": "skill_specifications/libraries/skill_lib_example/L_shaped_contour_following_example/L_shaped_contour_following_example.py",
                     "setups": [
-                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_asymmetrical_large.setup.json"}
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_L_shaped.setup.json"}
                     ],
-                    "description": "Contour following inside an asymmetrical L-shaped pocket (straight walls and rounded corners of different radii): move home, tare of the F/T sensor, guarded motions to the table and to the wall, then force-controlled contour following along 1.7 m of the wall."
+                    "description": "Contour following inside an L-shaped pocket (straight walls and rounded corners of different radii): move home, tare of the F/T sensor, guarded motions to the table and to the wall, then force-controlled contour following along 1.7 m of the wall. Set mode = SkillMode.FOLLOW_OUTER_CONTOUR in the skill to follow the outer face of the wall instead."
                 }
             ]
         },
