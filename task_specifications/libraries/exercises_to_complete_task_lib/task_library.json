@@ -1,0 +1,32 @@
+{
+    "$schema": "../task_library.schema.json",
+    "name": "exercises_to_complete_task_lib",
+    "description": "Library with exercises to be completed by users learning Crospi",
+    "license": "GNU GPLv3",
+    "version": "1.0.1",
+    "authors": [
+        {
+            "name": "Santiago Iregui",
+            "affiliation": "KU Leuven",
+            "email": "santiago.iregui@kuleuven.be"
+        },
+        {
+            "name": "Erwin Aertbeliën",
+            "affiliation": "KU Leuven",
+            "email": "erwin.aertbelien@kuleuven.be"
+        }
+    ],
+    "maintainers": [
+        {
+            "name": "Santiago Iregui",
+            "affiliation": "KU Leuven",
+            "email": "santiago.iregui@kuleuven.be"
+        },
+        {
+            "name": "Erwin Aertbeliën",
+            "affiliation": "KU Leuven",
+            "email": "erwin.aertbelien@kuleuven.be"
+        }
+    ],
+    "acknowledgements": "The authors acknowledge the financial support of AU2WIRE_IRVA Flanders Make project."
+}
