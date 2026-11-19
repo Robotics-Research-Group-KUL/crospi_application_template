@@ -25,7 +25,7 @@ TYPES = {
     "cylinder": {"position": [0.5, 0, 0.5], "axis": [0, 0, 1], "radius": 0.05, "length": 0.3},
     "box": {"position": [0.5, 0, 0.5], "orientation": [0, 0, 0], "size": [0.1, 0.1, 0.1]},
     "plane": {"position": [0.5, 0, 0.5], "normal": [0, 0, 1], "size": [0.4, 0.4]},
-    "cone": {"position": [0.5, 0, 0.5], "axis": [0, 0, 1], "angle": 0.3, "length": 0.15},
+    "cone": {"position": [0.5, 0, 0.5], "axis": [0, 0, 1], "radius1": 0, "radius2": 0.05, "length": 0.15},
     "point": {"position": [0.5, 0, 0.5], "size": 0.02},
     "frame": {"position": [0.5, 0, 0.5], "orientation": [0, 0, 0], "size": 0.1},
     "arrow": {"position": [0.5, 0, 0.5], "vector": [0, 0, 0.1], "scale": 1},

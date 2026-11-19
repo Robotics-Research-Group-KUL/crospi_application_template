@@ -20,9 +20,9 @@ type is edited (only the given properties change); otherwise it is created with 
 their defaults (a marker of another type with this name is replaced). Without a type, the marker must exist (e.g. in the
 Markers tab) and is edited.
 
-JSON: the one of a marker of the Markers tab ("Copy JSON" in its Form view copies it on one line), e.g.
+JSON: the one of a marker of the Markers tab ("Copy JSON" in its Form view copies it on one line, as a Python string), e.g.
 json='{"is-sphere":true,"name":"goal","color":"#59a14f","radius":0.02}': its "is-<type>" gives the type and its "name"
-the marker (when not given); the keyword arguments override its values (e.g. a position computed from the blackboard).
+the marker (when not given; else the name of the state is used); the keyword arguments override its values (e.g. a position computed from the blackboard).
 
 Values of the properties can be plain values, mk.expr(...) links, or computed when the state executes: a callable
 `f(blackboard)` or a BeTFSM ConfigCallback (reset(state, blackboard), then called with (state, blackboard)). Values
@@ -104,14 +104,17 @@ class MarkerEdit(Generator):
         MarkerEdit("add goal", "goal", type="sphere", position=lambda bb: bb["goal"], radius=0.02)   # add or edit
         MarkerEdit("add goal", json='{"is-sphere":true,"name":"goal","radius":0.02,"color":"#59a14f"}',
                    position=lambda bb: bb["goal"])                                # JSON of the Markers tab + arguments
+        MarkerEdit(json='{"is-sphere":true,"name":"goal","radius":0.02}')        # state named after the marker
+        MarkerEdit("goal", json='{"is-sphere":true,"radius":0.02}')              # marker named after the state
         MarkerEdit("drop pin", "contact", freeze=True, color="#59a14f")           # links → current values
         MarkerEdit("pin", lambda bb: f"visited {bb['k']}", type="point", position=mk.expr("origin(task_frame)"), freeze=True)
         MarkerEdit("remove goal", "goal", remove=True)
         MarkerEdit("back to the tab", "target", reset=True)                       # marker=None: all markers
 
     Parameters:
-        name: name of the state
-        marker: name of the marker (or a callable f(blackboard) giving it); default: the "name" of the JSON
+        name: name of the state; default: the name of the marker
+        marker: name of the marker (or a callable f(blackboard) giving it); default: the "name" of the JSON, else the
+            name of the state (except with reset=True: all markers). The name only has to be given once.
         props: properties (dict)
         json: the marker as JSON (string or dict), e.g. copied from the Markers tab: "is-<type>" gives the type,
             "name" the marker (if not given); props and the keyword arguments override its values
@@ -124,16 +127,20 @@ class MarkerEdit(Generator):
         **kw: properties (values, mk.expr links, callables f(blackboard) or ConfigCallbacks)
     """
 
-    def __init__(self, name, marker=None, props=None, *, json=None, type=None, remove=False, reset=False,  # noqa: A002
+    def __init__(self, name=None, marker=None, props=None, *, json=None, type=None, remove=False, reset=False,  # noqa: A002
                  freeze=False, **kw):
-        super().__init__(name, [SUCCEED])
         base = {}
         if json is not None:
             json_name, base = from_json(json)
             if marker is None:
                 marker = json_name
         if marker is None and not reset:
-            raise ValueError(f"MarkerEdit '{name}': the marker (its name) is missing (argument marker or \"name\" of the JSON)")
+            marker = name
+        if marker is None and not reset:
+            raise ValueError("MarkerEdit: the name of the marker is missing (argument name or marker, or \"name\" of the JSON)")
+        if name is None:
+            name = marker if isinstance(marker, str) else "MarkerEdit"
+        super().__init__(name, [SUCCEED])
         self.marker = marker
         self.change = {**base, **(props or {}), **kw, "remove": remove, "reset": reset, "freeze": freeze}
         if type is not None:
