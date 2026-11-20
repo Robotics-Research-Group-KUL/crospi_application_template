@@ -1,0 +1,126 @@
+<!--
+  Door and drawer for mujoco_robotsimulator_crospi (Crospi Playground, skill "Open a drawer and a door"), based on the
+  environment of "Pick and place (simple)" (pick_and_place/table_with_small_box.xml): the same grid floor, a pedestal for
+  the robot and a table, with a small cabinet on the table. The cabinet has a drawer (below) and a door (above) in the
+  front face, towards the robot. Both are operated with a handle that is a cube of 5 cm (the size of the cube of pick and
+  place) on a short stem, to be grasped by a parallel gripper (80 mm opening or more).
+
+  Setup (applications/application_mujoco_examples_franka_panda/franka_panda_door_and_drawer.setup.json): the robot
+  stands on the pedestal, base_position = (0.3, -0.4, 0.25), and faces the cabinet (base_quaternion_xyzw = rotation of
+  -90 deg about z: its x axis points along -y of the world, its y axis along +x). In the robot base frame:
+     front face of the cabinet                x = 0.80   (world y = -1.2), the cabinet is centered at y = 0.30
+     center of the handle of the drawer       (0.756, 0.30, 0.25)   closed; the drawer slides 0.22 m towards the robot
+     center of the handle of the door         (0.756, 0.195, 0.44)  closed; hinge at y = 0.495 (the robot's left),
+                                                                    the door opens towards the robot up to 1.5 rad
+  The handle of the door moves along a circular arc of radius 0.30 m. The Franka Emika Panda reaches both handles over
+  their whole range (drawer 0..0.22 m, door 0..0.9 rad) with the gripper tilted 60 degrees below the horizontal (a
+  horizontal gripper needs wrist configurations near the joint limits at this height). The handles are 0.3 m (drawer)
+  and 0.44 m (door) above the base of the robot: the pedestal is lower than the one of pick and place (0.25 m).
+
+  Collisions: the robot collides with everything; the door and the drawer do not collide with the carcass of the cabinet
+  nor with each other (contype/conaffinity bits), so that they do not stick in their closed position; the joint
+  ranges (door 0..1.5 rad, drawer 0..0.22 m) limit their motion. The door and the drawer have dry friction (frictionloss)
+  and damping, so that a force is needed to open them: about 3 N at the handle (plus 15 Ns/m for the drawer, 2 Nms/rad
+  for the door), see the joints.
+
+  The physics options (timestep, gravity, integrator, contacts) of this file are overwritten by the crospi
+  configuration of the simulator.
+-->
+<mujoco model="cabinet_with_door_and_drawer">
+  <compiler angle="radian"/>
+  <!-- Grasping: elliptic friction cones and a high impratio (friction-to-normal impedance), as in pick and place -->
+  <option cone="elliptic" impratio="10"/>
+
+  <visual>
+    <headlight ambient="0.4 0.4 0.4" diffuse="0.6 0.6 0.6"/>
+  </visual>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.2 0.3 0.4" rgb2="0.3 0.4 0.5" width="512" height="512"/>
+    <material name="grid" texture="grid" texrepeat="4 4" reflectance="0.1"/>
+  </asset>
+
+  <default>
+    <!-- contype/conaffinity bits: two geoms collide if (contype of one & conaffinity of the other) is not 0. The robot
+         (URDF) has contype = conaffinity = 1. carcass: collides with the robot only; door: with the robot only;
+         drawer: with the robot only. -->
+    <default class="carcass">
+      <geom contype="1" conaffinity="8" rgba="0.62 0.5 0.38 1"/>
+    </default>
+    <default class="door">
+      <geom contype="3" conaffinity="2" rgba="0.85 0.82 0.72 1" friction="1.5 0.02 0.001" condim="4"/>
+      <!-- hinge: damping [Nms/rad], dry friction [Nm] (3 N at the handle, 0.3 m from the hinge: 0.9 Nm) -->
+      <joint damping="2.0" frictionloss="0.9" armature="0.01"/>
+    </default>
+    <default class="drawer">
+      <geom contype="5" conaffinity="4" rgba="0.72 0.78 0.85 1" friction="1.5 0.02 0.001" condim="4"/>
+      <!-- slide: damping [Ns/m], dry friction [N] -->
+      <joint damping="15.0" frictionloss="3.0" armature="0.01"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <light name="top" pos="0 0 3" dir="0 0 -1" directional="true"/>
+    <geom name="floor" type="plane" size="0 0 0.05" material="grid"/>
+
+    <!-- Table (negative y side of the robot), top surface at z = 0.4 m, from y = -0.95 to y = -1.7: not under the
+         home pose of the robot (the gripper pointing down, its fingertips at z = 0.4 m would touch it) -->
+    <body name="table" pos="0.6 -1.325 0.2">
+      <geom name="table_top" type="box" size="0.5 0.375 0.2" rgba="0.55 0.4 0.3 1"/>
+    </body>
+
+    <!-- Pedestal of the robot: top at z = 0.25 m (the robot base is attached there by the setup) -->
+    <body name="pedestal" pos="0.3 -0.4 0.125">
+      <geom name="pedestal" type="box" size="0.08 0.08 0.125" rgba="0.35 0.35 0.38 1"/>
+    </body>
+
+    <!-- Cabinet on the table. Frame: origin at the middle of the front face, on the table top (z = 0.4); the front
+         face is the plane y = 0 (outside: y > 0, towards the robot). The cabinet is 0.44 m wide (x), 0.3 m deep (-y)
+         and 0.4 m high. Compartments: drawer z in [0.02, 0.18], door z in [0.20, 0.38]. -->
+    <body name="cabinet" pos="0.6 -1.2 0.4">
+      <geom class="carcass" name="cabinet_bottom" type="box" pos="0 -0.15 0.01" size="0.22 0.15 0.01"/>
+      <geom class="carcass" name="cabinet_shelf"  type="box" pos="0 -0.15 0.19" size="0.22 0.15 0.01"/>
+      <geom class="carcass" name="cabinet_top"    type="box" pos="0 -0.15 0.39" size="0.22 0.15 0.01"/>
+      <geom class="carcass" name="cabinet_left"   type="box" pos="-0.21 -0.15 0.2" size="0.01 0.15 0.2"/>
+      <geom class="carcass" name="cabinet_right"  type="box" pos="0.21 -0.15 0.2" size="0.01 0.15 0.2"/>
+      <geom class="carcass" name="cabinet_back"   type="box" pos="0 -0.29 0.2" size="0.22 0.01 0.2"/>
+
+      <!-- Drawer: slides towards the robot (+y); the front panel is flush with the face of the cabinet when closed;
+           handle (stem + cube of 5 cm) in the middle of the front panel. Origin of the body: middle of the front
+           surface. -->
+      <body name="drawer" pos="0 0 0.1">
+        <joint class="drawer" name="drawer_slide" type="slide" axis="0 1 0" range="0 0.22"/>
+        <geom class="drawer" name="drawer_front"  type="box" pos="0 -0.011 0" size="0.2 0.01 0.07" mass="0.6"/>
+        <geom class="drawer" name="drawer_floor"  type="box" pos="0 -0.15 -0.065" size="0.185 0.13 0.005" mass="0.3"/>
+        <geom class="drawer" name="drawer_left"   type="box" pos="-0.18 -0.15 -0.01" size="0.005 0.13 0.055" mass="0.2"/>
+        <geom class="drawer" name="drawer_right"  type="box" pos="0.18 -0.15 -0.01" size="0.005 0.13 0.055" mass="0.2"/>
+        <geom class="drawer" name="drawer_back"   type="box" pos="0 -0.275 -0.01" size="0.18 0.005 0.055" mass="0.2"/>
+        <geom class="drawer" name="drawer_handle_stem" type="box" pos="0 0.004 0" size="0.008 0.015 0.008" mass="0.02"/>
+        <geom class="drawer" name="drawer_handle" type="box" pos="0 0.044 0" size="0.025 0.025 0.025" mass="0.1"
+              rgba="0.8 0.2 0.2 1"/>
+        <!-- center of the handle cube: the grasp point -->
+        <site name="drawer_handle_site" pos="0 0.044 0" size="0.004" rgba="1 1 0 1"/>
+      </body>
+
+      <!-- Door: hinge on the robot's left (x = +0.195), the free edge on the right; it opens towards the robot (+y),
+           the angle [rad] is positive when open. The handle (stem + cube of 5 cm) is 0.30 m from the hinge. Origin of
+           the body: on the hinge axis, in the plane of the front face. -->
+      <body name="door" pos="0.195 0 0.29">
+        <joint class="door" name="door_hinge" type="hinge" axis="0 0 -1" range="0 1.5"/>
+        <geom class="door" name="door_panel" type="box" pos="-0.19 -0.011 0" size="0.19 0.01 0.085" mass="1.0"/>
+        <geom class="door" name="door_handle_stem" type="box" pos="-0.30 0.004 0" size="0.008 0.015 0.008" mass="0.02"/>
+        <geom class="door" name="door_handle" type="box" pos="-0.30 0.044 0" size="0.025 0.025 0.025" mass="0.1"
+              rgba="0.8 0.2 0.2 1"/>
+        <site name="door_handle_site" pos="-0.30 0.044 0" size="0.004" rgba="1 1 0 1"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <!-- MuJoCo sensors: published by the simulator on <topic_namespace>/mujoco_sensors/<name> -->
+  <sensor>
+    <jointpos name="door_angle" joint="door_hinge"/>
+    <jointpos name="drawer_position" joint="drawer_slide"/>
+    <framepos name="door_handle_position" objtype="site" objname="door_handle_site"/>
+    <framepos name="drawer_handle_position" objtype="site" objname="drawer_handle_site"/>
+  </sensor>
+</mujoco>

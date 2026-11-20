@@ -260,55 +260,21 @@
     ],
     "skill_examples": [
         {
-            "group": "Force control",
+            "group": "Debug",
             "items": [
                 {
-                    "id": "guarded",
-                    "title": "Guarded motion sequence (loop)",
-                    "script": "skill_specifications/libraries/skill_lib_example/guarded_motion_sequence/guarded_motion_sequence.py",
+                    "id": "sine",
+                    "title": "Sine wave on the last joint (debug)",
+                    "script": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.py",
                     "setups": [
-                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json"}
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json"},
+                        {
+                            "setup": "applications/application_mujoco_examples_franka_panda/franka_panda.setup.json",
+                            "tasks": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.franka_panda.json"
+                        },
+                        {"setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai.setup.json"}
                     ],
-                    "description": "Repeat(Sequence(CrospiTask ...)): move home, approach the table, guarded motions along z, x and y."
-                },
-                {
-                    "id": "circular",
-                    "title": "Circular contour following",
-                    "script": "skill_specifications/libraries/skill_lib_example/circular_contour_following_example/circular_contour_following_example.py",
-                    "setups": [
-                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json"}
-                    ],
-                    "description": "Move home, guarded motion down, move up, guarded motion to the contour, 2D contour following."
-                },
-                {
-                    "id": "large_sine",
-                    "title": "Large sine contour following",
-                    "script": "skill_specifications/libraries/skill_lib_example/large_sine_contour_following_example/large_sine_contour_following_example.py",
-                    "setups": [
-                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_large_sine.setup.json"}
-                    ],
-                    "description": "Contour following of a large sine-shaped contour."
-                },
-                {
-                    "id": "L_shaped",
-                    "title": "L-shaped contour following",
-                    "script": "skill_specifications/libraries/skill_lib_example/L_shaped_contour_following_example/L_shaped_contour_following_example.py",
-                    "setups": [
-                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_L_shaped.setup.json"}
-                    ],
-                    "description": "Contour following inside an L-shaped pocket (straight walls and rounded corners of different radii): move home, tare of the F/T sensor, guarded motions to the table and to the wall, then force-controlled contour following along 1.7 m of the wall. Set mode = SkillMode.FOLLOW_OUTER_CONTOUR in the skill to follow the outer face of the wall instead."
-                },
-                {
-                    "id": "rectangular_peg_insertion",
-                    "title": "Rectangular peg-in-hole insertion (gripper)",
-                    "script": "skill_specifications/libraries/skill_lib_example/rectangular_peg_insertion/rectangular_peg_insertion.py",
-                    "setups": [
-                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_0.5mm.setup.json"},
-                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_2mm.setup.json"},
-                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_1mm.setup.json"},
-                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_0.1mm.setup.json"}
-                    ],
-                    "description": "The UR10e picks a rectangular peg (30 x 20 mm) with its gripper from a known pose and inserts it in a hole with 0.5 mm of clearance (2, 1 and 0.1 mm: Setup dropdown of the Setup tab; set HOLE_CLEARANCE in the skill accordingly), following the methodology of Ulloa Rios et al., CASE 2026: initial placement with a known offset (translation and tilt) w.r.t. the hole, then a fixed sequence of insertion actions (insertion_action of force_control_task_lib) that reduce the offset one DoF at a time (z, y, x, theta_y, theta_z, theta_x) with force-controlled guarded motions, each finishing when its contact transition is detected, and a last push to the bottom. Change HOLE_POSE_ERROR in the skill to see that the exact pose of the hole is not needed."
+                    "description": "A single CrospiTask with a sine wave on the last joint."
                 }
             ]
         },
@@ -420,21 +386,65 @@
             ]
         },
         {
-            "group": "Debug",
+            "group": "Force control",
             "items": [
                 {
-                    "id": "sine",
-                    "title": "Sine wave on the last joint (debug)",
-                    "script": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.py",
+                    "id": "guarded",
+                    "title": "Guarded motion sequence (loop)",
+                    "script": "skill_specifications/libraries/skill_lib_example/guarded_motion_sequence/guarded_motion_sequence.py",
                     "setups": [
-                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json"},
-                        {
-                            "setup": "applications/application_mujoco_examples_franka_panda/franka_panda.setup.json",
-                            "tasks": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.franka_panda.json"
-                        },
-                        {"setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai.setup.json"}
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_guarded_motions.setup.json"}
                     ],
-                    "description": "A single CrospiTask with a sine wave on the last joint."
+                    "description": "Repeat(Sequence(CrospiTask ...)): move home, approach the table, guarded motions along z, x and y."
+                },
+                {
+                    "id": "circular",
+                    "title": "Circular contour following",
+                    "script": "skill_specifications/libraries/skill_lib_example/circular_contour_following_example/circular_contour_following_example.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_circular.setup.json"}
+                    ],
+                    "description": "Move home, guarded motion down, move up, guarded motion to the contour, 2D contour following."
+                },
+                {
+                    "id": "large_sine",
+                    "title": "Large sine contour following",
+                    "script": "skill_specifications/libraries/skill_lib_example/large_sine_contour_following_example/large_sine_contour_following_example.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_large_sine.setup.json"}
+                    ],
+                    "description": "Contour following of a large sine-shaped contour."
+                },
+                {
+                    "id": "L_shaped",
+                    "title": "L-shaped contour following",
+                    "script": "skill_specifications/libraries/skill_lib_example/L_shaped_contour_following_example/L_shaped_contour_following_example.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_contour_following_L_shaped.setup.json"}
+                    ],
+                    "description": "Contour following inside an L-shaped pocket (straight walls and rounded corners of different radii): move home, tare of the F/T sensor, guarded motions to the table and to the wall, then force-controlled contour following along 1.7 m of the wall. Set mode = SkillMode.FOLLOW_OUTER_CONTOUR in the skill to follow the outer face of the wall instead."
+                },
+                {
+                    "id": "rectangular_peg_insertion",
+                    "title": "Rectangular peg-in-hole insertion (gripper)",
+                    "script": "skill_specifications/libraries/skill_lib_example/rectangular_peg_insertion/rectangular_peg_insertion.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_0.5mm.setup.json"},
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_2mm.setup.json"},
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_1mm.setup.json"},
+                        {"setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_0.1mm.setup.json"}
+                    ],
+                    "description": "The UR10e picks a rectangular peg (30 x 20 mm) with its gripper from a known pose and inserts it in a hole with 0.5 mm of clearance (2, 1 and 0.1 mm: Setup dropdown of the Setup tab; set HOLE_CLEARANCE in the skill accordingly), following the methodology of Ulloa Rios et al., CASE 2026: initial placement with a known offset (translation and tilt) w.r.t. the hole, then a fixed sequence of insertion actions (insertion_action of force_control_task_lib) that reduce the offset one DoF at a time (z, y, x, theta_y, theta_z, theta_x) with force-controlled guarded motions, each finishing when its contact transition is detected, and a last push to the bottom. Change HOLE_POSE_ERROR in the skill to see that the exact pose of the hole is not needed."
+                },
+                {
+                    "id": "door_and_drawer",
+                    "title": "Open a drawer and a door (force control)",
+                    "script": "skill_specifications/libraries/skill_lib_example/door_and_drawer/door_and_drawer.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_franka_panda/franka_panda_door_and_drawer.setup.json"}
+                    ],
+                    "description": "A cabinet with a drawer and a door, each with a cube as handle, in a MuJoCo environment based on the one of pick and place. The approximately known position of a handle is only used to move in front of it: then force control (move_compliant_along_axis) finds the handle (the gripper moves along its axis, compliant sideways, until the hand touches the cube), the simulated gripper closes, and a second force controlled task pulls horizontally with a desired force with the torques controlled to zero, so that the drawer moves on a line and the door on an arc; it finishes when the distance travelled, computed by a feature variable and a constraint (an integrator), is reached. Franka Emika Panda, gripper tilted 60 degrees below the horizontal (the handles are reachable closed and open). The gripper is commanded by BeTFSM states over ROS 2 topics (simulation only). Set TARGETS at the top of the script to open only the drawer or the door.",
+                    "plots": "crospi_playground/plots/skill_door_and_drawer.plots.json"
                 }
             ]
         },

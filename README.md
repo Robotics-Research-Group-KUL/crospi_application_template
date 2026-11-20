@@ -178,6 +178,9 @@ environments `peg_insertion_rectangular/table_with_rectangular_hole_<c>mm_cleara
 picked from a known pose and inserted with the force-controlled insertion methodology of Ulloa Rios et al. (CASE 2026):
 an initial offset w.r.t. the hole, then a fixed sequence of insertion actions (task `insertion_action` of
 `force_control_task_lib`) that reduce the offset one degree of freedom at a time.
+`door_and_drawer` (Franka Emika Panda with its gripper, `franka_panda_door_and_drawer.setup.json`, environment
+`door_and_drawer/cabinet_with_door_and_drawer.xml`): the gripper finds the handle of a drawer and of a door with force
+control, grasps it and pulls it open with force control (tasks `move_compliant_along_axis` of `force_control_task_lib`).
 
 The playground packages the main branch of this repository (with its submodules): a change here reaches the playground
 when its assets are synchronized (`scripts/sync_assets.sh` of crospi_webassembly).

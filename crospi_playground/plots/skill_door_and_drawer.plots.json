@@ -1,0 +1,34 @@
+{
+    "v": 1,
+    "buffer": 60,
+    "simple": {
+        "split": false,
+        "areas": [
+            {
+                "kind": "time",
+                "curves": [
+                    {
+                        "path": "task/outputs/x_force",
+                        "color": "#4e9af1"
+                    },
+                    {
+                        "path": "task/outputs/z_force",
+                        "color": "#59a14f"
+                    },
+                    {
+                        "path": "task/outputs/y_force",
+                        "color": "#e15759"
+                    }
+                ],
+                "points": false
+            },
+            {
+                "kind": "time",
+                "curves": [],
+                "points": false
+            }
+        ]
+    },
+    "layout": null,
+    "custom": []
+}

@@ -1,0 +1,204 @@
+{
+    "blackboard": {
+        "etasl": {
+            "general": {
+                "event_topic": "crospi_node/events",
+                "sample_time": 0.01
+            },
+            "initializer": {
+                "full": true,
+                "sample_time": 0.01,
+                "duration": 3.0,
+                "convergence_criterion": 1e-08,
+                "weightfactor": 10000.0
+            },
+            "solver": {
+                "is-qpoasessolver": true,
+                "nWSR": 100,
+                "regularization_factor": 1e-04,
+                "cputime": 10
+            }
+        },
+        "robot": {
+            "robotsimulators": [
+                {
+                    "is-mujoco_robotsimulator_crospi": true,
+                    "robot_joints": [
+                        "fer_joint1",
+                        "fer_joint2",
+                        "fer_joint3",
+                        "fer_joint4",
+                        "fer_joint5",
+                        "fer_joint6",
+                        "fer_joint7"
+                    ],
+                    "initial_joints": [
+                        0.0,
+                        0.0654,
+                        0.0,
+                        -2.7266,
+                        0.0,
+                        2.7921,
+                        0.7854
+                    ],
+                    "periodicity": 0.01,
+                    "urdf_path": "$[franka_description]/urdf/panda.urdf",
+                    "environment_mjcf_path": "$[crospi_application_template]/robot_models/mujoco_environments/door_and_drawer/cabinet_with_door_and_drawer.xml",
+                    "base_position": [
+                        0.3,
+                        -0.4,
+                        0.25
+                    ],
+                    "base_quaternion_xyzw": [
+                        0.0,
+                        0.0,
+                        -0.7071068,
+                        0.7071068
+                    ],
+                    "add_ground_plane": false,
+                    "simulation_timestep": 0.001,
+                    "integrator": "implicitfast",
+                    "gravity": [
+                        0.0,
+                        0.0,
+                        -9.81
+                    ],
+                    "contacts_enabled": true,
+                    "joint_armature": [
+                        0.1,
+                        0.1,
+                        0.1,
+                        0.1,
+                        0.1,
+                        0.1,
+                        0.1
+                    ],
+                    "joint_damping": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "control_mode": {
+                        "is-position_servo": true,
+                        "joint_stiffness": [
+                            3000.0,
+                            3000.0,
+                            3000.0,
+                            3000.0,
+                            600.0,
+                            600.0,
+                            300.0
+                        ],
+                        "joint_damping_gains": [
+                            100.0,
+                            100.0,
+                            80.0,
+                            80.0,
+                            15.0,
+                            15.0,
+                            8.0
+                        ],
+                        "gravity_compensation": true,
+                        "clamp_torques_to_effort_limits": true
+                    },
+                    "base_link": "fer_link0",
+                    "tcp_link": "fer_link8",
+                    "gripper": {
+                        "joints": [
+                            "fer_finger_joint1",
+                            "fer_finger_joint2"
+                        ],
+                        "max_force": 40.0,
+                        "stiffness": 2000.0,
+                        "damping": 40.0,
+                        "max_velocity": 0.1,
+                        "friction": [
+                            1.5,
+                            0.02,
+                            0.001
+                        ],
+                        "condim": 4,
+                        "command_topic": "/gripper/command",
+                        "state_topic": "/gripper/joint_states"
+                    },
+                    "name_expr_joint_vel": "joint_vel",
+                    "name_expr_joint_torque": "joint_torque",
+                    "name_expr_cartesian_pos": "tcp_pos",
+                    "name_expr_cartesian_quat": "tcp_quat",
+                    "name_expr_cartesian_twist": "tcp_twist",
+                    "name_expr_cartesian_wrench": "wrench_input",
+                    "name_expr_base_pos": "base_pos",
+                    "name_expr_base_quat": "base_quat",
+                    "name_expr_base_twist": "base_twist",
+                    "ros_node_name": "mujoco_robotsimulator",
+                    "sensor_publishing": {
+                        "topic_namespace": "/mujoco_sim/sensors",
+                        "publish_period": 0.01
+                    },
+                    "visualization": {
+                        "model_topic": "/mujoco_sim/model",
+                        "state_topic": "/mujoco_sim/state",
+                        "publish_period": 0.033,
+                        "contact_topic": "/mujoco_sim/contacts"
+                    },
+                    "external_wrench": {
+                        "topic": "/mujoco_sim/external_wrench_mouse_interaction",
+                        "timeout": 0.2,
+                        "max_force": 100.0,
+                        "max_torque": 20.0
+                    }
+                }
+            ],
+            "default_robot_specification": {
+                "is-inline_robotspecification": true,
+                "urdf_path": "$[franka_description]/urdf/panda.urdf",
+                "tcp_frame": {
+                    "child_link": "fer_hand_tcp",
+                    "parent_link": "fer_link0"
+                },
+                "additional_frames": [
+                    {
+                        "name": "FT_sensor_frame",
+                        "child_link": "fer_link8",
+                        "parent_link": "fer_link0"
+                    }
+                ],
+                "robot_joints": [
+                    "fer_joint1",
+                    "fer_joint2",
+                    "fer_joint3",
+                    "fer_joint4",
+                    "fer_joint5",
+                    "fer_joint6",
+                    "fer_joint7"
+                ]
+            }
+        },
+        "iohandlers": {
+            "outputhandlers": [
+                {
+                    "is-JointStateOutputHandler": true,
+                    "topic-name": "/joint_states"
+                },
+                {
+                    "is-TopicOutputHandler": true,
+                    "topic-name": "/forces_etasl",
+                    "variable-names": [
+                        "x_force",
+                        "y_force",
+                        "z_force",
+                        "x_torque",
+                        "y_torque",
+                        "z_torque"
+                    ]
+                }
+            ],
+            "inputhandlers": []
+        }
+    },
+    "$defs": {}
+}
