@@ -17,6 +17,12 @@
   and aligned with it; its tip is 31 mm above the entrance. Full insertion (tip on the bottom)
   corresponds to tool0 at z = 0.310.
 
+  Free peg: a rectangular peg of the same cross-section (30 mm x 20 mm), 100 mm long and 0.1 kg, stands on
+  the table with its axis through (0.4, -0.5) and its long side along the world x axis (top at
+  z = 0.250): to be picked up with a gripper (e.g. urdf/ur10e_parallel_gripper.urdf) and inserted. Its contacts
+  with the table and the block use the parameters of these (priority 1: frictionless, see below); with the fingers,
+  stiff contacts with torsional friction (see the peg below), so that it does not rotate in the grasp.
+
   The hole is formed by 4 boxes around it (convex pieces: MuJoCo replaces concave meshes by their convex hull).
   This file was generated with generate_rectangular_peg_in_hole_environments.py (in the same directory).
 
@@ -33,6 +39,10 @@
 -->
 <mujoco model="table_with_rectangular_hole_0.1mm_clearance">
   <compiler angle="radian"/>
+
+  <!-- Grasping: elliptic friction cones and a high impratio (friction-to-normal impedance) so that the peg does not
+       slip slowly in the gripper (soft contacts creep under a constant load with the default pyramidal cones) -->
+  <option cone="elliptic" impratio="10"/>
 
   <visual>
     <headlight ambient="0.4 0.4 0.4" diffuse="0.6 0.6 0.6"/>
@@ -94,6 +104,18 @@
       <site name="hole_entrance" type="sphere" pos="0 0 0.060000000000000005" size="0.002" rgba="1 0.1 0.1 1"/>
       <site name="hole_bottom" type="sphere" pos="0 0 0.01" size="0.002" rgba="1 0.1 0.1 1"/>
     </body>
+
+    <!-- Free peg standing on the table (30 x 20 x 100 mm, long side along the world x axis) -->
+    <body name="peg" pos="0.4 -0.5 0.200">
+      <freejoint name="peg_joint"/>
+      <!-- Contacts with the fingers (same priority 0: the parameters are mixed): stiff (solref 0.004 s, solimp as the
+           block) and dominant in the mix (solmix), with torsional friction (condim 4, 0.05 m: the torque around the
+           axis of the fingers that the grasp resists, e.g. 1.5 Nm per finger at 30 N), so that the peg does not
+           rotate in the gripper under the contact forces of the insertion. With the table and the block, their
+           parameters are used (priority 1). -->
+      <geom name="peg" type="box" size="0.015 0.01 0.05" mass="0.1" rgba="0.85 0.45 0.1 1"
+            condim="4" friction="1 0.05 0.001" solref="0.004 1" solimp="0.95 0.99 0.001 0.5 2" solmix="1000"/>
+    </body>
   </worldbody>
 
   <!-- MuJoCo sensors: published by the simulator on <topic_namespace>/mujoco_sensors/<name> -->
@@ -104,5 +126,7 @@
     <framepos name="hole_entrance" objtype="site" objname="hole_entrance"/>
     <framepos name="hole_bottom" objtype="site" objname="hole_bottom"/>
     <framequat name="hole_orientation" objtype="site" objname="hole_entrance"/>
+    <framepos name="peg_position" objtype="body" objname="peg"/>
+    <framequat name="peg_orientation" objtype="body" objname="peg"/>
   </sensor>
 </mujoco>

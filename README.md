@@ -172,6 +172,12 @@ of `pick_and_place/fake_gripper_control.py` command the simulated gripper over R
 `/gripper/command` and `/gripper/joint_states`: only for the simulation, a real gripper needs states written for its
 own driver). The `gripper` entry of the MuJoCo simulator in these setups (the fingers driven by the
 simulator) is only implemented by the Crospi Playground for now, not yet by `mujoco_robotsimulator_crospi`.
+`rectangular_peg_insertion` (UR10e with the parallel gripper, `ur10e_gripper_peg_insertion_rectangular_<c>mm.setup.json`,
+environments `peg_insertion_rectangular/table_with_rectangular_hole_<c>mm_clearance.xml` with a free peg, clearance
+`<c>` = 2, 1, 0.5 or 0.1 mm; `HOLE_CLEARANCE` of the skill must match): the peg is
+picked from a known pose and inserted with the force-controlled insertion methodology of Ulloa Rios et al. (CASE 2026):
+an initial offset w.r.t. the hole, then a fixed sequence of insertion actions (task `insertion_action` of
+`force_control_task_lib`) that reduce the offset one degree of freedom at a time.
 
 The playground packages the main branch of this repository (with its submodules): a change here reaches the playground
 when its assets are synchronized (`scripts/sync_assets.sh` of crospi_webassembly).

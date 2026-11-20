@@ -10,8 +10,12 @@ The hole is placed on the axis of the peg at the MoveHome joints [4.7116, -1.570
 aligned with the peg (yaw of tool0 at MoveHome, from the forward kinematics of the UR10e), so that a straight vertical
 motion from MoveHome inserts the peg.
 
-Usage: python3 generate_rectangular_peg_in_hole_environments.py <clearance_mm> [<clearance_mm> ...]
-       e.g. python3 generate_rectangular_peg_in_hole_environments.py 0.1 0.5 1 2
+With --free-peg, the environment also contains a free rectangular peg standing on the table (same cross-section as
+the tool, 10 cm long, 0.1 kg), to be picked up with a gripper (urdf/ur10e_parallel_gripper.urdf) and inserted.
+
+Usage: python3 generate_rectangular_peg_in_hole_environments.py [--free-peg] <clearance_mm> [<clearance_mm> ...]
+       the files of the template:
+         python3 generate_rectangular_peg_in_hole_environments.py --free-peg 0.1 0.5 1 2
 """
 import math
 import os
@@ -26,17 +30,54 @@ B = 0.05                           # half side of the square block
 DEPTH = 0.05; FLOOR = 0.01         # hole depth, thickness under the hole
 ZTOP_TABLE = 0.15
 
-if len(sys.argv) < 2:
+# Free peg (--free-peg): standing on the table, long side along the world x axis
+PEG_LENGTH, PEG_MASS = 0.10, 0.1
+PEG_POS = (0.40, -0.50)            # axis of the peg on the table (world)
+
+args = sys.argv[1:]
+FREE_PEG = '--free-peg' in args
+args = [a for a in args if a != '--free-peg']
+if not args:
     sys.exit(__doc__)
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-for c_mm in [float(a) for a in sys.argv[1:]]:
+for c_mm in [float(a) for a in args]:
     c = c_mm / 1000.0
     hx, hy = (PEG_X + c) / 2, (PEG_Y + c) / 2      # half sizes of the hole
     zb = ZTOP_TABLE + FLOOR
     zt = zb + DEPTH
     zw = FLOOR + DEPTH / 2                          # center height of the walls (block frame)
     name = f'table_with_rectangular_hole_{c_mm:g}mm_clearance'
+    peg_header = peg_option = peg_body = peg_sensors = ''
+    if FREE_PEG:
+        peg_header = f'''
+  Free peg: a rectangular peg of the same cross-section ({PEG_X*1000:.0f} mm x {PEG_Y*1000:.0f} mm), {PEG_LENGTH*1000:.0f} mm long and {PEG_MASS} kg, stands on
+  the table with its axis through ({PEG_POS[0]}, {PEG_POS[1]}) and its long side along the world x axis (top at
+  z = {ZTOP_TABLE + PEG_LENGTH:.3f}): to be picked up with a gripper (e.g. urdf/ur10e_parallel_gripper.urdf) and inserted. Its contacts
+  with the table and the block use the parameters of these (priority 1: frictionless, see below); with the fingers,
+  stiff contacts with torsional friction (see the peg below), so that it does not rotate in the grasp.
+'''
+        peg_option = '''
+  <!-- Grasping: elliptic friction cones and a high impratio (friction-to-normal impedance) so that the peg does not
+       slip slowly in the gripper (soft contacts creep under a constant load with the default pyramidal cones) -->
+  <option cone="elliptic" impratio="10"/>
+'''
+        peg_body = f'''
+
+    <!-- Free peg standing on the table ({PEG_X*1000:.0f} x {PEG_Y*1000:.0f} x {PEG_LENGTH*1000:.0f} mm, long side along the world x axis) -->
+    <body name="peg" pos="{PEG_POS[0]} {PEG_POS[1]} {ZTOP_TABLE + PEG_LENGTH/2:.3f}">
+      <freejoint name="peg_joint"/>
+      <!-- Contacts with the fingers (same priority 0: the parameters are mixed): stiff (solref 0.004 s, solimp as the
+           block) and dominant in the mix (solmix), with torsional friction (condim 4, 0.05 m: the torque around the
+           axis of the fingers that the grasp resists, e.g. 1.5 Nm per finger at 30 N), so that the peg does not
+           rotate in the gripper under the contact forces of the insertion. With the table and the block, their
+           parameters are used (priority 1). -->
+      <geom name="peg" type="box" size="{PEG_X/2} {PEG_Y/2} {PEG_LENGTH/2}" mass="{PEG_MASS}" rgba="0.85 0.45 0.1 1"
+            condim="4" friction="1 0.05 0.001" solref="0.004 1" solimp="0.95 0.99 0.001 0.5 2" solmix="1000"/>
+    </body>'''
+        peg_sensors = '''
+    <framepos name="peg_position" objtype="body" objname="peg"/>
+    <framequat name="peg_orientation" objtype="body" objname="peg"/>'''
     xml = f'''<!--
   Environment for rectangular peg-in-hole insertion, for mujoco_robotsimulator_crospi.
 
@@ -55,7 +96,7 @@ for c_mm in [float(a) for a in sys.argv[1:]]:
   At the joints [4.7116, -1.5708, 2.0944, -2.0944, -1.5708, 0] (MoveHome) the peg is vertical, on the axis of the hole
   and aligned with it; its tip is {(0.241075 - zt)*1000:.0f} mm above the entrance. Full insertion (tip on the bottom)
   corresponds to tool0 at z = {zb + 0.15:.3f}.
-
+{peg_header}
   The hole is formed by 4 boxes around it (convex pieces: MuJoCo replaces concave meshes by their convex hull).
   This file was generated with generate_rectangular_peg_in_hole_environments.py (in the same directory).
 
@@ -72,7 +113,7 @@ for c_mm in [float(a) for a in sys.argv[1:]]:
 -->
 <mujoco model="{name}">
   <compiler angle="radian"/>
-
+{peg_option}
   <visual>
     <headlight ambient="0.4 0.4 0.4" diffuse="0.6 0.6 0.6"/>
   </visual>
@@ -132,7 +173,7 @@ for c_mm in [float(a) for a in sys.argv[1:]]:
       <!-- Ground truth -->
       <site name="hole_entrance" type="sphere" pos="0 0 {FLOOR + DEPTH}" size="0.002" rgba="1 0.1 0.1 1"/>
       <site name="hole_bottom" type="sphere" pos="0 0 {FLOOR}" size="0.002" rgba="1 0.1 0.1 1"/>
-    </body>
+    </body>{peg_body}
   </worldbody>
 
   <!-- MuJoCo sensors: published by the simulator on <topic_namespace>/mujoco_sensors/<name> -->
@@ -142,9 +183,9 @@ for c_mm in [float(a) for a in sys.argv[1:]]:
     <touch name="hole_bottom_touch" site="hole_bottom_volume"/>
     <framepos name="hole_entrance" objtype="site" objname="hole_entrance"/>
     <framepos name="hole_bottom" objtype="site" objname="hole_bottom"/>
-    <framequat name="hole_orientation" objtype="site" objname="hole_entrance"/>
+    <framequat name="hole_orientation" objtype="site" objname="hole_entrance"/>{peg_sensors}
   </sensor>
 </mujoco>
 '''
     open(os.path.join(OUT_DIR, f'{name}.xml'), 'w').write(xml)
-    print(f'{name}.xml: hole {2*hx*1000:.2f} x {2*hy*1000:.2f} mm')
+    print(f'{name}.xml: hole {2*hx*1000:.2f} x {2*hy*1000:.2f} mm{" (free peg)" if FREE_PEG else ""}')
