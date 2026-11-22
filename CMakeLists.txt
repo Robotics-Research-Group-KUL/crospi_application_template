@@ -104,8 +104,9 @@ install(PROGRAMS example_nodes/pose_msg_to_tf.py example_nodes/sine_wave_tf.py
 
 # Install using setup.py
 ament_python_install_package(skill_specifications)
-# markers of the Crospi Playground for skills (crospi_playground.playground_markers / betfsm_markers): outside the
-# playground they publish RViz markers (visualization_msgs/Marker on /visualization_marker)
+# Crospi Playground helpers for skills (crospi_playground.playground_markers / betfsm_markers / betfsm_debug): outside the
+# playground the markers are published as RViz markers (visualization_msgs/Marker on /visualization_marker) and
+# PlaygroundBreakpoint (breakpoint) does nothing
 ament_python_install_package(crospi_playground)
 
 
