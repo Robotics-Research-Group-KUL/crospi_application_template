@@ -160,7 +160,8 @@ Setups used by the examples of the playground: [applications/application_mujoco_
 the force/torque sensor and the SpaceMouse; `ur10e_joystick_teleoperation`), and the Franka Emika Panda and Trossen
 WidowX AI in [applications/application_mujoco_examples_franka_panda/](applications/application_mujoco_examples_franka_panda/)
 and [applications/application_mujoco_examples_widowx_ai/](applications/application_mujoco_examples_widowx_ai/) (these
-need `franka_description` / `trossen_arm_description` in the workspace). Task lists adapted to these robots are kept
+need `franka_description` / `trossen_arm_description` in the workspace; as franka_description installs only xacro
+files, the Panda URDF generated from it is in `robot_models/urdf_models/robot_setups/franka_panda/panda.urdf`). Task lists adapted to these robots are kept
 in the folder of their skill as `<skill>.<robot>.json` (e.g. `joystick_teleoperation.franka_panda.json`; with crospi,
 copy it over `<skill>.json`, the task list that the skill loads). Skills added for the playground in
 `skill_lib_example`: `joystick_teleoperation`, `markers_waypoints`, `markers_corner`, and `pick_and_place` (Panda,

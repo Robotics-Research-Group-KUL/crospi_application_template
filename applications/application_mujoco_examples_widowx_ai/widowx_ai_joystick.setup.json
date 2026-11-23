@@ -40,7 +40,7 @@
                         0.0
                     ],
                     "periodicity": 0.01,
-                    "urdf_path": "$[trossen_arm_description]/urdf/wxai_follower.urdf",
+                    "urdf_path": "$[trossen_arm_description]/urdf/generated/wxai/wxai_follower.urdf",
                     "environment_mjcf_path": "$[crospi_application_template]/robot_models/mujoco_environments/empty/empty.xml",
                     "base_position": [
                         0.0,
@@ -142,7 +142,7 @@
             ],
             "default_robot_specification": {
                 "is-inline_robotspecification": true,
-                "urdf_path": "$[trossen_arm_description]/urdf/wxai_follower.urdf",
+                "urdf_path": "$[trossen_arm_description]/urdf/generated/wxai/wxai_follower.urdf",
                 "tcp_frame": {
                     "child_link": "ee_gripper_link",
                     "parent_link": "base_link"
