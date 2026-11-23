@@ -161,9 +161,9 @@ the force/torque sensor and the SpaceMouse; `ur10e_joystick_teleoperation`), and
 WidowX AI in [applications/application_mujoco_examples_franka_panda/](applications/application_mujoco_examples_franka_panda/)
 and [applications/application_mujoco_examples_widowx_ai/](applications/application_mujoco_examples_widowx_ai/) (these
 need `franka_description` / `trossen_arm_description` in the workspace; as franka_description installs only xacro
-files, the Panda URDF generated from it is in `robot_models/urdf_models/robot_setups/franka_panda/panda.urdf`). Task lists adapted to these robots are kept
-in the folder of their skill as `<skill>.<robot>.json` (e.g. `joystick_teleoperation.franka_panda.json`; with crospi,
-copy it over `<skill>.json`, the task list that the skill loads). Skills added for the playground in
+files, the Panda URDF generated from it is in `robot_models/urdf_models/robot_setups/franka_panda/panda.urdf`). Task lists for these robots are kept in the
+folder of their skill as `<skill>_<robot>.json` (e.g. `joystick_teleoperation_franka_panda.json`); a skill loads
+`<skill>.json` unless another task list is given as its argument: `python3 joystick_teleoperation.py joystick_teleoperation_franka_panda.json`. Skills added for the playground in
 `skill_lib_example`: `joystick_teleoperation`, `markers_waypoints`, `markers_corner`, and `pick_and_place` (Panda,
 WidowX AI and UR10e with a generic parallel gripper (`ur10e_gripper_pick_and_place.setup.json`, URDF
 `robot_models/urdf_models/robot_setups/ur10e/ur10e_parallel_gripper.urdf`) with their grippers; `pick_and_place_simple.py`: motions to known poses only, `pick_and_place.py`: guarded

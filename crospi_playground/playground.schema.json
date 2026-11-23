@@ -44,7 +44,7 @@
                         "type": "object",
                         "properties": {
                             "setup": {"$ref": "#/definitions/path", "description": "Application setup (*.setup.json)."},
-                            "tasks": {"$ref": "#/definitions/path", "description": "Task list adapted to this setup (e.g. another robot), instead of <skill>.json; kept in the folder of the skill: <skill>.<robot>.json (with crospi, copy it over <skill>.json, the task list loaded by the skill)."}
+                            "tasks": {"$ref": "#/definitions/path", "description": "Task list for this setup (e.g. another robot), instead of <skill>.json: kept in the folder of the skill as <skill>_<robot>.json. The skill runs with it as its argument (python3 <skill>.py <task list>), as with crospi."}
                         },
                         "required": ["setup"],
                         "additionalProperties": false

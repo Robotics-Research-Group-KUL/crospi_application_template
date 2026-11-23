@@ -270,7 +270,7 @@
                         {"setup": "applications/application_mujoco_examples_ur10e/ur10e_position_servo.setup.json"},
                         {
                             "setup": "applications/application_mujoco_examples_franka_panda/franka_panda.setup.json",
-                            "tasks": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint.franka_panda.json"
+                            "tasks": "skill_specifications/libraries/skill_lib_example/skill_for_debug_sine_wave_last_joint/skill_for_debug_sine_wave_last_joint_franka_panda.json"
                         },
                         {"setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai.setup.json"}
                     ],
@@ -312,11 +312,11 @@
                         {"setup": "applications/application_mujoco_examples_ur10e/ur10e_joystick_teleoperation.setup.json"},
                         {
                             "setup": "applications/application_mujoco_examples_franka_panda/franka_panda_joystick.setup.json",
-                            "tasks": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.franka_panda.json"
+                            "tasks": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation_franka_panda.json"
                         },
                         {
                             "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_joystick.setup.json",
-                            "tasks": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation.widowx_ai.json"
+                            "tasks": "skill_specifications/libraries/skill_lib_example/joystick_teleoperation/joystick_teleoperation_widowx_ai.json"
                         }
                     ],
                     "description": "Move home, then move_joystick. Switch the SpaceMouse on (3D view): the TwistInputHandler of the setup feeds /spacenav/twist to joystick_input."
@@ -358,11 +358,11 @@
                         {"setup": "applications/application_mujoco_examples_franka_panda/franka_panda_pick_and_place.setup.json"},
                         {
                             "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_pick_and_place.setup.json",
-                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place_simple.widowx_ai.json"
+                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place_simple_widowx_ai.json"
                         },
                         {
                             "setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_pick_and_place.setup.json",
-                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place_simple.ur10e_gripper.json"
+                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place_simple_ur10e_gripper.json"
                         }
                     ]
                 },
@@ -375,11 +375,11 @@
                         {"setup": "applications/application_mujoco_examples_franka_panda/franka_panda_pick_and_place.setup.json"},
                         {
                             "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_pick_and_place.setup.json",
-                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place.widowx_ai.json"
+                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place_widowx_ai.json"
                         },
                         {
                             "setup": "applications/application_mujoco_examples_ur10e/ur10e_gripper_pick_and_place.setup.json",
-                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place.ur10e_gripper.json"
+                            "tasks": "skill_specifications/libraries/skill_lib_example/pick_and_place/pick_and_place_ur10e_gripper.json"
                         }
                     ]
                 }
@@ -459,11 +459,11 @@
                         {"setup": "applications/application_mujoco_examples_ur10e/ur10e_joystick_teleoperation.setup.json"},
                         {
                             "setup": "applications/application_mujoco_examples_franka_panda/franka_panda_joystick.setup.json",
-                            "tasks": "skill_specifications/libraries/exercises_to_complete_skill_lib/joystick_teleoperation_virtual_fixture/joystick_teleoperation.franka_panda.json"
+                            "tasks": "skill_specifications/libraries/exercises_to_complete_skill_lib/joystick_teleoperation_virtual_fixture/joystick_teleoperation_franka_panda.json"
                         },
                         {
                             "setup": "applications/application_mujoco_examples_widowx_ai/widowx_ai_joystick.setup.json",
-                            "tasks": "skill_specifications/libraries/exercises_to_complete_skill_lib/joystick_teleoperation_virtual_fixture/joystick_teleoperation.widowx_ai.json"
+                            "tasks": "skill_specifications/libraries/exercises_to_complete_skill_lib/joystick_teleoperation_virtual_fixture/joystick_teleoperation_widowx_ai.json"
                         }
                     ],
                     "description": "Exercise to complete: it does not work until its TODOs are completed. Complete the TODOs of move_joystick_virtual_fixture.etasl.lua (exercises_to_complete_task_lib, Task specs tab): a cylindrical (or conical) virtual fixture that keeps the tool inside it while it is teleoperated with the emulated SpaceMouse (switch it on in the 3D view). The cone marker shows the virtual fixture."
