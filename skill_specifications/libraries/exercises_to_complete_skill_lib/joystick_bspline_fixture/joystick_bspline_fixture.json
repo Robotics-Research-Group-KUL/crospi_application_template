@@ -1,0 +1,58 @@
+{
+    "$schema": "../../../../task_specifications/tasks-schema.json",
+    "tasks": [
+        {
+            "name": "MovingHome",
+            "task_specification": {
+                "from-core_task_lib-version-1.0.2": true,
+                "is-move_jointspace_trap": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.2,
+                    "maxvel": 0.5,
+                    "target_joints": [-1.5708, -1.5814, 1.6684, -1.6577, -1.5708, 0],
+                    "units": "radians"
+                }
+            }
+        },
+        {
+            "name": "MoveRelativeCartesian",
+            "task_specification": {
+                "from-core_task_lib-version-1.0.2": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "world_frame",
+                    "eq_r": 0.08,
+                    "delta_pos": [0, 0, 0.05],
+                    "delta_euler": [0, 0, 0],
+                    "error_pos_th": 0.0005,
+                    "error_rot_th": 0.01,
+                    "maxacc": 0.1,
+                    "maxvel": 0.1
+                }
+            }
+        },
+        {
+            "name": "joystick_bspline_fixture",
+            "task_specification": {
+                "from-core_task_lib-version-1.0.2": true,
+                "is-move_joystick_bspline_fixture": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_joystick_bspline_fixture.etasl.lua",
+                "parameters": {
+                    "activate_linear": true,
+                    "activate_angular": false,
+                    "activate_angular_fixture": true,
+                    "linear_scale": 0.3,
+                    "angular_scale": 0.3,
+                    "execution_time": 0,
+                    "task_frame": "tcp_frame",
+                    "fixture_base": [0.1747, -0.69126, 0.18, 0, 0, 0, 1],
+                    "radius": 0.2,
+                    "height": 0.45
+                }
+            }
+        }
+    ]
+}

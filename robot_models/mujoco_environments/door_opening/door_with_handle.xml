@@ -1,0 +1,78 @@
+<!--
+  A door for mujoco_robotsimulator_crospi (Crospi Playground, skill "Open a door (force control)"), inspired on the door of
+  door_and_drawer/cabinet_with_door_and_drawer.xml: the handle is a cube of 5 cm on a short stem, to be grasped by a
+  parallel gripper (80 mm opening or more), but here the door is a large, free standing door that opens away from the robot.
+
+  Setup (applications/application_mujoco_examples_franka_panda/franka_panda_door_opening.setup.json): the robot stands on a
+  pedestal at world (0, 0.1), base_position = (0, 0.1, 0.75), with the orientation of the world: the base frame of the robot is the
+  world frame shifted 0.1 m along y and 0.75 m up. In the WORLD (the BASE FRAME OF THE ROBOT: subtract (0, 0.1, 0.75)):
+
+     hinge axis of the door          vertical, through world (0.20, 0.20)               base frame (0.20, 0.10)
+     closed door                     in the plane x = 0.20, from the hinge to the robot's right, 0.5 m wide (world y = 0.20 .. -0.30),
+                                     1.5 m high (world z = 0.083 .. 1.583), 2 cm thick, its front face (towards the robot) at x = 0.20
+     opening                         the door rotates about +z (counterclockwise seen from above): its free edge moves away
+                                     from the robot (towards +x); angle 0 = closed, the range is 0 .. 80 degrees (the skill opens it 70 degrees)
+     handle                          cube of 5 cm on a stem, on the front face, 0.40 m from the hinge: its center is at
+                                     world (0.156, -0.20, 1.083) when the door is closed = base frame (0.156, -0.30, 0.333)
+
+  The door has dry friction (frictionloss) and damping in its hinge, so that a force is needed to open it: about 3 N at the
+  handle (plus 2 Nms/rad). The door collides with the robot only (there is no door frame). The cube of the handle has
+  the friction of the one of pick and place (and elliptic friction cones with a high impratio, for grasping).
+
+  The physics options (timestep, gravity, integrator, contacts) of this file are overwritten by the crospi
+  configuration of the simulator.
+-->
+<mujoco model="door_with_handle">
+  <compiler angle="radian"/>
+  <!-- Grasping: elliptic friction cones and a high impratio (friction-to-normal impedance), as in pick and place -->
+  <option cone="elliptic" impratio="10"/>
+
+  <visual>
+    <headlight ambient="0.4 0.4 0.4" diffuse="0.6 0.6 0.6"/>
+  </visual>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.2 0.3 0.4" rgb2="0.3 0.4 0.5" width="512" height="512"/>
+    <material name="grid" texture="grid" texrepeat="4 4" reflectance="0.1"/>
+  </asset>
+
+  <default>
+    <!-- contype/conaffinity bits: two geoms collide if (contype of one & conaffinity of the other) is not 0. The robot
+         (URDF) has contype = conaffinity = 1: the door collides with the robot only. -->
+    <default class="door">
+      <geom contype="3" conaffinity="2" rgba="0.85 0.82 0.72 1" friction="1.5 0.02 0.001" condim="4"/>
+      <!-- hinge: damping [Nms/rad], dry friction [Nm] (3 N at the handle, 0.4 m from the hinge: 1.2 Nm) -->
+      <joint damping="10" frictionloss="1.2" armature="0.01"/>
+    </default>
+      </default>
+
+  <worldbody>
+    <light name="top" pos="0 0 3" dir="0 0 -1" directional="true"/>
+    <geom name="floor" type="plane" size="0 0 0.05" material="grid"/>
+
+    <!-- Pedestal of the robot: top at z = 0.75 m (the robot base is attached there by the setup) -->
+    <body name="pedestal" pos="0 0.1 0.375">
+      <geom name="pedestal" type="box" size="0.08 0.08 0.375" rgba="0.35 0.35 0.38 1"/>
+    </body>
+
+    <!-- Door. Origin of the body: on the hinge axis, in the plane of the front face (x = 0.20), at mid height of the
+         door (z = 0.833 = 0.083 + 0.75). The panel (0.5 m wide) extends from the hinge towards -y when the door is closed; the handle is 0.4 m from the hinge, the free edge 0.1 m beyond it. The handle
+         (stem + cube of 5 cm) is on the front face (-x), 0.40 m from the hinge, at 0.25 m above the middle of the door:
+         z = 1.083 in the world = 0.333 m above the base of the robot. -->
+    <body name="door" pos="0.2 0.2 0.833">
+      <joint class="door" name="door_hinge" type="hinge" axis="0 0 1" range="0 1.4"/>
+      <geom class="door" name="door_panel" type="box" pos="0.011 -0.25 0" size="0.01 0.25 0.75" mass="5.0"/>
+      <geom class="door" name="door_handle_stem" type="box" pos="-0.004 -0.40 0.25" size="0.015 0.008 0.008" mass="0.02"/>
+      <geom class="door" name="door_handle" type="box" pos="-0.044 -0.40 0.25" size="0.025 0.025 0.025" mass="0.1"
+            rgba="0.8 0.2 0.2 1"/>
+      <!-- center of the handle cube: the grasp point -->
+      <site name="door_handle_site" pos="-0.044 -0.40 0.25" size="0.004" rgba="1 1 0 1"/>
+    </body>
+  </worldbody>
+
+  <!-- MuJoCo sensors: published by the simulator on <topic_namespace>/mujoco_sensors/<name> -->
+  <sensor>
+    <jointpos name="door_angle" joint="door_hinge"/>
+    <framepos name="door_handle_position" objtype="site" objname="door_handle_site"/>
+  </sensor>
+</mujoco>

@@ -9,8 +9,8 @@
             "initializer": {
                 "full": true,
                 "sample_time": 0.01,
-                "duration": 3.0,
-                "convergence_criterion": 1e-08,
+                "duration": 5.0,
+                "convergence_criterion": 1e-05,
                 "weightfactor": 10000.0
             },
             "solver": {

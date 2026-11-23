@@ -13,7 +13,7 @@
         {
             "lib_name": "core_task_lib",
             "repo_url": "git@gitlab.kuleuven.be:todo.git",
-            "version": "1.0.1"
+            "version": "1.0.2"
         }
     ],
     "authors": [

@@ -24,6 +24,7 @@
         "applications/application_mujoco_examples_widowx_ai/widowx_ai_pick_and_place.setup.json": "Trossen WidowX AI · pick and place (pedestal, table with a cube)",
         "applications/application_mujoco_examples_ur10e/ur10e_gripper_pick_and_place.setup.json": "UR10e + parallel gripper · pick and place (pedestal, table with a cube)",
         "applications/application_mujoco_examples_franka_panda/franka_panda_door_and_drawer.setup.json": "Franka Emika Panda · door and drawer (pedestal, table with a cabinet)",
+        "applications/application_mujoco_examples_franka_panda/franka_panda_door_opening.setup.json": "Franka Emika Panda · door with a handle",
         "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_2mm.setup.json": "UR10e + parallel gripper · rectangular peg and hole (2 mm clearance)",
         "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_1mm.setup.json": "UR10e + parallel gripper · rectangular peg and hole (1 mm clearance)",
         "applications/application_mujoco_examples_ur10e/ur10e_gripper_peg_insertion_rectangular_0.5mm.setup.json": "UR10e + parallel gripper · rectangular peg and hole (0.5 mm clearance)",

@@ -1,0 +1,79 @@
+{
+    "v": 1,
+    "buffer": 60,
+    "simple": {
+        "split": false,
+        "areas": [
+            {
+                "kind": "time",
+                "curves": [
+                    {
+                        "path": "task/outputs/x_tf",
+                        "color": "#4e9af1"
+                    },
+                    {
+                        "path": "task/outputs/qy_tf",
+                        "color": "#f28e2b"
+                    }
+                ],
+                "points": false
+            },
+            {
+                "kind": "time",
+                "curves": []
+            }
+        ]
+    },
+    "layout": {
+        "tabs": [
+            {
+                "name": "Tab 1",
+                "root": {
+                    "plot": {
+                        "kind": "time",
+                        "curves": [
+                            {
+                                "path": "robot/joint_positions/wrist_1_joint",
+                                "color": "#4e9af1"
+                            },
+                            {
+                                "path": "robot/joint_positions/wrist_2_joint",
+                                "color": "#f28e2b"
+                            },
+                            {
+                                "path": "robot/joint_positions/wrist_3_joint",
+                                "color": "#59a14f"
+                            }
+                        ],
+                        "points": false
+                    }
+                }
+            },
+            {
+                "name": "Tab 2",
+                "root": {
+                    "plot": {
+                        "kind": "time",
+                        "curves": [
+                            {
+                                "path": "solver/joint_velocity_setpoints/wrist_1_joint",
+                                "color": "#4e9af1"
+                            },
+                            {
+                                "path": "solver/joint_velocity_setpoints/wrist_2_joint",
+                                "color": "#f28e2b"
+                            },
+                            {
+                                "path": "solver/joint_velocity_setpoints/wrist_3_joint",
+                                "color": "#59a14f"
+                            }
+                        ],
+                        "points": false
+                    }
+                }
+            }
+        ],
+        "active": 1
+    },
+    "custom": []
+}
