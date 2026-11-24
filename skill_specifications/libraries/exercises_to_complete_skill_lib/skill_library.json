@@ -11,6 +11,11 @@
             "version": "1.0.1"
         },
         {
+            "lib_name": "force_control_task_lib",
+            "repo_url": "https://github.com/Robotics-Research-Group-KUL/force_control_task_lib.git",
+            "version": "1.0.3"
+        },
+        {
             "lib_name": "core_task_lib",
             "repo_url": "git@gitlab.kuleuven.be:todo.git",
             "version": "1.0.2"

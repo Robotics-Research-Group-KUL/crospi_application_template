@@ -445,15 +445,6 @@
                     ],
                     "description": "A cabinet with a drawer and a door, each with a cube as handle, in a MuJoCo environment based on the one of pick and place. The approximately known position of a handle is only used to move in front of it: then force control (move_compliant_along_axis) finds the handle (the gripper moves along its axis, compliant sideways, until the hand touches the cube), the simulated gripper closes, and a second force controlled task pulls horizontally with a desired force with the torques controlled to zero, so that the drawer moves on a line and the door on an arc; it finishes when the distance travelled, computed by a feature variable and a constraint (an integrator), is reached. Franka Emika Panda, gripper tilted 60 degrees below the horizontal (the handles are reachable closed and open). The gripper is commanded by BeTFSM states over ROS 2 topics (simulation only). Set TARGETS at the top of the script to open only the drawer or the door.",
                     "plots": "crospi_playground/plots/skill_door_and_drawer.plots.json"
-                },
-                {
-                    "id": "door_opening",
-                    "title": "Open a door with a handle (force control)",
-                    "script": "skill_specifications/libraries/skill_lib_example/door_opening/door_opening.py",
-                    "setups": [
-                        {"setup": "applications/application_mujoco_examples_franka_panda/franka_panda_door_opening.setup.json"}
-                    ],
-                    "description": "A free-standing door (0.5 m x 1.5 m, vertical hinge) with a cube as handle, opened about 70 degrees by a Franka Emika Panda. The gripper moves in front of the handle (known position), force control (move_compliant_along_axis) finds the handle (3 N contact), the simulated gripper closes on it, then the gripper pushes 20 N along the tangent of the arc of the handle, compliant sideways and with the torques controlled to zero, so that the handle moves on an arc and the tool turns with the door; it finishes when the path length, computed by a feature variable and a constraint (an integrator), reaches the distance of the task list (0.445 m: 70 degrees). Then the gripper releases the handle, moves back and the robot returns home. The gripper is commanded by BeTFSM states over ROS 2 topics (simulation only)."
                 }
             ]
         },
@@ -490,6 +481,15 @@
                     ],
                     "description": "Move home and 5 cm up, then move_joystick_bspline_fixture (core_task_lib): the tool is teleoperated with the SpaceMouse (switch it on in the 3D view) along a horn-shaped virtual fixture, a quadratic B-spline from the base of the fixture to a point of its top disk; the end point and the progress along the spline are feature variables, and the tool is kept tangent to the spline. The path marker shows the spline. UR10e or Trossen WidowX AI (Setup dropdown of the Setup tab; the fixture of each robot is in its task list).",
                     "plots": "crospi_playground/plots/skill_joystick_bspline_fixture.plots.json"
+                },
+                {
+                    "id": "door_opening",
+                    "title": "Open a door with a handle (force control)",
+                    "script": "skill_specifications/libraries/exercises_to_complete_skill_lib/door_opening/door_opening.py",
+                    "setups": [
+                        {"setup": "applications/application_mujoco_examples_franka_panda/franka_panda_door_opening.setup.json"}
+                    ],
+                    "description": "Exercise to complete: it does not work until its TODOs are completed. Complete the TODOs of push_door.etasl.lua (exercises_to_complete_task_lib, Task specs tab). A free-standing door (0.5 m x 1.5 m, vertical hinge) with a cube as handle, opened about 70 degrees by a Franka Emika Panda. The gripper moves in front of the handle (known position), force control (move_compliant_along_axis) finds the handle (3 N contact), the simulated gripper closes on it, then the gripper pushes 20 N along the tangent of the arc of the handle, compliant sideways and with the torques controlled to zero, so that the handle moves on an arc and the tool turns with the door; it finishes when the path length, computed by a feature variable and a constraint (an integrator), reaches the distance of the task list (0.445 m: 70 degrees). Then the gripper releases the handle, moves back and the robot returns home. The gripper is commanded by BeTFSM states over ROS 2 topics (simulation only)."
                 }
             ]
         }

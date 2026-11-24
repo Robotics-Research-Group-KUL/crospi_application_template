@@ -1,0 +1,169 @@
+{
+    "$schema": "../../../../task_specifications/tasks-schema.json",
+    "tasks": [
+        {
+            "name": "MovingHome",
+            "task_specification": {
+                "from-core_task_lib-version-1.0.2": true,
+                "is-move_jointspace_trap": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.3,
+                    "maxvel": 0.3,
+                    "target_joints": [
+                        -1.7324,
+                        -0.2717,
+                        -0.6317,
+                        -2.5621,
+                        0.8921,
+                        1.1332,
+                        1.4945
+                    ],
+                    "units": "radians"
+                }
+            }
+        },
+        {
+            "name": "DoorPregrasp",
+            "task_specification": {
+                "from-core_task_lib-version-1.0.2": true,
+                "is-move_jointspace_trap": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_jointspace_trap.etasl.lua",
+                "parameters": {
+                    "maxacc": 0.3,
+                    "maxvel": 0.3,
+                    "target_joints": [
+                        -1.7862,
+                        -0.2892,
+                        -0.3297,
+                        -2.7618,
+                        1.0867,
+                        1.3225,
+                        1.4033
+                    ],
+                    "units": "radians"
+                }
+            }
+        },
+        {
+            "name": "ApproachHandle",
+            "task_specification": {
+                "from-force_control_task_lib-version-1.0.3": true,
+                "is-move_compliant_along_axis": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/force_control_task_lib/task_specifications/move_compliant_along_axis.etasl.lua",
+                "parameters": {
+                    "axis": "z",
+                    "force": 6.0,
+                    "distance": 0.15,
+                    "contact_force": 3.0,
+                    "time_delay": 1.0,
+                    "max_time": 15.0,
+                    "maxvel": 0.05,
+                    "max_angular_velocity": 0.5,
+                    "K_F": [
+                        3000,
+                        3000,
+                        1200
+                    ],
+                    "K_T": [
+                        25,
+                        25,
+                        25
+                    ],
+                    "K_force": 4,
+                    "K_torque": 4,
+                    "force_threshold": 0.5,
+                    "torque_threshold": 0.05,
+                    "task_frame": "tcp_frame",
+                    "FT_sensor_frame": "FT_sensor_frame",
+                    "tf_2_insframe": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "BackOff",
+            "task_specification": {
+                "from-core_task_lib-version-1.0.2": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0,
+                        -0.02
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.1,
+                    "maxvel": 0.02,
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
+                }
+            }
+        },
+        {
+            "name": "PushDoor",
+            "task_specification": {
+                "from-exercises_to_complete_task_lib-version-1.0.1": true,
+                "is-push_door": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/exercises_to_complete_task_lib/task_specifications/push_door.etasl.lua",
+                "parameters": {
+                    "max_door_angle": 65,
+                    "desired_force": 10,
+                    "max_time": 0,
+                    "stiffness_F": [
+                        3000,
+                        3000,
+                        2000
+                    ],
+                    "stiffness_T": [
+                        100,
+                        100,
+                        100
+                    ],
+                    "force_gain": 5,
+                    "torque_gain": 5,
+                    "task_frame": "tcp_frame",
+                    "FT_sensor_frame": "FT_sensor_frame"
+                }
+            }
+        },
+        {
+            "name": "RetreatFromHandle",
+            "task_specification": {
+                "from-core_task_lib-version-1.0.2": true,
+                "is-move_cartesianspace_relative": true,
+                "file_path": "$[crospi_application_template]/task_specifications/libraries/core_task_lib/task_specifications/move_cartesianspace_relative.etasl.lua",
+                "parameters": {
+                    "delta_pos": [
+                        0,
+                        0,
+                        -0.12
+                    ],
+                    "delta_euler": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "eq_r": 0.08,
+                    "maxacc": 0.2,
+                    "maxvel": 0.1,
+                    "task_frame": "tcp_frame",
+                    "wrt_frame": "tcp_frame"
+                }
+            }
+        }
+    ]
+}
