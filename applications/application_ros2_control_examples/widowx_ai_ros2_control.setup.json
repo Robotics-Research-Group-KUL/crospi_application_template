@@ -1,0 +1,129 @@
+{
+    "$schema": "../../schemas/generated/blackboard-schema-bundled.json",
+    "blackboard": {
+        "etasl": {
+            "general": {
+                "event_topic": "crospi_node/events",
+                "sample_time": 0.01
+            },
+            "initializer": {
+                "full": true,
+                "sample_time": 0.01,
+                "duration": 3.0,
+                "convergence_criterion": 1e-08,
+                "weightfactor": 10000.0
+            },
+            "solver": {
+                "is-qpoasessolver": true,
+                "nWSR": 100,
+                "regularization_factor": 1e-08,
+                "cputime": 10
+            }
+        },
+        "robot": {
+            "robotsimulators": [
+                {
+                    "is-ros2_control": true,
+                    "robot_joints": [
+                        "joint_0",
+                        "joint_1",
+                        "joint_2",
+                        "joint_3",
+                        "joint_4",
+                        "joint_5"
+                    ],
+                    "periodicity": 0.01,
+                    "robot_description": {
+                        "file": "$[trossen_arm_description]/urdf/wxai.urdf.xacro",
+                        "xacro_arguments": {
+                            "variant": "follower",
+                            "ros2_control_hardware_type": "mock_components"
+                        }
+                    },
+                    "controllers": [
+                        {
+                            "name": "joint_state_broadcaster",
+                            "type": "joint_state_broadcaster/JointStateBroadcaster",
+                            "parameters": {
+                                "use_local_topics": true
+                            }
+                        }
+                    ],
+                    "command_interfaces": [
+                        "position"
+                    ],
+                    "hold_joints": [
+                        "left_carriage_joint"
+                    ],
+                    "name_expr_joint_vel": "joint_vel",
+                    "name_expr_joint_torque": "joint_torque"
+                }
+            ],
+            "robotdrivers": [
+                {
+                    "is-ros2_control": true,
+                    "robot_joints": [
+                        "joint_0",
+                        "joint_1",
+                        "joint_2",
+                        "joint_3",
+                        "joint_4",
+                        "joint_5"
+                    ],
+                    "periodicity": 0.01,
+                    "robot_description": {
+                        "file": "$[trossen_arm_description]/urdf/wxai.urdf.xacro",
+                        "xacro_arguments": {
+                            "variant": "follower",
+                            "ros2_control_hardware_type": "real",
+                            "ip_address": "192.168.1.2"
+                        }
+                    },
+                    "controllers": [
+                        {
+                            "name": "joint_state_broadcaster",
+                            "type": "joint_state_broadcaster/JointStateBroadcaster",
+                            "parameters": {
+                                "use_local_topics": true
+                            }
+                        }
+                    ],
+                    "command_interfaces": [
+                        "position"
+                    ],
+                    "hold_joints": [
+                        "left_carriage_joint"
+                    ],
+                    "name_expr_joint_vel": "joint_vel",
+                    "name_expr_joint_torque": "joint_torque"
+                }
+            ],
+            "default_robot_specification": {
+                "is-inline_robotspecification": true,
+                "urdf_path": "$[trossen_arm_description]/urdf/generated/wxai/wxai_follower.urdf",
+                "tcp_frame": {
+                    "child_link": "ee_gripper_link",
+                    "parent_link": "base_link"
+                },
+                "robot_joints": [
+                    "joint_0",
+                    "joint_1",
+                    "joint_2",
+                    "joint_3",
+                    "joint_4",
+                    "joint_5"
+                ]
+            }
+        },
+        "iohandlers": {
+            "outputhandlers": [
+                {
+                    "is-JointStateOutputHandler": true,
+                    "topic-name": "/joint_states"
+                }
+            ],
+            "inputhandlers": []
+        }
+    },
+    "$defs": {}
+}

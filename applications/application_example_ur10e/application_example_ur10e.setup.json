@@ -40,7 +40,7 @@
                 {
                     "is-urXe_driver_crospi": true,
                     "ip_address": "192.168.56.102",
-                    "periodicity": 0.02,
+                    "periodicity": 0.002,
                     "q_acceleration": 1.2,
                     "robot_joints": [
                         "shoulder_pan_joint",
